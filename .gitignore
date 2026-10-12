@@ -1,0 +1,9 @@
+# Build output from redux/dev.sh / meson
+/build*/
+
+# Transcriber working directory (downloaded audio, raw Whisper output).
+# The curated transcript is committed as redux/design/transcript.md.
+/redux/design/transcript/
+
+# Local tool state
+/.remember/

@@ -1,0 +1,27 @@
+# Isolated runner for AI-Video-Transcriber (https://github.com/wendy7756/AI-Video-Transcriber).
+# Subtitles are fetched with yt-dlp; when a video has none, audio is transcribed
+# locally with faster-whisper. Nothing is installed on the host.
+FROM docker.io/library/python:3.12-slim
+
+ARG TRANSCRIBER_COMMIT=7f1c6197766937adc98596a2641109477a1a8ee4
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ffmpeg git ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/wendy7756/AI-Video-Transcriber.git /opt/transcriber \
+ && git -C /opt/transcriber checkout --quiet "$TRANSCRIBER_COMMIT"
+
+WORKDIR /opt/transcriber
+# uv downloads wheels in parallel (pip fetches them one at a time).
+ENV UV_CONCURRENT_DOWNLOADS=10
+RUN pip install --no-cache-dir uv \
+ && uv pip install --system --no-cache -r requirements.txt \
+ && uv pip install --system --no-cache --upgrade "yt-dlp[default]" deno "av<16"
+# yt-dlp needs a JavaScript runtime (deno) to solve YouTube's player challenges;
+# without it, format URLs return HTTP 403.
+# av<16: faster-whisper 1.2.x passes metadata_errors= to av.open(), which newer PyAV removed.
+
+# Whisper models are cached in a named volume mounted here.
+ENV HF_HOME=/cache/huggingface
+ENTRYPOINT ["python3", "transcribe.py"]

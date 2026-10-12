@@ -1,0 +1,38 @@
+{
+  // For VS Code Dev Containers / the devcontainer CLI. redux/dev.sh does the same with plain Podman.
+  "name": "VLC Redux",
+  "build": { "dockerfile": "Containerfile" },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "mounts": [
+    "source=vlc-redux-ccache,target=/ccache,type=volume",
+    "source=${localEnv:XDG_RUNTIME_DIR}/${localEnv:WAYLAND_DISPLAY},target=/tmp/runtime/${localEnv:WAYLAND_DISPLAY},type=bind",
+    "source=${localEnv:XDG_RUNTIME_DIR}/pipewire-0,target=/tmp/runtime/pipewire-0,type=bind",
+    "source=${localEnv:XDG_RUNTIME_DIR}/pulse/native,target=/tmp/runtime/pulse/native,type=bind"
+  ],
+  "runArgs": [
+    "--userns=keep-id",
+    "--security-opt", "label=disable",
+    "--tmpfs", "/tmp/runtime:rw,mode=0700,U",
+    "--device", "/dev/dri",
+    "--group-add", "keep-groups"
+  ],
+  "containerEnv": {
+    "HOME": "/tmp/home",
+    "XDG_RUNTIME_DIR": "/tmp/runtime",
+    "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
+    "QT_QPA_PLATFORM": "wayland;xcb",
+    "PULSE_SERVER": "unix:/tmp/runtime/pulse/native"
+  },
+  "postCreateCommand": "mkdir -p /tmp/home",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "theqtcompany.qt-qml",
+        "theqtcompany.qt-cpp",
+        "mesonbuild.mesonbuild",
+        "llvm-vs-code-extensions.vscode-clangd"
+      ]
+    }
+  }
+}

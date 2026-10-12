@@ -1,0 +1,71 @@
+# VLC Redux development container.
+#
+# Mirrors VideoLAN's own CI image for Linux builds (videolan/docker-images,
+# vlc-debian-unstable/Dockerfile), so the build dependencies, including Qt 6, match
+# upstream. It's built locally from Debian sid instead of pulled from
+# registry.videolan.org, which serves multi-GB images slowly.
+# Dropped from the upstream list: the Android toolchain (openjdk, ant) and Rust.
+FROM docker.io/library/debian:sid-slim
+
+# redux/dev.sh passes the fastest mirror it measured (redux/tools/fastest-debian-mirror.sh).
+ARG DEBIAN_MIRROR=http://deb.debian.org/debian
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# apt has no parallel-download switch; retries and a deeper HTTP pipeline are the
+# closest equivalents.
+# The slim base has no CA certificates, so an https mirror can't be reached until
+# ca-certificates is installed. redux/dev.sh mounts the host's CA bundle at
+# /run/host-ca.crt for that first step; without it, bootstrap from deb.debian.org over http.
+RUN printf 'Acquire::Retries "5";\nAcquire::http::Pipeline-Depth "10";\nAPT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' \
+      > /etc/apt/apt.conf.d/90vlc-redux \
+ && if [ -f /run/host-ca.crt ]; then boot_mirror="$DEBIAN_MIRROR"; ca="-o Acquire::https::CaInfo=/run/host-ca.crt"; \
+    else boot_mirror=http://deb.debian.org/debian; ca=""; fi \
+ && printf 'Types: deb\nURIs: %s\nSuites: sid\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.gpg\n' "$boot_mirror" \
+      > /etc/apt/sources.list.d/debian.sources \
+ && apt-get $ca update && apt-get $ca install -y ca-certificates \
+ && printf 'Types: deb deb-src\nURIs: %s\nSuites: sid\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.gpg\n' "$DEBIAN_MIRROR" \
+      > /etc/apt/sources.list.d/debian.sources \
+ && rm -rf /var/lib/apt/lists/*
+
+# Upstream's VLC build dependencies (same list as vlc-debian-unstable).
+RUN apt-get update && apt-get install -y \
+      ca-certificates git-core autopoint ninja-build python3 python3-venv gettext pkg-config \
+      zip p7zip-full unzip zstd wget dos2unix yasm \
+      m4 build-essential libc6-dbg libtool-bin gdb gcovr \
+      curl libltdl-dev freerdp3-dev \
+      qml6-module-qtquick-effects qml6-module-qtcore qml6-module-qtqml qml6-module-qtqml-workerscript qml6-module-qtqml-models \
+      qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
+      qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qttest qt6-shadertools-dev \
+      qt6-svg-dev qt6-wayland-dev qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-declarative-private-dev \
+      libxkbcommon-x11-dev libx11-xcb-dev libplacebo-dev \
+      meson doxygen graphviz libsqlite3-dev rapidjson-dev nasm cmake libxcb-damage0-dev \
+      clang clang-tidy gperf libgstreamer-plugins-base1.0-dev \
+      glslang-dev libvpx-dev \
+      libopencv-imgcodecs-dev libopencv-objdetect-dev \
+      libgme-dev libaom-dev librav1e-dev libvpl-dev libebur128-dev librist-dev \
+      xvfb xauth python3-xdg dbus-x11 \
+ && apt-get build-dep -y vlc \
+ && rm -rf /var/lib/apt/lists/*
+
+# VLC Redux extras:
+#  - run and screenshot the GUI headless (xvfb above, imagemagick) or on the host display (qt6-wayland)
+#  - test media (ffmpeg), faster rebuilds (ccache), GPU rendering (mesa), the design font (Inter)
+#  - QML runner (qml-qt6), qmllint and qmlformat (qt6-declarative-dev-tools) for the QML work
+RUN apt-get update && apt-get install -y \
+      ccache less sudo x11-utils imagemagick ffmpeg \
+      mesa-utils libgl1-mesa-dri libegl-mesa0 libglx-mesa0 \
+      qt6-wayland qml-qt6 qt6-declarative-dev-tools fonts-inter fonts-noto-color-emoji \
+ && rm -rf /var/lib/apt/lists/*
+
+# Containers started by redux/dev.sh run as the host user (podman --userns=keep-id);
+# let that user use sudo without a password inside the container only.
+RUN echo 'ALL ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/vlc-redux && chmod 0440 /etc/sudoers.d/vlc-redux
+
+ENV LANG=C.UTF-8 \
+    CCACHE_DIR=/ccache \
+    CCACHE_MAXSIZE=20G \
+    PATH=/usr/lib/ccache:$PATH
+
+WORKDIR /workspace
+CMD ["bash"]
