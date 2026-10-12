@@ -30,3 +30,4 @@ entry if it changes a plan. New gaps found during milestone research go here too
 ## Resolution log
 | Date | Gap | Resolution | Source |
 |---|---|---|---|
+| 2026-10-13 | G1 (partial) | `.fig` local copy received and stored at `redux/design/source/VLC-Redesign.fig` (git-ignored; ZIP holding `canvas.fig`, `meta.json` and the embedded images). This covers exact values offline. Rendered frame PNGs and icon SVGs still need the Figma token (or manual exports); the maintainer's PNG exports in `VLC Redesign (Community)/` serve as interim references. | Maintainer |
