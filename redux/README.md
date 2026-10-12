@@ -24,6 +24,18 @@ redux/dev.sh run qml6 redux/tools/smoke.qml                                     
 redux/dev.sh run env QT_QPA_PLATFORM=xcb xvfb-run -a qml6 redux/tools/smoke.qml    # headless
 ```
 
+## Build, run, screenshot
+
+```bash
+redux/dev.sh run redux/tools/build.sh             # configure (first time) and build VLC
+redux/dev.sh run redux/tools/build.sh qt          # rebuild only the Qt interface plugin
+redux/dev.sh run redux/tools/build.sh run         # start the built player on your desktop
+redux/dev.sh run redux/tools/make-media.sh        # synthetic test media in build/media
+redux/dev.sh run redux/tools/shoot.sh             # 1920x1080 screenshots in build/shots
+redux/dev.sh run redux/tools/compare.sh           # diff against Figma; open build/shots/report.html
+python3 -I redux/tools/figma-export.py            # on the host: Figma frames/icons into redux/design/source
+```
+
 ## Video transcripts
 
 `redux/tools/transcriber/transcribe.sh <youtube-url> [--whisper-model medium]` runs

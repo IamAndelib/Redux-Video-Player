@@ -70,3 +70,5 @@ static-lib/
 /redux/design/transcript/
 # Local tool state
 /.remember/
+# Designer's source file (.fig) and Figma API exports: kept local, not redistributed.
+/redux/design/source/

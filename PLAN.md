@@ -149,33 +149,35 @@ The designer's stated reasoning. It settles behavior that the Figma frames only 
 ## 5. Phases
 
 ### Phase 0: Foundations
-1. **Fork setup.**
-   - Clone upstream VLC, add the GitHub remote, and push `master` plus a `redux/main` branch.
-   - Pin the commit in `redux/UPSTREAM_COMMIT`.
-2. **Dev container. Done:** `.devcontainer/Containerfile` and `devcontainer.json`, driven by `redux/dev.sh`.
-   - It's built locally from Debian sid with the same package list as VideoLAN's `vlc-debian-unstable` CI image, because `registry.videolan.org` serves its images too slowly.
-   - Usage:
-     - `redux/dev.sh image` builds the image.
-     - `redux/dev.sh shell` opens a shell.
-     - `redux/dev.sh run <cmd>` runs one command.
-   - Details: the repo is mounted at `/workspace`, commands run as your own user, ccache lives in a volume, and the host Wayland/X11 display, PipeWire audio and GPU are passed through.
-   - Or use Ubuntu 24.04 with Qt 6.8 via `aqtinstall`, meson, ninja, ffmpeg, Xvfb and ImageMagick.
-   - It runs on your machine with Docker or Podman.
-3. **Build script** `redux/tools/build.sh`.
-   - Runs `meson setup build` with only the needed modules, then `ninja -C build`, then runs `./build/vlc`.
-   - Document the fast loop: rebuild just the Qt plugin target.
-4. **Test media** `redux/tools/make-media.sh`.
-   - ffmpeg generates test video (testsrc/smptebars), music clips with embedded cover art and tags, a subtitle file and a folder tree like "Shows/The Wand/S01". This mirrors the Figma content, with no licensing issues.
-5. **Visual harness** `redux/tools/shoot.sh`.
-   - Launch the player under Xvfb at 1920×1080 on fixture media and capture each screen.
-   - Run ImageMagick `compare` against the Figma reference PNGs (exported with Figma MCP `get_screenshot`) and output an HTML side-by-side report.
-6. **Design inventory.**
-   - Figma MCP `get_variable_defs` and `get_design_context` on the key frames give `redux/design/tokens.json`.
-   - `download_assets` on the Icon frame `42:356` gives SVGs.
-   - Write `screen-map.md`.
-7. **Transcript. Done:** `redux/design/transcript.md`, produced by `redux/tools/transcriber/transcribe.sh <url>`.
-   - That script runs AI-Video-Transcriber in its own container: yt-dlp with deno, then faster-whisper.
-   - Its design rationale is summarized in §2a.
+1. **Fork setup. Done.**
+   - VLC master with full history is merged into this repo, pinned to `a5538c557d27` (newest master commit with green upstream CI on 2026-10-12). The pin is recorded in `redux/UPSTREAM_COMMIT`.
+   - The `upstream` remote is `https://code.videolan.org/videolan/vlc.git`. To sync: `git fetch upstream master`, then merge a green commit and update the pin.
+2. **Dev container. Done:** `.devcontainer/Containerfile` and `devcontainer.json`, driven by `redux/dev.sh` (`image`, `shell`, `run <cmd>`).
+   - Debian sid with VideoLAN's own CI package list. It's built locally because `registry.videolan.org` serves images too slowly, and it uses the fastest Debian mirror, measured by `redux/tools/fastest-debian-mirror.sh`.
+   - medialibrary **0.13.2** is built from source, matching VLC's contrib. Debian's 0.14 has an incompatible API.
+   - The repo is at `/workspace`, commands run as you, ccache lives in a volume, and the Wayland/X11 display, PipeWire and GPU are passed through.
+3. **Build. Done:** `redux/tools/build.sh` uses meson with `-Dqt=enabled -Dmedialibrary=enabled -Dskins2=disabled`, Qt 6.11.2.
+   - A full build is 2,324 steps.
+   - `build.sh qt` rebuilds only the Qt plugin.
+   - `build.sh run` starts `build/meson/bin/vlc-static`, which loads plugins from the build tree.
+4. **Test media. Done:** `redux/tools/make-media.sh` writes about 50 MB of synthetic media into `build/media/`:
+   - "The Wand/S01" with 15 episodes, a flat-gray 1080p E04 for player diffs, and `.srt` files with matching and mismatched names.
+   - A 4K HDR10 clip.
+   - The "My Songs" album with cover art and varied loudness for the waveform.
+   - The "Cool Songs" and "Anime to Watch" playlists.
+5. **Visual harness. Done:**
+   - `redux/tools/shoot.sh` captures scenes at 1920×1080 under Xvfb: `first-run`, `library`, `player` and `music`.
+     - Each run uses a throwaway profile whose XDG folders point at the test media.
+     - The first-run wizard is driven with xdotool so the media library gets indexed.
+     - The default theme is Night.
+   - `redux/tools/compare.sh` diffs the shots against Figma frames listed in `redux/tools/shots.tsv` and writes `build/shots/report.html` (side by side, a diff image and RMSE).
+   - Baseline: stock VLC 4 scores RMSE 0.17 against the Figma player frame 187:328.
+6. **Design inventory. Partly done.**
+   - Done: `redux/design/screen-map.md` maps each Figma frame to the VLC QML/C++ files it affects.
+   - Partial: `redux/design/tokens.json` has the full dark palette, part of the light palette, and the effects. The Figma MCP Starter-plan limit stopped further queries.
+   - Pending: `redux/tools/figma-export.py`. It needs a Figma personal access token in `~/.config/vlc-redux/figma-token`, and uses about 3–5 REST calls to fetch the full file JSON, PNG renders of all frames and SVGs of all icons into the git-ignored `redux/design/source/`.
+   - Pending: the `.fig` local copy in the same folder, an offline source of truth that `fig2sketch` can parse.
+7. **Transcript. Done:** `redux/design/transcript.md`, produced by `redux/tools/transcriber/transcribe.sh <url>`, which runs AI-Video-Transcriber with yt-dlp, deno and faster-whisper `medium`. Its design rationale is in §2a.
 
 ### Phase 1: Design system
 - **Theme.** Rewrite the palette and tokens in `style/VLCStyle.qml`, `style/systempalette.cpp` and `style/colorcontext.cpp`:

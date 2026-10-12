@@ -49,14 +49,27 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/*
 
 # VLC Redux extras:
-#  - run and screenshot the GUI headless (xvfb above, imagemagick) or on the host display (qt6-wayland)
+#  - run, drive and screenshot the GUI headless (xvfb above, xdotool, imagemagick) or on the host display (qt6-wayland)
 #  - test media (ffmpeg), faster rebuilds (ccache), GPU rendering (mesa), the design font (Inter)
 #  - QML runner (qml-qt6), qmllint and qmlformat (qt6-declarative-dev-tools) for the QML work
 RUN apt-get update && apt-get install -y \
-      ccache less sudo x11-utils imagemagick ffmpeg \
+      ccache less sudo x11-utils xdotool imagemagick ffmpeg \
       mesa-utils libgl1-mesa-dri libegl-mesa0 libglx-mesa0 \
       qt6-wayland qml-qt6 qt6-declarative-dev-tools fonts-inter fonts-noto-color-emoji \
  && rm -rf /var/lib/apt/lists/*
+
+# VideoLAN medialibrary, needed by the Qt library views. VLC master builds against 0.13.x
+# (contrib/src/medialibrary/rules.mak); Debian ships 0.14, whose API is incompatible.
+# Same version and checksum as VLC's contrib.
+ARG MEDIALIBRARY_VERSION=0.13.2
+ARG MEDIALIBRARY_SHA512=ec04cd28a19e547debf1a911fbcd33345a53a3f963e83d6f878c9836ebfefd4045c42a670a2c076ba3767bf91884f542e48dab6a254fc29285041fa9be35fe73
+RUN cd /tmp \
+ && curl -fsSLo ml.tar.bz2 "https://code.videolan.org/videolan/medialibrary/-/archive/${MEDIALIBRARY_VERSION}/medialibrary-${MEDIALIBRARY_VERSION}.tar.bz2" \
+ && echo "${MEDIALIBRARY_SHA512}  ml.tar.bz2" | sha512sum -c - \
+ && tar xf ml.tar.bz2 && cd "medialibrary-${MEDIALIBRARY_VERSION}" \
+ && meson setup build --prefix=/usr/local --buildtype=release -Dlibvlc=disabled -Dtests=disabled \
+ && meson install -C build \
+ && ldconfig && cd / && rm -rf /tmp/ml.tar.bz2 "/tmp/medialibrary-${MEDIALIBRARY_VERSION}"
 
 # Containers started by redux/dev.sh run as the host user (podman --userns=keep-id);
 # let that user use sudo without a password inside the container only.
