@@ -1,7 +1,9 @@
 # VLC Redux: development environment
 
 Everything builds and runs inside Podman containers. The host needs only `podman` and `git`.
-The project plan is in [`../PLAN.md`](../PLAN.md).
+Planning and progress: [`milestones/ROADMAP.md`](milestones/ROADMAP.md) (what and in which order), [`milestones/STATUS.md`](milestones/STATUS.md)
+(where we are), [`milestones/GAPS.md`](milestones/GAPS.md) and [`milestones/DECISIONS.md`](milestones/DECISIONS.md). Session rules are in [`../CLAUDE.md`](../CLAUDE.md);
+the original scope assessment is in [`../PLAN.md`](../PLAN.md).
 
 ## Dev container
 

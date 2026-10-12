@@ -148,6 +148,11 @@ The designer's stated reasoning. It settles behavior that the Figma frames only 
 
 ## 5. Phases
 
+> **Superseded for planning purposes:** the authoritative, milestone-level plan is now
+> [`redux/milestones/ROADMAP.md`](redux/milestones/ROADMAP.md), with progress in
+> [`STATUS.md`](redux/milestones/STATUS.md). The phase outlines below are kept as the original scope assessment.
+> Phase 0 below is the record of what was built.
+
 ### Phase 0: Foundations
 1. **Fork setup. Done.**
    - VLC master with full history is merged into this repo, pinned to `a5538c557d27` (newest master commit with green upstream CI on 2026-10-12). The pin is recorded in `redux/UPSTREAM_COMMIT`.
