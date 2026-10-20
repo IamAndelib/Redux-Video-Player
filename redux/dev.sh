@@ -4,6 +4,7 @@
 #   redux/dev.sh image          build (or rebuild) the dev image
 #   redux/dev.sh shell          interactive shell in the container
 #   redux/dev.sh run <cmd...>   run one command in the container
+#   redux/dev.sh app [file...]  open the built player on your desktop (what the app-menu launcher runs)
 #
 # The repo is mounted at /workspace and commands run as your own user, so files
 # created in the container belong to you on the host. The host's Wayland/X11
@@ -15,8 +16,17 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 image="localhost/vlc-redux-dev:latest"
 
 build_image() {
-  local mirror ca build_args=()
-  mirror="$("$repo/redux/tools/fastest-debian-mirror.sh")"
+  local mirror ca build_args=() saved="$repo/build/debian-mirror"
+  # The mirror is a build argument, so changing it invalidates every cached layer. Benchmark once,
+  # save the winner and reuse it; DEBIAN_MIRROR=… overrides, deleting build/debian-mirror re-picks.
+  if [[ -n "${DEBIAN_MIRROR:-}" ]]; then
+    mirror="$DEBIAN_MIRROR"
+  elif [[ -s "$saved" ]]; then
+    mirror="$(<"$saved")"
+  else
+    mirror="$("$repo/redux/tools/fastest-debian-mirror.sh")"
+    mkdir -p "$repo/build" && echo "$mirror" > "$saved"
+  fi
   build_args+=(--build-arg "DEBIAN_MIRROR=$mirror")
   # Lend the host's CA bundle to the first apt step so an https mirror works from the start.
   for ca in /etc/pki/tls/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt; do
@@ -26,8 +36,8 @@ build_image() {
     -t "$image" -f "$repo/.devcontainer/Containerfile" "$repo/.devcontainer"
 }
 
-container_args() {
-  local runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+container_args() { # container_args [home-inside-container]
+  local runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" home="${1:-/tmp/home}"
   args=(
     --rm --init
     --userns=keep-id
@@ -37,7 +47,7 @@ container_args() {
     -v vlc-redux-ccache:/ccache:U
     -w /workspace
     --tmpfs /tmp/runtime:rw,mode=0700,U   # private XDG runtime dir owned by you
-    -e HOME=/tmp/home
+    -e HOME="$home"
     -e XDG_RUNTIME_DIR=/tmp/runtime
     -e TERM="${TERM:-xterm-256color}"
   )
@@ -74,6 +84,31 @@ case "${1:-}" in
     ensure_image; container_args
     exec podman run -it "${args[@]}" "$image" bash -c "$prelude && exec bash"
     ;;
+  app)
+    # The player with a persistent profile (build/app-home: settings and library survive, and the
+    # system VLC config is never touched) and your home folder mounted read-only at the same path,
+    # so the player can open your own files and take drag and drop from the file manager.
+    shift
+    if [[ ! -x "$repo/build/meson/bin/vlc-static" ]]; then
+      msg="Redux Video Player isn't built yet. Run: redux/dev.sh run redux/tools/build.sh"
+      echo "$msg" >&2
+      command -v notify-send >/dev/null && notify-send "Redux Video Player" "$msg"
+      exit 1
+    fi
+    ensure_image; container_args /workspace/build/app-home
+    args+=(-v "$HOME:$HOME:ro")
+    # File dialogs through the desktop's XDG portal (KDE's or GNOME's own dialog, as in a Flatpak): the portal
+    # platform theme talks to it over the session bus.
+    runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    if [[ -S "$runtime/bus" ]]; then
+      args+=(-v "$runtime/bus:/tmp/runtime/bus" -e DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/runtime/bus
+             -e QT_QPA_PLATFORMTHEME=xdgdesktopportal -e XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-}")
+    fi
+    # Audio: the container has no PipeWire client config, but the host's PulseAudio socket (PipeWire's
+    # pulse server on most desktops) is mounted, so use VLC's PulseAudio output. Backdrop blur is off: without
+    # KWin blur it only makes panels see-through (D19, G17).
+    exec podman run "${args[@]}" "$image" bash -c "$prelude && exec redux/tools/build.sh run --aout=pulse --no-qt-backdrop-blur \"\$@\"" bash "$@"
+    ;;
   run)
     shift; [[ $# -ge 1 ]] || { echo "usage: $0 run <cmd...>" >&2; exit 1; }
     ensure_image; container_args
@@ -81,7 +116,7 @@ case "${1:-}" in
     exec podman run "${tty[@]}" "${args[@]}" "$image" bash -c "$prelude && exec \"\$@\"" bash "$@"
     ;;
   *)
-    sed -n '2,11p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
     exit 1
     ;;
 esac

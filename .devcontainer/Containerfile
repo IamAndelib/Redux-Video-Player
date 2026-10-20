@@ -75,6 +75,16 @@ RUN cd /tmp \
 # let that user use sudo without a password inside the container only.
 RUN echo 'ALL ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/vlc-redux && chmod 0440 /etc/sudoers.d/vlc-redux
 
+# Running the player on the host desktop (redux/dev.sh app, D18): VA-API drivers for Intel (iHD) and
+# AMD/others (Mesa) plus vainfo; Qt's SVG and extra image-format plugins (icons, the cone, artwork); and the
+# XDG desktop portal platform theme, so file dialogs are the desktop's own (as in a Flatpak). Audio goes
+# through the host's PulseAudio/PipeWire socket with --aout=pulse. A separate final layer, so adding it doesn't
+# rebuild the layers above.
+RUN apt-get update && apt-get install -y \
+      intel-media-va-driver mesa-va-drivers vainfo \
+      qt6-svg-plugins qt6-image-formats-plugins qt6-xdgdesktopportal-platformtheme \
+ && rm -rf /var/lib/apt/lists/*
+
 ENV LANG=C.UTF-8 \
     CCACHE_DIR=/ccache \
     CCACHE_MAXSIZE=20G \

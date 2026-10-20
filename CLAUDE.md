@@ -13,7 +13,7 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 3. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
    `git remote add upstream https://code.videolan.org/videolan/vlc.git`). Work only on the milestone's branch
    `m/M<ID>-<slug>` (D8).
-4. Don't start a new milestone until the maintainer says go.
+4. Don't start a new milestone until the maintainer has said the previous one is good.
 
 ## Philosophy
 - **Slow and steady:** one milestone at a time, reviewed and merged before the next.
@@ -28,10 +28,18 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
   - Tokenize hard-coded values only in files you already touch.
 - **Verify, don't assume:** nothing is "done" without the milestone's verification output.
 
-## Milestone ritual
-Research → plan (maintainer approves) → implement in small commits → verify → maintainer review on the PR →
-squash-merge → update `STATUS.md` and the milestone's status log. Ending mid-milestone always logs
-"stopped at / next step". Details: `redux/milestones/ROADMAP.md` ("Milestone ritual", "Definition of Done").
+## Milestone ritual (D18)
+Research → plan → implement in small commits → verify → **hand over**: rebuild, make sure "Redux Video Player (dev)"
+opens from the app menu (`redux/dev.sh app`), open the PR and give the maintainer the test checklist (below) → the maintainer tests
+the app and gives feedback → fix and hand over again → on "good": squash-merge, update `STATUS.md` and the
+milestone's status log, then start the next milestone. Ask the maintainer during a milestone only when a gap needs
+their decision. Ending mid-milestone always logs "stopped at / next step". Details: `redux/milestones/ROADMAP.md`.
+
+**Every hand-over includes a test checklist** (copied into the milestone file's manual checklist):
+1. Numbered items, each with **open** (where in the app), **do** (the action) and **expect** (what should happen).
+2. Cover every user-visible change of the milestone, plus a quick regression check of what it touched.
+3. Then "known not working yet" (out of scope or later milestones), so nothing is reported twice.
+4. End with how to report: the item number and what you saw (a screenshot helps).
 
 ## Commands (all builds and tools run in the Podman dev container)
 | What | Command |
@@ -39,7 +47,9 @@ squash-merge → update `STATUS.md` and the milestone's status log. Ending mid-m
 | Build (first time configures) | `redux/dev.sh run redux/tools/build.sh` |
 | Re-apply build options (after a `build.sh` option change) | `redux/dev.sh run redux/tools/build.sh reconfigure` |
 | Rebuild only the Qt UI (~3 s) | `redux/dev.sh run redux/tools/build.sh qt` |
-| Run the player on the desktop | `redux/dev.sh run redux/tools/build.sh run` |
+| Open the app on the host (persistent profile, your files read-only) | `redux/dev.sh app [file…]`, or "Redux Video Player (dev)" in the app menu |
+| Add or remove the app-menu entry (host) | `redux/tools/launcher.sh install` / `uninstall` |
+| Run the player with a throwaway profile | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
 | Screenshots (1920×1080, Night) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light) |

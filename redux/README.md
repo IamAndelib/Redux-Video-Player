@@ -20,7 +20,7 @@ the original scope assessment is in [`../PLAN.md`](../PLAN.md).
 - The repo is mounted at `/workspace`, and commands run as your own user, so files you create stay owned by you.
 - ccache persists in the `vlc-redux-ccache` volume.
 - Your Wayland/X11 display, PipeWire/PulseAudio and GPU (`/dev/dri`) are passed through, so the built player shows up on your desktop and plays sound.
-- **Forcing a mirror:** run `DEBIAN_MIRROR=https://… redux/dev.sh image`. Otherwise `redux/tools/fastest-debian-mirror.sh` picks one.
+- **Forcing a mirror:** run `DEBIAN_MIRROR=https://… redux/dev.sh image`. Otherwise `redux/tools/fastest-debian-mirror.sh` picks one on the first build and saves it in `build/debian-mirror`, so later builds reuse the cached layers (delete the file to re-pick).
 - **VS Code / devcontainer CLI:** `.devcontainer/devcontainer.json` uses the same Containerfile.
 
 Smoke test, which should print `platform=wayland graphicsApi=OpenGL`:
@@ -36,7 +36,9 @@ redux/dev.sh run env QT_QPA_PLATFORM=xcb xvfb-run -a qml6 redux/tools/smoke.qml 
 redux/dev.sh run redux/tools/build.sh             # configure (first time) and build VLC
 redux/dev.sh run redux/tools/build.sh reconfigure # re-apply build options after changing build.sh
 redux/dev.sh run redux/tools/build.sh qt          # rebuild only the Qt interface plugin
-redux/dev.sh run redux/tools/build.sh run         # start the built player on your desktop
+redux/dev.sh app [file...]                        # open the built player on your desktop (persistent profile in build/app-home)
+redux/tools/launcher.sh install                   # on the host: add "Redux Video Player (dev)" to the app menu
+redux/dev.sh run redux/tools/build.sh run         # start the player with a throwaway profile
 redux/dev.sh run redux/tools/make-media.sh        # synthetic test media in build/media
 redux/dev.sh run redux/tools/shoot.sh             # 1920x1080 screenshots in build/shots (THEME=day for light)
 redux/dev.sh run redux/tools/compare.sh           # diff against Figma; open build/shots/report.html
