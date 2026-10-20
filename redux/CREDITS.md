@@ -13,6 +13,7 @@ took, where from, its licence, and where it lives in this repo.
 ## Development and testing
 | What | From | Licence | Used for |
 |---|---|---|---|
+| End-of-playback behaviour (stay on the last frame) | [mpv](https://mpv.io)'s `keep-open` option, as the model; built with VLC's own `play-and-pause` | GPL-2.0-or-later (idea only, no code) | `modules/gui/qt/playlist/playlist_controller.cpp` (M0.6) |
 | Real-world media samples | [FFmpeg FATE suite](https://fate-suite.ffmpeg.org) | Samples as published by FFmpeg for testing | `redux/tools/samples.tsv`, `fetch-samples.sh`, the codec/format matrix (M0.6) |
 | Synthetic test media | [FFmpeg](https://ffmpeg.org) (`lavfi` sources and encoders) | LGPL/GPL | `make-media.sh`, `make-matrix.sh` |
 | Build environment package list | VideoLAN's [docker-images](https://code.videolan.org/videolan/docker-images) `vlc-debian-unstable` | GPL-2.0-or-later | `.devcontainer/Containerfile` (D3) |

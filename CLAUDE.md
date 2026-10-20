@@ -44,6 +44,8 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 2. Cover every user-visible change of the milestone, plus a quick regression check of what it touched.
 3. Then "known not working yet" (out of scope or later milestones), so nothing is reported twice.
 4. End with how to report: the item number and what you saw (a screenshot helps).
+5. Anything the maintainer does by hand uses test media at least 30 s long (e.g. `build/media/`), never the 2 s
+   matrix clips: a check must not be over before it can be done.
 
 ## Commands (all builds and tools run in the Podman dev container)
 | What | Command |

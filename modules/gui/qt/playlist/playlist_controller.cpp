@@ -23,6 +23,7 @@
 #include "playlist_controller.hpp"
 #include "playlist_controller_p.hpp"
 #include <vlc_player.h>
+#include <vlc_configuration.h>
 #include <vlc_url.h>
 #include "util/shared_input_item.hpp"
 #include <algorithm>
@@ -322,6 +323,12 @@ static void
 on_playlist_has_next_changed(vlc_playlist_t *playlist, bool has_next,
                              void *userdata)
 {
+    /* Redux Video Player: when nothing comes next, pause on the last frame instead of stopping, so the player
+     * stays open at the end of a video (like mpv's keep-open) and a queue still plays through. The user's
+     * "play-and-pause" setting (pause after every item) still wins. The playlist and the player share this lock. */
+    vlc_player_SetPlayAndPause(vlc_playlist_GetPlayer(playlist),
+                               !has_next || config_GetInt("play-and-pause"));
+
     PlaylistControllerPrivate *that = static_cast<PlaylistControllerPrivate *>(userdata);
     that->callAsync([=](){
         if (that->m_playlist != playlist)

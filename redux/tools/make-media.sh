@@ -35,6 +35,24 @@ srt=$'1\n00:00:01,000 --> 00:00:04,000\nYou\'ll never find the wand.\n\n2\n00:00
 printf '%s' "$srt" > "$show/The_Wand_S01E04.srt"
 printf '%s' "$srt" > "$show/the.wand.s01e05.EN.srt"
 
+# A one-minute clip with an embedded, default ASS subtitle track (styled lines every 4 s), for subtitle checks in
+# the app. The matrix files are only 2 s long, too short to pick a track by hand.
+ass="$out/Videos/Clips/.subtitles.ass"
+{
+  printf '[Script Info]\nScriptType: v4.00+\nPlayResX: 1280\nPlayResY: 720\n\n[V4+ Styles]\n'
+  printf 'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n'
+  printf 'Style: Default,DejaVu Sans,48,&H00FFFFFF,&H000000FF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,3,1,2,20,20,40,1\n\n'
+  printf '[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n'
+  for i in $(seq 0 14); do
+    printf 'Dialogue: 0,0:00:%02d.00,0:00:%02d.50,Default,,0,0,0,,Subtitle line %d of 15: {\\b1}bold{\\b0} and {\\i1}italic{\\i0}\n' \
+      $((i * 4)) $((i * 4 + 3)) $((i + 1))
+  done
+} > "$ass"
+"${ff[@]}" -f lavfi -i "testsrc2=size=1280x720:rate=25:duration=60" -f lavfi -i "sine=frequency=440:duration=60" -i "$ass" \
+  -map 0 -map 1 -map 2 -c:v libx264 -preset veryfast -crf 30 -pix_fmt yuv420p -c:a aac -b:a 64k -c:s ass \
+  -metadata:s:s:0 language=eng -disposition:s:0 default "$out/Videos/Clips/subtitles-ass-demo.mkv"
+rm "$ass"
+
 # A 4K HDR-tagged clip for the HDR options and video panels.
 "${ff[@]}" -f lavfi -i "testsrc2=size=3840x2160:rate=24:duration=8" \
   -c:v libx265 -preset ultrafast -x265-params log-level=error:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc \
