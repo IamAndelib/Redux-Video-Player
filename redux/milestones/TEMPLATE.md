@@ -45,8 +45,13 @@
 | Review | `/code-review`, `qt-qml-review` / `qt-cpp-review`, `/simplify` | |
 
 ## Manual checklist (for the maintainer)
-<!-- What to click or try with `redux/dev.sh run redux/tools/build.sh run`. -->
-- [ ]
+<!-- The hand-over test checklist (D18): open "Redux Video Player (dev)" from the app menu (or `redux/dev.sh app`).
+     One numbered item per user-visible change, plus a quick regression check. -->
+1. [ ] **Open:** <where in the app> · **Do:** <action> · **Expect:** <what should happen>
+
+**Known not working yet:** <out of scope or later milestones>
+
+**Report:** the item number and what you saw (a screenshot helps).
 
 ## Definition of Done
 - [ ] Build and tests pass

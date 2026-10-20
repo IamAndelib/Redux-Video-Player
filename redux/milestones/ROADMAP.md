@@ -57,12 +57,15 @@ Related files:
    - Grep for reusable code.
    - Look at prior art if new C++ is needed.
    - Unknowns go to `GAPS.md`. If something blocks, stop and ask you.
-3. **Plan.** Scope, out-of-scope and acceptance are confirmed in the milestone file, and you approve them.
+3. **Plan.** Scope, out-of-scope and acceptance go into the milestone file. Ask you only when a gap needs your
+   decision (D18).
 4. **Implement** on the milestone branch in small commits, looping on the build.
 5. **Verify** with the milestone's commands. Paste the outputs and diff scores into the file, then run the review skills.
-6. **Your review.** Run the manual checklist and comment on the PR.
-7. **Merge.** Squash-merge, update the `STATUS.md` row, close the issue.
-8. **Log.** Write a dated status-log entry. Ending mid-milestone always records "stopped at / next step".
+6. **Hand over.** Rebuild, check that "Redux Video Player (dev)" opens from your app menu (`redux/dev.sh app`), open
+   the PR, and give you a clear, numbered test checklist: for each item, what to open, what to do and what you should see; then anything known not to work yet, and how to report a problem (the item number plus what you saw). The same list is the milestone file's manual checklist.
+7. **Your feedback.** You open the app and test; Claude fixes what you report and hands over again.
+8. **Merge.** When you say it's good: squash-merge, update the `STATUS.md` row, close the issue, write a dated
+   status-log entry. Ending mid-milestone always records "stopped at / next step".
 
 **Definition of Done, for every milestone:**
 - The build and tests pass.
@@ -78,7 +81,7 @@ Related files:
 - **S** = `shoot.sh <scene>` (`THEME=day` for light)
 - **C** = `compare.sh`, producing `build/shots/report.html`
 - **PX** = exact pixel color check
-- **U** = your manual check via `build.sh run`
+- **U** = your check in the app (app-menu launcher or `redux/dev.sh app`)
 - **LOG** = `-vv` log grep
 
 The RMSE (difference score) is a regression signal per screen region, calibrated in M0.3. Your eyes on the side-by-side are the final judge.

@@ -75,6 +75,13 @@ RUN cd /tmp \
 # let that user use sudo without a password inside the container only.
 RUN echo 'ALL ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/vlc-redux && chmod 0440 /etc/sudoers.d/vlc-redux
 
+# Running the player on the host desktop (redux/dev.sh app, D18): VA-API drivers for Intel (iHD) and
+# AMD/others (Mesa), plus vainfo to check hardware decoding. (Audio goes through the host's PulseAudio/PipeWire
+# socket with --aout=pulse.) A separate final layer, so adding it doesn't rebuild the layers above.
+RUN apt-get update && apt-get install -y \
+      intel-media-va-driver mesa-va-drivers vainfo \
+ && rm -rf /var/lib/apt/lists/*
+
 ENV LANG=C.UTF-8 \
     CCACHE_DIR=/ccache \
     CCACHE_MAXSIZE=20G \

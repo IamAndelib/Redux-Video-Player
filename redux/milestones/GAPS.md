@@ -28,6 +28,7 @@ entry if it changes a plan. New gaps found during milestone research go here too
 | G20 | Real-world test media | Synthetic set | HDR, multi-track MKV, ASS subtitles | A few sample files or URLs | M0.6, M5.3, M5.4 |
 | G21 | Flatpak app ID ownership | Proposed `io.github.iamandelib.Redux-Video-Player` (D16) | Flathub requires proof you control the ID's namespace (GitHub `io.github.<user>`); exact casing rules | Flathub's current app-ID requirements; your choice of Flathub vs a self-hosted remote | M10.1, M10.3 |
 | G22 | Formats the matrix can't synthesize | ffmpeg can generate most codec/container pairs | Real samples for PGS subtitles, TrueHD/Atmos, DTS-HD, Dolby Vision, VC-1 in MKV, damaged/odd files | A few real sample files (or public sample sites) | M0.6 |
+| G23 | Downloads from code.videolan.org stall on this network | Archive downloads (medialibrary 0.13.2 tarball) time out or reset; the server root answers. Image builds reuse the cached medialibrary layer while `build/debian-mirror` stays `http://deb.debian.org/debian` | A reliable source for fresh image builds | Vendor the tarball (checksum-pinned) or a mirror that serves it; check again from another network | M0.7 (Flatpak sources), fresh image builds |
 
 ## Resolution log
 | Date | Gap | Resolution | Source |

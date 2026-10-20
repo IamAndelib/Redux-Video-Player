@@ -140,3 +140,18 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   upstream VLC's, untouched.
 - **Why:** visitors land on a page about this project; editing the root README would conflict on every upstream merge.
 - **Alternatives:** a banner at the top of the root README.
+
+### D18 · 2026-10-20 · Simple loop: build, hand over, feedback
+- **Decision:** Claude completes each milestone end to end (research, plan, implement, verify) and hands over a
+  build the maintainer opens from the host app menu ("Redux Video Player (dev)", `redux/tools/launcher.sh`, which
+  runs `redux/dev.sh app`). The maintainer tests it and gives feedback; Claude fixes and hands over again. When the
+  maintainer says it's good, Claude squash-merges the milestone PR and moves on. Plans are not approved separately;
+  Claude asks only when a gap needs the maintainer's decision.
+- **How the app runs:** inside the dev container on the host display, with a persistent profile in
+  `build/app-home` (never the system VLC config) and the maintainer's home folder mounted read-only, so their own
+  files open and drag and drop works. The container gained Intel/Mesa VA-API drivers for this, and the app uses VLC's
+  PulseAudio output through the host's PulseAudio/PipeWire socket. From M0.7 on, the launcher can switch to the Flatpak build.
+- **Every hand-over** comes with a numbered test checklist: for each item what to open, what to do and what to
+  expect, then what is known not to work yet, and how to report (`CLAUDE.md`, `TEMPLATE.md`).
+- **Why:** the maintainer wants a simple loop judged on the running app, not on documents.
+- **Alternatives:** plan approval before each milestone; reviewing PRs on GitHub; installing builds on the host.
