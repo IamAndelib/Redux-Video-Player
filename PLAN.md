@@ -36,67 +36,9 @@ All frames are on one page, `0:1`.
 - Rounded 6–8px corners.
 - Library layout: icon rail sidebar (Home, Videos, Music, Network, Playlists, Recent, Add item), breadcrumbs, and a floating miniplayer card in the bottom-right corner.
 
-### 2a. Design intent from the video (full text in `redux/design/transcript.md`)
-The designer's stated reasoning. It settles behavior that the Figma frames only show statically.
-
-- **Identity:**
-  - Keep the cone and VLC orange, on neutral grays and black.
-  - Two icon sets: two-tone gray and orange icons where the icon is not clickable (e.g. menu item icons), monochrome for every clickable icon.
-  - Shapes stay rectangular but slightly less sharp. That is deliberate: no pill or circle styling.
-- **Control bar:**
-  - One thin row that never covers the video.
-  - The play button stays on the left, not centered, slightly bigger, with prev and next around it.
-  - Fullscreen and settings move to the right.
-  - The playlist toggle becomes a **queue** icon. Queue (auto-plays) and playlists (saved collections) are separate concepts.
-  - The volume slider is a **cone-shaped** wedge, keeping VLC's colors.
-  - The **seek bar is thick** and sits in the bottom row. Add **seek thumbnails** (preview frames while scrubbing).
-  - On the right: a **subtitle** button (track list) and an **audio** button (tracks plus output device such as headphones or speakers). Video tracks get a tab in the sidebar but no bar button.
-- **Top bar:**
-  - Menu, media title and window decorations.
-  - In fullscreen, both bars stay available and **show on hover near the edge** and hide immediately after. The title must always be reachable.
-  - Fullscreen and Picture-in-Picture may live in the top bar; the designer left this open as "up or down".
-  - The **folder or show name in the top bar** acts as the entry point that opens the library sidebar in compact mode next to the video.
-- **Menus:**
-  - Merge the duplicated top menu and right-click menu into one "…" menu holding the media and extra options.
-  - Clean up the right-click menu and add **Hide UI** (also as a shortcut).
-  - Split the old all-in-one "Open Media" dialog into separate actions: Open file, Open folder, Network stream, Capture device, Clipboard, Recent, Convert, Stream to device.
-- **Right sidebar** with 4 tabs: Subtitles, Audio, Video, Playback.
-  - **Subtitles:**
-    - Timing as sliders, plus a **subtitle timeline** for syncing visually against the audio.
-    - Font, size (relative or precise), outline and position.
-    - A default track or language.
-  - **Audio:** default track or language, delay, and expandable filters (EQ etc.) with friendly presets that have preview icons.
-  - **Video:** filters with **live previews**, plus flip, rotate, zoom, HDR, resolution and aspect ratio.
-  - **Playback:** speed, reverse, sleep timer, show subtitle timeline, show **waveform on seek bar**, show metadata.
-  - **Bookmarks and chapters** timeline (Ctrl+B adds a bookmark quickly).
-  - All of this can be saved as **per-show presets**.
-- **Subtitles "Add" dialog:** apply to this file, this folder or this playlist. The source is local files or a site like OpenSubtitles. Files are auto-matched by name, with manual matching per episode remembered for later.
-- **Library:**
-  - Sections: Videos, Music (Songs, Albums, Artists, Genres), Network streams and Playlists.
-  - Back/forward buttons and a clickable **address bar** of breadcrumbs.
-  - A view-mode toggle (grid, list, detail), visible **sorting** (including Unwatched first and Watched first) and search.
-  - A "…" menu to add a file or folder.
-  - **Drag from the library to the queue.**
-  - The library can also go fullscreen, with a draggable miniplayer and the queue.
-- **Sidebar extras:** **pinned** items (playlists, folders), **Recent**, and a **Home** page with the latest files, playlists and streams, plus "continue where you left off".
-  - The resume prompt sits near the center playback controls, not in a far corner.
-- **Network:**
-  - A saved stream list with an add button.
-  - Pasting an M3U URL (such as the public IPTV lists on GitHub) produces an automatic playlist.
-- **On-screen messages:** when a shortcut fires, show the **key pressed** as well as the action.
-- **Settings:**
-  - 13 categories: General (theme and accent), Interface, Privacy, Controls, Playback, Video, Audio, Subtitles, Library, Network, Performance, Recording, Extensions.
-  - Each page shows **basic settings first, then advanced settings further down the same page**, replacing the separate "simple" and "all" modes.
-  - Every setting has a visible **info icon**.
-  - Numeric codes become **human-worded dropdowns**. For example, subtitle auto-detect fuzziness gets descriptive choices instead of the numbers 0–4.
-  - Duplicated settings are deduplicated.
-  - **Keyboard shortcuts** get their own dialog, reachable from the menu.
-  - Extensions shows add-ons (extensions, skins); internal plugins move to Advanced.
-- **Customization:**
-  - A drag-and-drop canvas over the player.
-  - Layouts are saved per **profile**.
-  - **Onboarding** offers theme options and introduces the basic shortcuts, because about half of users want minimal customization.
-- **License note:** the designer says the redesign "will be open source and free to use", which is compatible with this project. Still credit her.
+### 2a. Design intent from the video
+Moved to [`redux/design/brief.md`](redux/design/brief.md): every decision from the designer's video with its reason,
+milestone and references. The full narration is in `redux/design/transcript.md`.
 
 ## 3. Scope answers
 
@@ -182,7 +124,7 @@ The designer's stated reasoning. It settles behavior that the Figma frames only 
    - Partial: `redux/design/tokens.json` has the full dark palette, part of the light palette, and the effects. The Figma MCP Starter-plan limit stopped further queries.
    - Pending: `redux/tools/figma-export.py`. It needs a Figma personal access token in `~/.config/vlc-redux/figma-token`, and uses about 3–5 REST calls to fetch the full file JSON, PNG renders of all frames and SVGs of all icons into the git-ignored `redux/design/source/`.
    - Pending: the `.fig` local copy in the same folder, an offline source of truth that `fig2sketch` can parse.
-7. **Transcript. Done:** `redux/design/transcript.md`, produced by `redux/tools/transcriber/transcribe.sh <url>`, which runs AI-Video-Transcriber with yt-dlp, deno and faster-whisper `medium`. Its design rationale is in §2a.
+7. **Transcript. Done:** `redux/design/transcript.md`, produced by `redux/tools/transcriber/transcribe.sh <url>`, which runs AI-Video-Transcriber with yt-dlp, deno and faster-whisper `medium`. Its design rationale is in `redux/design/brief.md`.
 
 ### Phase 1: Design system
 - **Theme.** Rewrite the palette and tokens in `style/VLCStyle.qml`, `style/systempalette.cpp` and `style/colorcontext.cpp`:

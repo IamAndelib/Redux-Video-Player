@@ -1,7 +1,8 @@
 # VLC Redux: working agreement
 
 VLC Redux is a fork of VLC master whose Qt/QML interface (`modules/gui/qt/`) is redesigned to Juxtopposed's
-concept. The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the rationale is in `PLAN.md` §2a and `redux/design/transcript.md`.
+concept. The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the video's design intent is in `redux/design/brief.md` (build from this),
+backed by `redux/design/transcript.md`.
 Everything specific to this fork lives in `redux/`. Everything else is upstream VLC.
 
 ## Start of every session
@@ -42,6 +43,8 @@ squash-merge → update `STATUS.md` and the milestone's status log. Ending mid-m
 | Shell in the container | `redux/dev.sh shell` |
 | Rebuild the dev image | `redux/dev.sh image` |
 | Figma export (host) | `python3 -I redux/tools/figma-export.py` (token in `~/.config/vlc-redux/figma-token`) |
+| Video contact sheets / picked frames | `redux/dev.sh run redux/tools/video-sheets.sh` / `video-frames.sh` (video at `redux/design/source/video.mp4`) |
+| Check the design brief | `python3 -I redux/tools/check-brief.py` |
 | GitHub | `gh` CLI (repo `IamAndelib/VLC-Redux`) |
 
 ## Rules

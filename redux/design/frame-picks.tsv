@@ -1,0 +1,4 @@
+# Reference frames picked from the designer's video for redux/design/brief.md.
+# Regenerate the images with: redux/dev.sh run redux/tools/video-frames.sh
+# Columns (tab-separated): time (m:ss or m:ss.s), slug (a-z0-9-), caption, optional crop WxH+X+Y in 1920x1080 source pixels.
+# The output file is MMSS-<slug>.jpg; cite it by that name in brief.md.

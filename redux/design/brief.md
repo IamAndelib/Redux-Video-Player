@@ -7,10 +7,13 @@ it lands in our code. Use this file while building. Go to the sources only to ch
 |---|---|---|
 | Figma `CAuJVJyM5yY7PnyQQK9X24` | **Visuals:** layout, sizes, colors, states | Node IDs below; code mapping in [`screen-map.md`](screen-map.md) |
 | Video `ERFeOgqk324` | **Behavior and intent:** what things do and why | `t=` links below; full narration in [`transcript.md`](transcript.md) |
-| Video frames | What the video shows that the Figma doesn't | `redux/design/source/video-frames/` (private, see "Frames" below) |
+| Video frames | What the video shows that the Figma doesn't | `redux/design/source/video-frames/` (git-ignored; regenerate from [`frame-picks.tsv`](frame-picks.tsv), see "Frames") |
 
 **When the sources disagree:** Figma wins on visuals, the video wins on behavior. Every conflict is listed in
 [Video vs Figma](#video-vs-figma).
+
+**Credit:** the designer says the redesign "will be open source and free to use". Credit Juxtopposed in the README
+and About dialog (M10.1).
 
 **How each entry reads:**
 - **Decision** in bold, then why it was made (the old-VLC pain it fixes).

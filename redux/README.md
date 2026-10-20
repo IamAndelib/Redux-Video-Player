@@ -44,4 +44,8 @@ python3 -I redux/tools/figma-export.py            # on the host: Figma frames/ic
 [AI-Video-Transcriber](https://github.com/wendy7756/AI-Video-Transcriber) in its own container. That container has yt-dlp with Deno for YouTube's player challenges, and faster-whisper running locally.
 
 - Output goes to `redux/design/transcript/`, which git ignores.
-- The curated transcript of the designer's video is committed as `redux/design/transcript.md`.
+- The curated transcript of the designer's video is committed as `redux/design/transcript.md`. The design guide built
+  from it is `redux/design/brief.md`.
+- Reference frames: put the video at `redux/design/source/video.mp4`, then run `redux/dev.sh run redux/tools/video-sheets.sh`
+  (contact sheets for review) and `redux/dev.sh run redux/tools/video-frames.sh` (the frames listed in
+  `redux/design/frame-picks.tsv`). Both write under the git-ignored `redux/design/source/`.
