@@ -4,7 +4,7 @@
     python3 -I redux/tools/check-brief.py [--draft]
 
 Checks:
-  1. every video link (?t=N) lies inside the video (duration from video-work/info.txt, else 20:30)
+  1. every video link (?t=N) lies inside the video (duration from video-work/info.txt, else 21:00)
   2. every transcript section (except the sponsor) is cited by at least one video link in the brief
   3. every decision entry (a "- **" bullet under a lettered section) has a Refs line
   4. every frame file named in the brief comes from frame-picks.tsv, and every pick is used
@@ -19,7 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DESIGN = ROOT / "redux/design"
 PLACEHOLDER = "_Filled in from the frame analysis._"
-DEFAULT_DURATION = 20 * 60 + 30
+DEFAULT_DURATION = 21 * 60  # the video runs 20:59.9
 
 
 def frame_name(time, slug):

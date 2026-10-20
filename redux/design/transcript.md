@@ -1,6 +1,6 @@
 # Transcript: "I Redesigned VLC After 25 Years" by Juxtopposed
 
-- Video: https://youtu.be/ERFeOgqk324 (20:30). Figma: https://www.figma.com/design/CAuJVJyM5yY7PnyQQK9X24/VLC-Redesign--Community-
+- Video: https://youtu.be/ERFeOgqk324 (20:59). Figma: https://www.figma.com/design/CAuJVJyM5yY7PnyQQK9X24/VLC-Redesign--Community-
 - **Use [`brief.md`](brief.md) for design work.** This file is the citable source behind it: the full narration, cleaned up.
 - Cleanup applied to the Whisper `medium` output (`redux/tools/transcriber/transcribe.sh`):
   - Misheard words fixed ("ELC/DLC/BLC" → VLC, "codex" → codecs, "cue" → queue, "Mobben" → Mobbin).

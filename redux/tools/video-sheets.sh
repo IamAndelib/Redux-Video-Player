@@ -38,7 +38,9 @@ for f in "$out"/cov/f*.jpg; do
   mv "$f" "$out/cov/t$(printf %04d $(((n - 1) * step))).jpg"
 done
 
-# Contact sheets of 16 frames each.
+# Contact sheets of 16 frames each. ImageMagick's default label font often isn't installed,
+# so name a real one.
+font=$(fc-match -f '%{file}' sans 2>/dev/null || true)
 mapfile -t frames < <(find "$out/cov" -name 't*.jpg' | sort)
 for ((i = 0; i < ${#frames[@]}; i += 16)); do
   args=()
@@ -48,7 +50,7 @@ for ((i = 0; i < ${#frames[@]}; i += 16)); do
   done
   first=$(basename "${frames[i]}" .jpg | tr -d t)
   last=$(basename "${args[-1]}" .jpg | tr -d t)
-  montage "${args[@]}" -tile 4x -geometry 400x225+4+4 -pointsize 20 \
+  montage ${font:+-font "$font"} "${args[@]}" -tile 4x -geometry 400x225+4+4 -pointsize 20 \
     -background '#202020' -fill white "$out/sheets/sheet-$first-$last.jpg"
 done
 

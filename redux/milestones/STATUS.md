@@ -4,7 +4,7 @@ One row per milestone. Update the row (and the milestone file's status log) when
 Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap). Scores are the region
 RMSE from `compare.sh` (baseline set in M0.3).
 
-**Next up: M1.1** (no blockers). **M0.4 is in progress:** it needs the video as a local file (see its step 1). M0.2 can also start: the `.fig` arrived (G1 partly resolved; the Figma token is still needed for rendered PNG/SVG exports).
+**Next up: M1.1** (no blockers). **M0.4 is in progress:** the video is in place (1080p), next is its step 2. **M0.2 is unblocked:** G1 is resolved; the full Figma export (document JSON, 103 frame PNGs, 206 icon SVGs) is in `redux/design/source/`.
 
 | ID | Milestone | Track | Size | Status | Issue / PR | Region score | Updated |
 |---|---|---|---|---|---|---|---|
