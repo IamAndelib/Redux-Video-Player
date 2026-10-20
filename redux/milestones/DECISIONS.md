@@ -65,6 +65,8 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - History is never rewritten.
 - **Why:** reviewable units, easy rollback per milestone, and a readable history on top of VLC's.
 - **Alternatives:** direct commits with tags.
+- **Exception (2026-10-20):** M0.2's transcript work, M0.4, the local setup and M0.5 were done on the cloud-session
+  branch `claude/vlc-ui-redesign-scope-wzy21y` and reach `main` through one PR. From M0.6 on, the rule applies again.
 
 ### D9 · 2026-10-13 · Upstream contributions as we go
 - **Decision:**
@@ -74,16 +76,67 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - `systempalette.cpp:635` alpha bug
   - swapped FRAME_PREV/NEXT entries in `PlayerControlbarControls.qml`
   - `MLBookmarkModel` invokables
-  - later: seek thumbnails, waveform
+  - later: seek thumbnails, if M6.1 comes back (the waveform was cut, D14)
 - **Why:** goodwill, fewer merge conflicts, and others benefit.
 - **Alternatives:** keep everything in the fork.
 
 ### D10 · 2026-10-13 · Player first
 - **Decision:** milestone order makes the redesigned player usable first (design system → player screen, gate R0), then the library (R1 daily driver), then customize, panels and visuals (R2), then settings, onboarding and release (R3).
 - **Why:** the player is where users spend their time, and the maintainer chose it.
+- **Amended by D14:** the scope foundations M0.5–M0.8 come first; Track G visuals are cut or future, so R2 is
+  customize, panels and library extended.
 - **Alternatives:** library first; restyle everything before any layout change.
 
 ### D11 · 2026-10-13 · Touch-to-tokenize, no global sweeps
 - **Decision:** hard-coded colors (~36 QML sites) and radii (~48) are replaced with `VLCStyle`/`ColorContext` tokens only in files a milestone already edits.
 - **Why:** global sweeps would conflict with nearly every upstream merge.
 - **Alternatives:** one big cleanup milestone.
+
+### D12 · 2026-10-20 · Video frames correct three plans
+- **Decision:**
+  - Onboarding has **3 steps** (welcome and media folder, theme and accent, shortcuts), not 11. Figma's 12 frames are those 3 steps with step 2 drawn once per accent.
+  - **Bookmarks and chapters are tabs of the queue panel** (Queue | Bookmarks | Chapters), not part of the right sidebar. M5.5 still builds them.
+  - **Fullscreen sits with the window buttons**, top-right; the bottom bar has none.
+- **Why:** the M0.4 frame review (`redux/design/brief.md`, Video vs Figma) shows all three in the video, and Figma agrees on the first and third.
+- **Alternatives:** keeping the earlier readings (an 11-step wizard from the frame count; bookmarks in the sidebar from the narration; fullscreen bottom-right from "move them to the right side").
+
+### D13 · 2026-10-20 · Linux only, shipped as a Flatpak
+- **Decision:** Redux Video Player targets Linux only and ships as a Flatpak. AppImage, Windows and macOS are dropped.
+  The Flatpak is built from M0.7 on, not only at release.
+- **Why:** one packaging format reaches every distro; the maintainer runs Linux; VLC's macOS UI is native Cocoa, not
+  Qt, so other platforms would double the work.
+- **Alternatives:** Flatpak plus AppImage; distro packages; keeping Windows/macOS in the backlog.
+
+### D14 · 2026-10-20 · Product scope: offline video, maximum formats, minimal features
+- **Decision:** what ships is fixed in `redux/SCOPE.md` (keep / cut / future). Cut features are switched off in the
+  build (M0.6) and their entry points removed from the UI (M0.8); upstream code is not deleted. Milestones M6.2–M6.4
+  are cut and M6.1 is future; new milestones M0.5–M0.8, M2.7 and M5.7–M5.9 are added.
+- **Why:** the maintainer wants a simple player focused on offline video with the best of VLC. Community research
+  (VideoLAN forum, upstream issues, Lemmy/Reddit mirrors, Flathub's VLC) shows the cut features are online-only,
+  broken, niche or better served by other tools. Disabling instead of deleting keeps upstream merges cheap (D2, D11).
+- **Alternatives:** the full redesign including music, streaming and conversion; deleting upstream code.
+
+### D15 · 2026-10-20 · Bundle FFmpeg in the Flatpak; VA-API only
+- **Decision:** the Flatpak bundles a current FFmpeg plus dav1d, libplacebo (with Vulkan, for HDR tone-mapping) and
+  libass, instead of relying on `org.freedesktop.Platform.codecs-extra`. Hardware decoding is VA-API only (Intel,
+  AMD, and NVIDIA through nvidia-vaapi-driver); NVDEC is future. No encoders and no disc-decryption libraries ship.
+- **Why:** maximum codec support has to work out of the box and on our versions. Flathub's VLC also bundles its own
+  FFmpeg; users report H.264 failing with `codecs-extra`; VLC 4 needs a far newer FFmpeg (and libplacebo) than
+  Flathub's VLC 3 build pins.
+- **Alternatives:** `codecs-extra`; VA-API plus NVDEC.
+
+### D16 · 2026-10-20 · Name: Redux Video Player
+- **Decision:** the product is **Redux Video Player**. The GitHub repo is renamed `IamAndelib/Redux-Video-Player`
+  (2026-10-20), so the app ID is `io.github.iamandelib.Redux-Video-Player`: Flathub takes the ID's last part as the
+  repo name "as-is", and dashes are allowed only there (confirmed in M10.1, G21). The local checkout folder and
+  internal names (`vlc-redux-dev` image, `~/.config/vlc-redux/`) stay. The About dialog and README credit
+  Juxtopposed (design) and VideoLAN (VLC).
+- **Why:** "VLC" and the cone are VideoLAN trademarks, and a renamed fork is the safe course.
+- **Alternatives:** "VLC Redux"; deciding the name at release.
+
+### D17 · 2026-10-20 · Fork front page in `.github/README.md`
+- **Decision:** the GitHub landing page is `.github/README.md` (GitHub shows it in place of the root README). It
+  explains Redux Video Player, links the fork's docs and credits Juxtopposed and VideoLAN. The root `README.md` stays
+  upstream VLC's, untouched.
+- **Why:** visitors land on a page about this project; editing the root README would conflict on every upstream merge.
+- **Alternatives:** a banner at the top of the root README.

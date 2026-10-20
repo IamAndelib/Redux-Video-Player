@@ -1,4 +1,4 @@
-# VLC Redux development container.
+# Redux Video Player development container.
 #
 # Mirrors VideoLAN's own CI image for Linux builds (videolan/docker-images,
 # vlc-debian-unstable/Dockerfile), so the build dependencies, including Qt 6, match
@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y \
  && apt-get build-dep -y vlc \
  && rm -rf /var/lib/apt/lists/*
 
-# VLC Redux extras:
+# Redux Video Player extras:
 #  - run, drive and screenshot the GUI headless (xvfb above, xdotool, imagemagick) or on the host display (qt6-wayland)
 #  - test media (ffmpeg), faster rebuilds (ccache), GPU rendering (mesa), the design font (Inter)
 #  - QML runner (qml-qt6), qmllint and qmlformat (qt6-declarative-dev-tools) for the QML work

@@ -1,7 +1,11 @@
-# VLC Redux: development environment
+# Redux Video Player: development environment
+
+Redux Video Player is a lean, Linux-only Flatpak video player built on VLC 4. Design by
+[Juxtopposed](https://www.youtube.com/@juxtopposed); built on [VLC](https://www.videolan.org/vlc/) by VideoLAN.
+Not affiliated with or endorsed by VideoLAN.
 
 Everything builds and runs inside Podman containers. The host needs only `podman` and `git`.
-Planning and progress: [`milestones/ROADMAP.md`](milestones/ROADMAP.md) (what and in which order), [`milestones/STATUS.md`](milestones/STATUS.md)
+Product scope (what ships): [`SCOPE.md`](SCOPE.md). Planning and progress: [`milestones/ROADMAP.md`](milestones/ROADMAP.md) (what and in which order), [`milestones/STATUS.md`](milestones/STATUS.md)
 (where we are), [`milestones/GAPS.md`](milestones/GAPS.md) and [`milestones/DECISIONS.md`](milestones/DECISIONS.md). Session rules are in [`../CLAUDE.md`](../CLAUDE.md);
 the original scope assessment is in [`../PLAN.md`](../PLAN.md).
 
@@ -30,12 +34,14 @@ redux/dev.sh run env QT_QPA_PLATFORM=xcb xvfb-run -a qml6 redux/tools/smoke.qml 
 
 ```bash
 redux/dev.sh run redux/tools/build.sh             # configure (first time) and build VLC
+redux/dev.sh run redux/tools/build.sh reconfigure # re-apply build options after changing build.sh
 redux/dev.sh run redux/tools/build.sh qt          # rebuild only the Qt interface plugin
 redux/dev.sh run redux/tools/build.sh run         # start the built player on your desktop
 redux/dev.sh run redux/tools/make-media.sh        # synthetic test media in build/media
-redux/dev.sh run redux/tools/shoot.sh             # 1920x1080 screenshots in build/shots
+redux/dev.sh run redux/tools/shoot.sh             # 1920x1080 screenshots in build/shots (THEME=day for light)
 redux/dev.sh run redux/tools/compare.sh           # diff against Figma; open build/shots/report.html
 python3 -I redux/tools/figma-export.py            # on the host: Figma frames/icons into redux/design/source
+python3 -I redux/tools/check-brief.py             # check the design brief's links, frames and coverage
 ```
 
 ## Video transcripts
@@ -44,4 +50,8 @@ python3 -I redux/tools/figma-export.py            # on the host: Figma frames/ic
 [AI-Video-Transcriber](https://github.com/wendy7756/AI-Video-Transcriber) in its own container. That container has yt-dlp with Deno for YouTube's player challenges, and faster-whisper running locally.
 
 - Output goes to `redux/design/transcript/`, which git ignores.
-- The curated transcript of the designer's video is committed as `redux/design/transcript.md`.
+- The curated transcript of the designer's video is committed as `redux/design/transcript.md`. The design guide built
+  from it is `redux/design/brief.md`.
+- Reference frames: put the video at `redux/design/source/video.mp4`, then run `redux/dev.sh run redux/tools/video-sheets.sh`
+  (contact sheets for review) and `redux/dev.sh run redux/tools/video-frames.sh` (the frames listed in
+  `redux/design/frame-picks.tsv`). Both write under the git-ignored `redux/design/source/`.

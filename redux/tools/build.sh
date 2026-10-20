@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Configure, build and run VLC Redux. Meant to run inside the dev container:
+# Configure, build and run Redux Video Player. Meant to run inside the dev container:
 #
 #   redux/dev.sh run redux/tools/build.sh            configure if needed, then build everything
 #   redux/dev.sh run redux/tools/build.sh qt         rebuild only the Qt interface plugin (fast UI loop)
@@ -14,7 +14,8 @@ builddir="${BUILD_DIR:-build/meson}"
 
 configure() {
   # The Qt interface and the media library are what this project is about, so they're required;
-  # skins2 stays off since we replace the UI rather than skin it.
+  # skins2 stays off since we replace the UI rather than skin it. Everything else is still "auto"
+  # until M0.6 switches to an allowlist that matches redux/SCOPE.md (then run `build.sh reconfigure`).
   meson setup "$builddir" ${1:+"$1"} \
     --buildtype=debugoptimized \
     -Dqt=enabled \

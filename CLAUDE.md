@@ -1,14 +1,18 @@
-# VLC Redux: working agreement
+# Redux Video Player: working agreement
 
-VLC Redux is a fork of VLC master whose Qt/QML interface (`modules/gui/qt/`) is redesigned to Juxtopposed's
-concept. The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the rationale is in `PLAN.md` §2a and `redux/design/transcript.md`.
+Redux Video Player (repo `Redux-Video-Player`) is a fork of VLC master whose Qt/QML interface (`modules/gui/qt/`) is
+redesigned to Juxtopposed's concept. It is a Linux-only Flatpak for offline video with maximum codec and format
+support. **What ships is fixed in `redux/SCOPE.md` (D14): build only what it keeps.** The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the video's design intent is in `redux/design/brief.md` (build from this),
+backed by `redux/design/transcript.md`.
 Everything specific to this fork lives in `redux/`. Everything else is upstream VLC.
 
 ## Start of every session
 1. Read `redux/milestones/STATUS.md`. Its "Next up" line and the `wip` rows tell you where we are.
 2. Read the active milestone file `redux/milestones/M<ID>-*.md`, especially its status log. If none exists yet, look up
    the milestone in `redux/milestones/ROADMAP.md`.
-3. `git status` and `git fetch upstream`. Work only on the milestone's branch `m/M<ID>-<slug>`.
+3. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
+   `git remote add upstream https://code.videolan.org/videolan/vlc.git`). Work only on the milestone's branch
+   `m/M<ID>-<slug>` (D8).
 4. Don't start a new milestone until the maintainer says go.
 
 ## Philosophy
@@ -33,6 +37,7 @@ squash-merge → update `STATUS.md` and the milestone's status log. Ending mid-m
 | What | Command |
 |---|---|
 | Build (first time configures) | `redux/dev.sh run redux/tools/build.sh` |
+| Re-apply build options (after a `build.sh` option change) | `redux/dev.sh run redux/tools/build.sh reconfigure` |
 | Rebuild only the Qt UI (~3 s) | `redux/dev.sh run redux/tools/build.sh qt` |
 | Run the player on the desktop | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
@@ -42,10 +47,13 @@ squash-merge → update `STATUS.md` and the milestone's status log. Ending mid-m
 | Shell in the container | `redux/dev.sh shell` |
 | Rebuild the dev image | `redux/dev.sh image` |
 | Figma export (host) | `python3 -I redux/tools/figma-export.py` (token in `~/.config/vlc-redux/figma-token`) |
-| GitHub | `gh` CLI (repo `IamAndelib/VLC-Redux`) |
+| Video contact sheets / picked frames | `redux/dev.sh run redux/tools/video-sheets.sh` / `video-frames.sh` (video at `redux/design/source/video.mp4`) |
+| Check the design brief | `python3 -I redux/tools/check-brief.py` |
+| GitHub | `gh` CLI (repo `IamAndelib/Redux-Video-Player`) |
 
 ## Rules
 - Never install anything on the host; add it to `.devcontainer/Containerfile` and record why in `DECISIONS.md`.
+- Build only what `redux/SCOPE.md` keeps. Bringing back a cut or future feature needs a `DECISIONS.md` entry first.
 - Edits outside `modules/gui/qt/` and `redux/` need a `redux/milestones/DECISIONS.md` entry.
 - New QML or C++ files must be listed in both `modules/gui/qt/meson.build` and `modules/gui/qt/Makefile.am`.
 - Control IDs in `player/control_list_model.hpp` are persisted: append into reserved slots only, never renumber.

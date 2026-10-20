@@ -4,12 +4,13 @@
 #
 #   redux/dev.sh run redux/tools/shoot.sh [scene...]        (default: all scenes)
 #
-# Scenes: first-run, library, player, music. Output: build/shots/<scene>.png
+# Scenes: first-run, library, player. Output: build/shots/<scene>.png
 # THEME=night|day|system picks VLC's color scheme for the later scenes (default night, to
 # match the dark Figma frames).
-# The player uses a throwaway profile (build/shots/profile) whose Videos and Music folders
-# point at the generated test media. The first-run scene walks the first-run wizard, which
-# adds those folders to the media library, so run it before library (the default order does).
+# The player uses a throwaway profile (build/shots/profile) whose Videos folder points at the
+# generated test media. The first-run scene walks the first-run wizard, which adds that folder
+# to the media library, so run it before library (the default order does). The library is
+# video-only (redux/SCOPE.md), so there is no music scene.
 set -euo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
@@ -26,7 +27,7 @@ case "${THEME:-night}" in system) scheme=0 ;; day) scheme=1 ;; night) scheme=2 ;
 [[ -d "$media" ]] || redux/tools/make-media.sh "$media" >/dev/null
 
 mkdir -p "$out" "$profile/.config"
-printf 'XDG_VIDEOS_DIR="%s"\nXDG_MUSIC_DIR="%s"\n' "$media/Videos" "$media/Music" > "$profile/.config/user-dirs.dirs"
+printf 'XDG_VIDEOS_DIR="%s"\n' "$media/Videos" > "$profile/.config/user-dirs.dirs"
 
 # Headless X server; force Qt onto it even when the host Wayland socket is passed through.
 display=:99
@@ -78,7 +79,7 @@ scene_first_run() {
   rm -rf "$profile/.config/vlc" "$profile/.local/share/vlc" "$profile/.cache/vlc"
   start_vlc --qt-privacy-ask
   shoot first-run 3
-  # Accept the wizard defaults, which include the XDG Videos/Music folders. Use the buttons'
+  # Accept the wizard defaults, which include the XDG Videos folder. Use the buttons'
   # mnemonics (&Next, &Finish): Return would hit the folder page's "add folder" button.
   for _ in 1 2 3 4; do xdotool key alt+n; sleep 1; done
   xdotool key alt+f
@@ -113,16 +114,8 @@ scene_player() {
   stop_vlc
 }
 
-scene_music() {
-  start_vlc --no-qt-privacy-ask --start-time=10 --start-paused "$media/Music/My Songs/01 - untangle.mp3"
-  fill_screen
-  xdotool mousemove $((W / 2)) $((H - 60))
-  shoot music 3
-  stop_vlc
-}
-
 scenes=("$@")
-[[ ${#scenes[@]} -gt 0 ]] || scenes=(first-run library player music)
+[[ ${#scenes[@]} -gt 0 ]] || scenes=(first-run library player)
 for s in "${scenes[@]}"; do
   fn="scene_${s//-/_}"
   declare -F "$fn" >/dev/null || { echo "unknown scene: $s" >&2; exit 1; }
