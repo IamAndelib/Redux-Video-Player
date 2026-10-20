@@ -22,7 +22,7 @@ All frames are on one page, `0:1`.
 | Settings, 14 pages (General, Interface, Privacy, Playback, Video, Audio, Subtitles, Controls, Library, Network, Performance, Recording, Extensions; plus Advanced) | 999:5047, 3046:9282, 3046:10057, 3062:11379, 3062:11911, 3062:12552, 3072:13408, 3073:14187, 3073:15375, 3073:15879, 3180:17398, 3180:17989, 6536:13908, 6536:14482, 6542:15251, 6543:15649, 6571:15958, 6571:16429, 6575:17137 |
 | Add subtitles to playlist/folder | 1911:7545, 3336:11929, 1919:8707, 1919:9278 |
 | Keyboard shortcuts / Open network stream / New playlist / Profiles | 2437:14832 / 6216:13614 / 6259:14954 / 6648:20666 |
-| Onboarding, 11 steps | 1899:3055, 1902:3670 … 1902:6465 |
+| Onboarding, 3 steps (12 frames; D12) | 1899:3055, 1902:3670 … 1902:6465 |
 | Audio panels: Equalizer, Compressor, Spatializer, Stereo Widener | 6114:13610, 536:1513, 536:1703, 612:1223 |
 | Video panels: Essential, Crop, Colors | 536:1855, 543:990, 614:1430 |
 | Miniplayer card | 970:3091 |
@@ -182,7 +182,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 - **Other dialogs.** Keyboard Shortcuts (editable) and Profiles.
 
 ### Phase 7: Onboarding and polish
-- **Onboarding.** An 11-step QML onboarding (welcome, media folder, theme, accent …) replaces `dialogs/firstrun/firstrunwizard`.
+- **Onboarding.** A 3-step QML onboarding (welcome and media folder, theme and accent, shortcuts) replaces `dialogs/firstrun/firstrunwizard`.
 - **Light theme.** A pass across all screens.
 - **Keyboard and accessibility.** Keyboard navigation and accessible names.
 - **Display.** HiDPI and fractional scaling, motion/animation polish.

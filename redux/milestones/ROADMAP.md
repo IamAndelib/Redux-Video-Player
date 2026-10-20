@@ -137,7 +137,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | **M5.2** | Audio effect cards (EQ, compressor, spatializer, stereo widener) with presets | M (spike) | New `AudioEffectsModel` lifted from `extended_panels.cpp` tables (that file stays untouched); `equalizer_presets.h` | Audible change; filter appears in the log |
 | **M5.3** | Video tab: aspect, zoom, crop, deinterlace, flip/rotate, adjust | M | `PlayerController`'s existing VLCVarChoiceModels; `adjust`/`transform` filters | Visible changes; reset works |
 | **M5.4** | Subtitle styling (relative/precise size, font, outline, position) and default language | M | `vlc_player_SetSubtitleTextScale`, `sub-language`, `TrackDelayButton` | Live updates; setting saved to `vlcrc` |
-| **M5.5** | Playback tab: speed, reverse, sleep timer, metadata; bookmarks and chapters list; Ctrl+B | M | `MLBookmarkModel` (make add/remove invokable; upstreamable), `Player.reverse()` | Bookmarks persist and show as ticks; timer fires |
+| **M5.5** | Playback tab: speed, reverse, sleep timer, metadata; bookmarks and chapters as queue-panel tabs (D12); Ctrl+B | M | `MLBookmarkModel` (make add/remove invokable; upstreamable), `Player.reverse()` | Bookmarks persist and show as ticks; timer fires |
 | **M5.6** | Add Subtitles dialog (file/folder/playlist, auto and manual matching), local files only | M | VLC's own autodetect heuristics (`src/input/subtitles.c`); matcher written test-first | Mismatched test `.srt` files auto-match; manual matches survive restart |
 
 ### Track G: Media visuals
@@ -152,7 +152,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
 | **M7.1** | Network stream list, M3U import, split Open dialogs, New playlist dialog | M | `MLUrlModel`, `UrlListDisplay`, M3U demux, `dialogs/playlists` | Streams persist; M3U imports N entries |
-| **M7.2** | Compact library panel beside the video, opened from the folder name in the top bar | M | Queue-pane docking | Matches frame 187:328 (after G19 is resolved) |
+| **M7.2** | Compact library panel beside the video, opened from the folder name in the top bar | M | Queue-pane docking | Matches frame 187:328 (G19: it is this panel) |
 
 **Gate R2 "Feature preview":** `r2` goes to a wider group of testers.
 
@@ -167,7 +167,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 ### Track J: Onboarding and polish
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M9.1** | 11-step QML onboarding replacing the first-run wizard (also update `shoot.sh`) | M–L | Settings row delegates, `MLFoldersModel` | Clean profile indexes the library through the new flow |
+| **M9.1** | 3-step QML onboarding (D12) replacing the first-run wizard (also update `shoot.sh`) | M–L | Settings row delegates, `MLFoldersModel` | Clean profile indexes the library through the new flow |
 | **M9.2** | Light theme, HiDPI and accessibility polish | M–L | `makeLightPalette()`, complete tokens | Day scenes readable; keyboard-only walkthrough passes |
 
 ### Track K: Release

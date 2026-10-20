@@ -4,7 +4,7 @@ One row per milestone. Update the row (and the milestone file's status log) when
 Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap). Scores are the region
 RMSE from `compare.sh` (baseline set in M0.3).
 
-**Next up: M1.1** (no blockers). **M0.4 is in progress:** the video is in place (1080p), next is its step 2. **M0.2 is unblocked:** G1 is resolved; the full Figma export (document JSON, 103 frame PNGs, 206 icon SVGs) is in `redux/design/source/`.
+**Next up: M1.1** (no blockers). **M0.4 is in review:** `redux/design/brief.md` is complete, with 62 video frames cited (D12 records the three plan changes they forced). **M0.2 is unblocked:** G1 is resolved; the full Figma export (document JSON, 103 frame PNGs, 206 icon SVGs) is in `redux/design/source/`.
 
 | ID | Milestone | Track | Size | Status | Issue / PR | Region score | Updated |
 |---|---|---|---|---|---|---|---|
@@ -12,7 +12,7 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M0.1 | Tracking scaffolding | A | S | done | [#1](https://github.com/IamAndelib/VLC-Redux/issues/1) | | 2026-10-13 |
 | M0.2 | Complete the design source | A | S | todo | [#2](https://github.com/IamAndelib/VLC-Redux/issues/2) | |  |
 | M0.3 | Harness v2 and isolated run profile | A | S–M | todo | [#3](https://github.com/IamAndelib/VLC-Redux/issues/3) | |  |
-| M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | wip | — | | 2026-10-20 |
+| M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | review | — | | 2026-10-20 |
 | M1.1 | Night palette from Figma tokens | B | S | todo | [#4](https://github.com/IamAndelib/VLC-Redux/issues/4) | |  |
 | M1.2 | Typography and shape tokens | B | M | todo | [#5](https://github.com/IamAndelib/VLC-Redux/issues/5) | |  |
 | M1.3 | Live accent presets | B | M | todo | [#6](https://github.com/IamAndelib/VLC-Redux/issues/6) | |  |
@@ -51,7 +51,7 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M8.2 | Settings pages: Interface, Playback, Video, Audio, Subtitles | I | M | todo | [#36](https://github.com/IamAndelib/VLC-Redux/issues/36) | |  |
 | M8.3 | Settings pages: Privacy to Extensions | I | M | todo | [#37](https://github.com/IamAndelib/VLC-Redux/issues/37) | |  |
 | M8.4 | Keyboard shortcuts dialog | I | M | todo | [#38](https://github.com/IamAndelib/VLC-Redux/issues/38) | |  |
-| M9.1 | QML onboarding (11 steps) | J | M–L | todo | [#39](https://github.com/IamAndelib/VLC-Redux/issues/39) | |  |
+| M9.1 | QML onboarding (3 steps) | J | M–L | todo | [#39](https://github.com/IamAndelib/VLC-Redux/issues/39) | |  |
 | M9.2 | Light theme, HiDPI and accessibility polish | J | M–L | todo | [#40](https://github.com/IamAndelib/VLC-Redux/issues/40) | |  |
 | M10.1 | Identity and credits | K | S | todo | [#41](https://github.com/IamAndelib/VLC-Redux/issues/41) | |  |
 | M10.2 | CI | K | M | todo | [#42](https://github.com/IamAndelib/VLC-Redux/issues/42) | |  |

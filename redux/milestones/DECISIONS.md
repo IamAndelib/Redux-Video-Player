@@ -87,3 +87,11 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Decision:** hard-coded colors (~36 QML sites) and radii (~48) are replaced with `VLCStyle`/`ColorContext` tokens only in files a milestone already edits.
 - **Why:** global sweeps would conflict with nearly every upstream merge.
 - **Alternatives:** one big cleanup milestone.
+
+### D12 · 2026-10-20 · Video frames correct three plans
+- **Decision:**
+  - Onboarding has **3 steps** (welcome and media folder, theme and accent, shortcuts), not 11. Figma's 12 frames are those 3 steps with step 2 drawn once per accent.
+  - **Bookmarks and chapters are tabs of the queue panel** (Queue | Bookmarks | Chapters), not part of the right sidebar. M5.5 still builds them.
+  - **Fullscreen sits with the window buttons**, top-right; the bottom bar has none.
+- **Why:** the M0.4 frame review (`redux/design/brief.md`, Video vs Figma) shows all three in the video, and Figma agrees on the first and third.
+- **Alternatives:** keeping the earlier readings (an 11-step wizard from the frame count; bookmarks in the sidebar from the narration; fullscreen bottom-right from "move them to the right side").

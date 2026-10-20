@@ -2,3 +2,65 @@
 # Regenerate the images with: redux/dev.sh run redux/tools/video-frames.sh
 # Columns (tab-separated): time (m:ss or m:ss.s), slug (a-z0-9-), caption, optional crop WxH+X+Y in 1920x1080 source pixels.
 # The output file is MMSS-<slug>.jpg; cite it by that name in brief.md.
+0:58	palette-swatches	Palette: orange shades, neutral grays and near-blacks
+1:14	icon-sets-two-tone-mono	Same glyphs as two-tone decorative and monochrome clickable sets
+1:54	upstream-centered-controls	Upstream VLC 4 centered transport, the layout she rejects
+3:23	control-bar-one-row	Final one-row bar: play left, thick seek, cone volume	1920x80+0+493
+3:30	seek-thumbnail-card	Seek preview card with frame and timecode above the bar
+3:48	fullscreen-both-bars	Fullscreen keeps both bars with centered title
+4:04	pip-fullscreen-up-or-down	PiP and fullscreen shown in both bars, placement left open
+4:34	tracks-popup-subtitles	Subtitles popup: embedded and external tracks, Show Preferences
+4:36	tracks-popup-audio-output	Audio popup: tracks plus output device with refresh
+4:46	tracks-popup-video-tab	Tracks popup with Video, Audio and Subtitles tabs
+5:04	old-menubar-and-context-menu	Before: old menu bar and right-click menu duplicate each other
+5:26.5	context-menu-hide-ui	New right-click menu with Hide UI (Ctrl+\)
+6:06	add-subtitles-scope-menu	Add subtitles to this file, folder or playlist
+6:12	add-subtitles-source-menu	Subtitle source: computer, OpenSubtitles or link
+6:20	add-subtitles-match-dialog	Add Subtitles dialog matching videos to subtitle files	1210x930+355+45
+6:42	old-sync-spinboxes	Before: old Adjustments and Effects synchronization spinboxes	930x830+497+130
+6:56	subtitle-timeline-seekbar	Subtitle cue blocks on a zoomed seek bar	1920x120+0+490
+7:22	sidebar-subtitles-sync-sliders	Sidebar Subtitles tab: delay, speed and duration sliders
+7:50	sidebar-subtitles-appearance	Subtitle appearance with Relative/Pixels size values
+8:00	preset-menu	Preset menu with New Custom Preset
+8:40	sidebar-subtitles-defaults	Default subtitle track and language above synchronization
+8:42	sidebar-audio-tab	Audio tab: track, language, stereo mode, delay
+8:48	audio-filter-cards	Audio filter cards with toggle and Expand Settings
+8:54	eq-preset-menu	Equalizer preset dropdown with curve preview icons
+8:58	sidebar-video-tab	Video tab: flip, rotate, zoom, HDR, resolution, aspect
+9:18	sidebar-playback-tab	Playback tab: timeline, waveform, reverse, sleep timer, speed
+9:30	queue-panel	Queue panel: item count, duration, sort, repeat, shuffle	405x975+1500+45
+10:48	library-sort-menu	Sort menu with Unwatched First and Watched First
+10:55	library-header-more-menu	Library header menu: add file or folder, tracks, info
+10:58	library-full-grid	Library grid with breadcrumb and watched underlines
+11:38	top-bar-folder-name	Top bar shows the playing folder name	860x170+440+390
+11:46	compact-library-drag-to-queue	Compact library beside video, dragging into the queue
+11:56	full-library-miniplayer-queue	Full library with miniplayer card and queue
+12:10	music-sections	Music section: Add, Songs, Albums, Artists and Genres
+12:16	music-now-playing	Music: big cover, blurred backdrop, waveform seek bar
+12:24	network-streams-list	Network section: Add Network Stream, Podcasts and Radio
+13:09	app-menu-cleaned	Cleaned app menu with split Open actions	520x840+555+68
+13:10	open-network-stream-dialog	Open Network Stream dialog with optional playlist name
+13:28	new-playlist-dialog	New Playlist: name, thumbnail, file drop zone
+13:32	file-context-menu	File menu: play, mark watched, favorite, add to playlist
+13:47	sidebar-rail-home-recent-pins	Sidebar with Home, Recent and pinned items
+13:52	home-page	Home: Continue Watching, Listen Again, frequent folders
+13:58	resume-prompt-old	Before: resume banner far from the controls	1920x50+0+32
+14:08	resume-prompt-new	Resume card centered above the control bar
+15:12	bookmarks-tab	Queue panel tabs: Queue, Bookmarks, Chapters
+15:26	osd-pressed-key	On-screen message shows the action and the pressed key
+16:00	keyboard-shortcuts-dialog	Keyboard Shortcuts dialog with search and hotkey columns
+17:16	old-subtitle-fuzziness	Before: numeric subtitle matching explained only in a tooltip	940x530+452+40
+17:30	file-name-matching-dropdown	File name matching as a plain-language dropdown	1050x800+435+140
+17:40	settings-general-page	Settings General page with grouped categories and info icons
+17:43	settings-light-theme	Player and Settings in the Light theme
+17:46	accent-color-swatches	Nine accent swatches recolor the UI live
+17:58	settings-controls-page	Controls page with Edit Keyboard Shortcuts
+18:10	settings-subtitles-page	Subtitle Defaults page with file name matching
+18:27	settings-extensions-page	Extensions and Scripts page
+18:52	settings-advanced-expanded	Advanced Options expanded inline below basic settings
+19:22	customize-player-canvas	Customize Player canvas with dashed slots on both bars
+19:28	alternate-layout	Alternate two-row layout built in Customize Player
+19:34	menu-profile-submenu	Profile submenu in the app menu
+19:48	onboarding-welcome	Onboarding 1: welcome and media folder
+19:50	onboarding-theme	Onboarding 2: theme and accent color
+19:52	onboarding-shortcuts	Onboarding 3: basic keyboard shortcuts

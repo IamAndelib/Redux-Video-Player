@@ -62,7 +62,7 @@ relative to `modules/gui/qt/`.
 | EQ, compressor, spatializer, stereo widener | logic in `dialogs/extended/extended_panels.cpp` → shared model + QML | Rework (to QML) |
 | Video essential, crop, colors, HDR | `dialogs/extended/extended_panels.cpp` (ExtVideo) | Rework (to QML) |
 | Subtitle timeline, subtitle presets, default track | `widgets/qml/TrackDelayButton.qml` + new | New |
-| Bookmarks and chapters timeline | `medialibrary/qml/Bookmarks.qml`, `dialogs/bookmarks/` | Rework |
+| Bookmarks and chapters (queue-panel tabs, D12) | `medialibrary/qml/Bookmarks.qml`, `dialogs/bookmarks/` | Rework |
 | Add Subtitles to file/folder/playlist, frames 1911:7545, 3336:11929, 1919:8707, 1919:9278 | — | New |
 
 ## Settings (Phase 6): frames 999:5047 … 6575:17137 (14 pages), 2437:14832 shortcuts
@@ -75,4 +75,4 @@ relative to `modules/gui/qt/`.
 ## Onboarding (Phase 7): frames 1899:3055, 1902:3670 … 1902:6465
 | Design element | Code | Kind |
 |---|---|---|
-| 11-step onboarding (welcome, media folder, theme, accent, shortcuts) | `dialogs/firstrun/firstrunwizard.*` (QtWidgets) | Rework (to QML) |
+| 3-step onboarding (welcome and media folder, theme and accent, shortcuts) | `dialogs/firstrun/firstrunwizard.*` (QtWidgets) | Rework (to QML) |
