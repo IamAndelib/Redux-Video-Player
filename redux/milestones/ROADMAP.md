@@ -72,6 +72,7 @@ Related files:
 - Touched screens are keyboard-reachable.
 - Night and Day themes start with no QML errors in the log.
 - No new hard-coded hex colors or `radius:` numbers.
+- Touched screens keep the spacing-token gaps: nothing sits flush against its neighbour (principle 9).
 - `STATUS.md` and the log are updated.
 - The PR includes before/after crops.
 
@@ -105,17 +106,17 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
 | **M1.1** | Night palette from the Figma tokens (accent `#D37918`); fix the upstream alpha bug at `systempalette.cpp:635` (upstreamable) | S | `style/systempalette.{cpp,hpp}` `makeDarkPalette()`; ColorContext API unchanged | PX matches tokens; sidebar/bottom-bar scores below baseline; Day theme unchanged |
-| **M1.2** | Typography and shape tokens: bundle Inter (OFL font), one app-wide `setFont`, font/radius/margin tokens in `VLCStyle.qml` | M | Icon-font qrc loading pattern; `mainui.cpp` | Inter renders even without the system font; no region regresses |
+| **M1.2** | Typography and shape tokens: bundle Inter (OFL font), one app-wide `setFont`, font/radius/margin tokens in `VLCStyle.qml`, including one spacing scale used for every gap (principle 9) | M | Icon-font qrc loading pattern; `mainui.cpp` | Inter renders even without the system font; no region regresses |
 | **M1.3** | Live accent presets (9 colors): runtime NOTIFY property, persisted `qt-accent-color`, pressed/dim colors derived from the accent; temporary View→Accent menu | M | Upstream !7074 option; `systempalette.cpp` L305-336; `menus.cpp` | Recolors without restart; survives restart |
 | **M1.4** | Monochrome icon set under the existing `VLCIcons` keys (no QML changes), plus new keys (queue, sidebar, PiP, hide-UI, ±10/15) | M | `pixmaps/VLCIcons.json` + `makeIconFont.py`; add `python3-fontforge` to the image | Glyph contact sheet matches Figma; no missing-glyph boxes |
-| **M1.5** | Base widgets: Button, IconToolButton, Switch, Slider, new SegmentedControl, ComboBox, SearchBox, TextField, ToolTip, dark QMenu styling | M | VLC's own style layer `widgets/qml/*Ext.qml` over `QtQuick.Templates` | All states (hover, pressed, focus, disabled) match Figma components; visible focus ring |
+| **M1.5** | Base widgets: Button, IconToolButton, Switch, Slider, new SegmentedControl, ComboBox, SearchBox, TextField, ToolTip, dark QMenu styling | M | VLC's own style layer `widgets/qml/*Ext.qml` over `QtQuick.Templates` | All states (hover, pressed, focus, disabled) match Figma components; visible focus ring |; every widget keeps the spacing-token gap from its neighbours (principle 9)
 
 ### Track C: Player screen (first priority)
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
 | **M2.1** | One-row bottom bar (prev, **play**, next, time, thick seek bar, duration, right group) as a new "Redux" default profile; pinned controls by default | M | `controlbar_profile_model.cpp`, `ControlBar`/`SliderBar`/`PlayerControlLayout.qml`; existing `qt-pin-controls` | Figma order; video never covered; bottom-bar score ≤ 0.5× baseline |
 | **M2.2** | Cone-shaped volume control | S | `VolumeWidget.qml` (Shape) | Drag, wheel, keys and mute work; >100% visually distinct |
-| **M2.3** | Top bar: cone, "…", sidebar toggle, folder/show name, centered title, window buttons | M | `TopBar.qml`, `CSD*.qml`, `MenuTopbar.qml` | Works with custom title bar on and off; folder name navigates |
+| **M2.3** | Top bar: cone, "…", sidebar toggle, folder/show name, centered title, window buttons; window chrome (D19): VLC's custom chrome as the Redux default, a Fullscreen window button, window radius and 1 px border from tokens, an opaque content background, backdrop blur off by default | M | `TopBar.qml`, `CSD*.qml`, `MenuTopbar.qml`; existing custom chrome: `CSDWindowButtonSet.qml`, `util/csdbuttonmodel.hpp`, `CSDTitlebarTapNDrapHandler.qml`, `CSDMouseStealer.qml`, `RoundedRectangleShadow`, `compositor_wayland.cpp` | Drag, double-click, right-click and edge resize work on KDE Wayland, GNOME Wayland and X11; shadow, radius and border show; fully opaque with blur off; with the system title bar on, nothing breaks; folder name navigates (screenshots under Xvfb have no compositor, so check shadow and corners on KWin)
 | **M2.4** | Separate Subtitle and Audio buttons (audio includes output device); Playlist button becomes Queue; restyle the queue panel (header "N items - duration", sort, repeat, shuffle, remove, add) | M | Reserved control-ID slots; `TracksListPage`, `AudioDeviceModel`; old `LANG_BUTTON` profiles still load | Track/device switching verified on the multi-track clip |
 | **M2.5** | Fullscreen edge-hover reveal, Hide UI, resume prompt near the controls | M | `PlayerToolbarVisibilityFSM` (+ unit test like `tst_FSM.qml`), `MinimalView`, `ResumeDialog` | New QML test passes; chrome hides instantly away from the edges |
 | **M2.6** | One shared "…" menu and right-click menu builder; Hide UI; Open entries limited to file(s), folder(s) and recent (no disc, network, capture, clipboard, convert, stream, plugins) | M | `menus/menus.cpp` | Same entries from both menus; per-entry checklist passes |
@@ -126,7 +127,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 ### Track D: Library core
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M3.1** | Icon rail: Home, Videos, Playlists, Recent, pinned folders/playlists, Add (no Music or Network, D14) | M | `navigationmodel.cpp` (+ update `tests/test_navigation_model.cpp`), `SideNavigationPane.qml` | All entries navigate; tests pass; sidebar score ≤ 0.5× baseline |
+| **M3.1** | Icon rail: Home, Videos, Playlists, Recent, pinned folders/playlists, Add (no Music or Network, D14); no drag-to-resize handle (collapse/expand button only); the back button shows only when there is a page to go back to | M | `navigationmodel.cpp` (+ update `tests/test_navigation_model.cpp`), `SideNavigationPane.qml` | All entries navigate; tests pass; sidebar score ≤ 0.5× baseline |; no resize handle; back button hidden on top-level pages
 | **M3.2** | Library header: back/forward, breadcrumb address bar, count, view toggle, sort (incl. Unwatched/Watched first via existing `playcount` sort), search | M | `ViewHeader`, `SortControl`, `NetworkAddressbar`, `MLVideoModel` | Sorts and search work; breadcrumbs navigate |
 | **M3.3** | Grid and list items with watched-progress underline | M | `VideoGridItem`, `GridItem`, `VideoProgressBar`, `EnhancedImageExt` | Partially watched item shows underline; grid score ≤ 0.5× baseline |
 | **M3.4** | File, folder and playlist context menus (incl. mark watched/unwatched, favorite; no Stream or Convert) | M | `MLContextMenu.qml`, medialibrary favorites | Every entry works |
@@ -182,7 +183,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
 | **M9.1** | 3-step QML onboarding (D12) replacing the first-run wizard (also update `shoot.sh`) | M–L | Settings row delegates, `MLFoldersModel` | Clean profile indexes the library through the new flow |
-| **M9.2** | Light theme, HiDPI and accessibility polish | M–L | `makeLightPalette()`, complete tokens | Day scenes readable; keyboard-only walkthrough passes |
+| **M9.2** | Light theme, HiDPI and accessibility polish; light-theme check of the window chrome (shadow and border contrast) | M–L | `makeLightPalette()`, complete tokens | Day scenes readable; keyboard-only walkthrough passes |
 
 ### Track K: Release
 | ID | Milestone | Size | Key reuse / files | Accept |
@@ -222,7 +223,7 @@ tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windo
 | Scope creep (~100 frames) | Strict out-of-scope per milestone; backlog; gates |
 | Context loss between sessions | `CLAUDE.md` + `STATUS.md` + "next step" log entries |
 | Clash with an installed system VLC config | Isolated profile (M0.3); Flatpak from M0.7 |
-| Wayland limits (always-on-top, title bars differ) | In-window floating card; test title bar both ways |
+| Wayland limits (always-on-top, title bars differ) | In-window floating card; window chrome is ours on every desktop (M2.3, D19); test both title-bar modes |
 | Subtitle timeline or library scans cause UI stalls | Worker threads, cancellation, memory caps, QML profiler |
 | Licensing (GPL-3 code, fonts, design, trademark) | No GPL-3 copying; Inter under OFL; M10.1 checks; credit the designer |
 | Cutting a module breaks a format users expect | The M0.6 matrix runs on every build; a cut is reverted with a `DECISIONS.md` entry |

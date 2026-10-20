@@ -97,9 +97,17 @@ case "${1:-}" in
     fi
     ensure_image; container_args /workspace/build/app-home
     args+=(-v "$HOME:$HOME:ro")
+    # File dialogs through the desktop's XDG portal (KDE's or GNOME's own dialog, as in a Flatpak): the portal
+    # platform theme talks to it over the session bus.
+    runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    if [[ -S "$runtime/bus" ]]; then
+      args+=(-v "$runtime/bus:/tmp/runtime/bus" -e DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/runtime/bus
+             -e QT_QPA_PLATFORMTHEME=xdgdesktopportal -e XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-}")
+    fi
     # Audio: the container has no PipeWire client config, but the host's PulseAudio socket (PipeWire's
-    # pulse server on most desktops) is mounted, so use VLC's PulseAudio output.
-    exec podman run "${args[@]}" "$image" bash -c "$prelude && exec redux/tools/build.sh run --aout=pulse \"\$@\"" bash "$@"
+    # pulse server on most desktops) is mounted, so use VLC's PulseAudio output. Backdrop blur is off: without
+    # KWin blur it only makes panels see-through (D19, G17).
+    exec podman run "${args[@]}" "$image" bash -c "$prelude && exec redux/tools/build.sh run --aout=pulse --no-qt-backdrop-blur \"\$@\"" bash "$@"
     ;;
   run)
     shift; [[ $# -ge 1 ]] || { echo "usage: $0 run <cmd...>" >&2; exit 1; }

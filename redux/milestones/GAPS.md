@@ -22,8 +22,8 @@ entry if it changes a plan. New gaps found during milestone research go here too
 | G14 | Settings content mapping | 13 page frames; expert model | Figma setting → config key mapping | The settings you actually use | M8.2–M8.3 |
 | G15 | Product identity | **Name resolved 2026-10-20: Redux Video Player (D16).** VLC is a trademark | Icon, Figma licence (app ID is G21) | Your decisions; designer contact | M10.1 |
 | G16 | Two-tone icons | Colored-SVG provider exists | Rendering approach | Research only | future (D14) |
-| G17 | Window-behind blur on Linux | In-window blur works | Compositor support | Your desktop environment/compositor | M9.2 |
-| G18 | Window-button style | Custom title-bar button set exists | Figma buttons look like Windows | Your desktop environment | M2.3 |
+| G17 | Window-behind blur on Linux | **Resolved 2026-10-21** (see log). In-window blur works | Compositor support | Your desktop environment/compositor | — (blur is an optional preference later) |
+| G18 | Window-button style | **Resolved 2026-10-21** (see log). Custom title-bar button set exists | Figma buttons look like Windows | Your desktop environment | — (M2.3 builds it) |
 | G19 | Side panel in frame 187:328 | **Resolved 2026-10-20** (see log). It shows "Playlists" | Is it the queue or the library? | Your reading of the video | M7.2 |
 | G20 | Real-world test media | Synthetic set | HDR, multi-track MKV, ASS subtitles | A few sample files or URLs | M0.6, M5.3, M5.4 |
 | G21 | Flatpak app ID ownership | Proposed `io.github.iamandelib.Redux-Video-Player` (D16) | Flathub requires proof you control the ID's namespace (GitHub `io.github.<user>`); exact casing rules | Flathub's current app-ID requirements; your choice of Flathub vs a self-hosted remote | M10.1, M10.3 |
@@ -52,3 +52,5 @@ entry if it changes a plan. New gaps found during milestone research go here too
 | 2026-10-20 | G20 (scope) | The IPTV M3U item is dropped (IPTV cut); codec-matrix samples it can't synthesize moved to G22. | D14 |
 | 2026-10-20 | G12 | Closed: reverse playback is cut. | D14 |
 | 2026-10-20 | G21 (partial) | The repo is renamed to `Redux-Video-Player`, so the app ID `io.github.iamandelib.Redux-Video-Player` matches Flathub's rule that the last part equals the repo name "as-is" (dashes are allowed only there). Still open: Flathub vs a self-hosted remote. | D16 |
+| 2026-10-21 | G17 | Resolved: behind-window blur exists only on KWin, through VLC's `qtwindoweffects` module (KF6WindowSystem, present in the KDE Flatpak runtime); GNOME has none. Without it, blur mode only makes panels 70% see-through. Default `qt-backdrop-blur` off; offer it later as a KDE-only preference. | M0.5 chrome research, D19 |
+| 2026-10-21 | G18 | Resolved: Redux draws its own flat window-button glyphs (VLCIcons) in Figma order (minimize, maximize, fullscreen, close) on every desktop; no GTK/KDE theme images, so it looks the same on KDE and GNOME. | D19 |

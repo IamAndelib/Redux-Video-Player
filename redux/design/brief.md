@@ -28,7 +28,7 @@ and About dialog (M10.1).
   app says "Redux Video Player" (D16).
 
 ## Principles
-These eight rules decide anything the entries below don't cover.
+These nine rules decide anything the entries below don't cover.
 
 1. **Keep VLC's identity.** The cone and the orange stay; everything else is neutral gray and black.
 2. **Rectangular, slightly softened.** No pills; small radii. The square shapes are part of VLC's personality. (The onboarding accent swatches are the one round exception, in both sources.)
@@ -38,6 +38,7 @@ These eight rules decide anything the entries below don't cover.
 6. **Basic first, advanced below.** Every settings page shows common options first and advanced ones further down the same page. No separate expert mode.
 7. **Use words, not numbers.** Options are named in plain language, and help text sits behind a visible info icon, never a hover-only tooltip.
 8. **Customization is optional.** Good defaults; onboarding offers theme and shortcuts, and the layout editor is there for those who want it.
+9. **Breathing room.** Every element keeps a consistent gap from its neighbours and from container edges, taken from the spacing tokens (M1.2). Nothing touches anything else, e.g. a search field never sits flush against the buttons beside it. (Maintainer feedback, 2026-10-21.)
 
 ## B. Design system
 - **Two icon sets.** Two-tone gray and orange icons for non-clickable places (menu item icons); monochrome icons for everything clickable.
@@ -102,6 +103,7 @@ These eight rules decide anything the entries below don't cover.
 
 ## D. Library
 - **Sections:** Home, Videos, Music, Network, Playlists, Recent, pinned items, and "+ Add item". The label is "Network", not "Network streams".
+  - **Maintainer feedback (2026-10-21):** the sidebar has no drag-to-resize handle; the collapse/expand button is the only way to change its width. The back button appears only when there is a page to go back to.
   - **Out of scope (D14):** the Music and Network sections. The rail is Home, Videos, Playlists, Recent, pins and "+ Add item".
   - Build: M3.1 · Refs: [10:22](https://youtu.be/ERFeOgqk324?t=622) · [13:47](https://youtu.be/ERFeOgqk324?t=827) [`1347-sidebar-rail-home-recent-pins.jpg`](source/video-frames/1347-sidebar-rail-home-recent-pins.jpg) · Figma 848:1996
 - **Header:** back and forward buttons, a clickable breadcrumb **address bar** ("Videos › Shows › The Wand › S01"), then "15 items", sort, view toggle (grid, list, detail), search and a "…" menu.

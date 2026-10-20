@@ -58,6 +58,7 @@
 - [ ] Touched screens are keyboard-reachable
 - [ ] Night and Day start without QML errors (`grep -i "qml.*error" build/shots/vlc.log` is empty)
 - [ ] No new hard-coded hex colors or `radius:` numbers in touched QML
+- [ ] Touched screens keep the spacing-token gaps; nothing sits flush against its neighbour (principle 9)
 - [ ] `STATUS.md` row and this file's status log are updated
 - [ ] PR has before/after crops; upstreamable pieces are noted
 

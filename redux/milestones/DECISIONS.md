@@ -155,3 +155,16 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   expect, then what is known not to work yet, and how to report (`CLAUDE.md`, `TEMPLATE.md`).
 - **Why:** the maintainer wants a simple loop judged on the running app, not on documents.
 - **Alternatives:** plan approval before each milestone; reviewing PRs on GitHub; installing builds on the host.
+
+### D19 · 2026-10-21 · Window chrome: VLC's custom chrome, restyled
+- **Decision:** the title bar, shadow, resize edges and window buttons are VLC 4's existing Qt-based custom chrome
+  (`FramelessWindowHint` with `startSystemMove`/`startSystemResize`, a QML-drawn shadow in a transparent margin,
+  Wayland input mask), made the Redux default and restyled in M2.3. New pieces only: a Fullscreen window button,
+  a window radius and a 1 px border from tokens, and an opaque content background. Backdrop blur is off by default;
+  the system title bar stays a preference.
+- **Why:** the maintainer asked to use Qt for the title bar, shadows, radius and borders. VLC already does this in Qt,
+  so we configure and restyle instead of writing new code. KWin adds no shadow for frameless Wayland windows, and
+  GNOME has no server-side decorations, so drawing our own chrome is the only way to match the Figma on every
+  desktop. Blur exists only on KWin and, without it, makes panels see-through.
+- **Alternatives:** system title bars (can't hold the Figma's folder name, centered title and Fullscreen button);
+  QtWayland decoration plugins (GNOME-only look); a new frameless implementation.
