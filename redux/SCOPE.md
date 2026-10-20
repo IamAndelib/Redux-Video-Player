@@ -121,19 +121,18 @@ Parked; each needs a `DECISIONS.md` entry to become a milestone.
 - The pressed key in on-screen messages (G13).
 - Two-tone menu icons (G16).
 
-## Build allowlist (summary for M0.6)
-`build.sh` moves to `--auto-features=disabled` with an explicit allowlist. Source: the module inventory in
-[`milestones/M0.5-scope.md`](milestones/M0.5-scope.md).
+## What the build contains (M0.6, D20)
+The plugins outside this scope are listed by name in [`cut-modules.txt`](cut-modules.txt): 190 plugins are not
+built and 232 are. `redux/tools/build.sh` passes the list to meson; to bring one back, delete its line, add a
+`DECISIONS.md` entry and run `build.sh reconfigure`.
 
-- **Keep:** local access (`filesystem`), `archive`, the demuxers (mp4, mkv, avi, asf, ogg, ts with libdvbpsi, ps, es,
-  wav, flac, raw formats, `avformat` fallback, `subtitle`, local `playlist`), `avcodec` + `vaapi`, dav1d, vpx, flac,
-  opus, vorbis, theora, mpg123, the subtitle decoders (subsdec, libass, webvtt, ttml, tx3g, spudec, dvbsub, cc),
-  packetizers, audio filters (EQ, normalize, gain, compressor, spatializer, stereo widener, pitch, resamplers,
-  scaletempo), PipeWire and PulseAudio output, the GL and libplacebo video outputs (Wayland and X11), chroma
-  converters, picture filters (adjust, crop, transform, deinterlace, sharpen), freetype, taglib, medialibrary,
-  `dbus` (MPRIS), screensaver inhibition, `hotkeys`, the Qt interface.
-- **Drop:** all network access and services discovery, `adaptive`, `ytdl`, `lua`, `stream_out`, `access_output`,
-  `mux`, encoders (x264, x265, rav1e, aom encoder, twolame, shine), capture and broadcast access, disc access,
-  `chromecast`, keystores, `audioscrobbler`, `fingerprinter`, `addons*`, `skins2`, `ncurses`, remote-control
-  interfaces, visualizations, novelty video filters, video splitters.
-- `-Dstream_outputs=false` doesn't remove `stream_out/` or `access_output/`, so M0.6 adds meson guards for them.
+- **Built:** local files and archives, every demuxer and decoder (FFmpeg's avcodec and avformat, dav1d, vpx, the
+  Xiph codecs, mpg123, faad, the subtitle decoders including libass, teletext, ARIB and closed captions), packetizers,
+  the audio filters we keep, PipeWire/PulseAudio/ALSA output, the OpenGL and libplacebo video outputs, VA-API,
+  freetype, taglib, the media library, MPRIS, screensaver inhibition, hotkeys, the console and file loggers, and the
+  Qt interface.
+- **Not built:** network access and protocols, streaming formats (HLS/DASH), site scripts and Lua, services
+  discovery, discs, capture and broadcast, stream output, muxers and encoders, remote interfaces, music visuals,
+  novelty video filters and splitters, niche audio filters and outputs.
+- **Proof:** `redux/tools/play-matrix.sh` plays 51 synthetic files (`make-matrix.sh`) and 28 real-world samples from
+  FFmpeg's FATE suite (`fetch-samples.sh`, `samples.tsv`); every one must open and find a decoder for each stream.

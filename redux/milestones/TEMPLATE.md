@@ -16,7 +16,7 @@
 - Upstream since the pin: `git log --oneline $(cat redux/UPSTREAM_COMMIT)..upstream/master -- <paths>`
 - Upstream MRs searched: <terms → relevant MRs, or "none">
 - Reusable code found: <file:line → what we reuse>
-- Prior art / libraries: <only if new C++ is needed>
+- Prior art (always): <who already solved this: upstream VLC, mpv/IINA/Haruna/Celluloid/MPC-HC, KDE/Qt, libraries, test suites → what we adopt, credited in redux/CREDITS.md; or "none fits, because …">
 - New gaps: <G-numbers added to GAPS.md, or "none">
 
 ## Scope

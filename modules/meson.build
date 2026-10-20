@@ -483,6 +483,11 @@ foreach module : vlc_modules
         endif
     endforeach
 
+    # Redux Video Player (D20): plugins cut by the product scope are disabled like any other module.
+    if module['name'] in get_option('redux_cut_modules')
+        module += { 'enabled': false }
+    endif
+
     vlc_plugins_manifest += {
         module['name']: module
     }
