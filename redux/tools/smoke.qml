@@ -6,7 +6,7 @@ import QtQuick.Window
 
 Window {
     width: 480; height: 160; visible: true; color: "#111111"
-    title: "VLC Redux dev container smoke test"
+    title: "Redux Video Player dev container smoke test"
 
     readonly property var apiNames: ["Unknown", "Software", "OpenVG", "OpenGL", "Direct3D 11", "Vulkan", "Metal", "Null", "Direct3D 12"]
     readonly property string api: apiNames[label.GraphicsInfo.api] ?? "?"
@@ -16,7 +16,7 @@ Window {
         anchors.centerIn: parent
         horizontalAlignment: Text.AlignHCenter
         color: "#f08a24"; font.pixelSize: 22
-        text: "VLC Redux container OK\n" + api + " on " + Qt.platform.pluginName
+        text: "Redux Video Player container OK\n" + api + " on " + Qt.platform.pluginName
     }
 
     Timer {

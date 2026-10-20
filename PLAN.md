@@ -1,4 +1,4 @@
-# VLC Redux: scope assessment and implementation plan
+# Redux Video Player (formerly VLC Redux): original scope assessment and implementation plan
 
 > **Superseded in part (2026-10-20).** The product is now **Redux Video Player**, a Linux-only Flatpak for offline
 > video (D13–D16). What ships is fixed in [`redux/SCOPE.md`](redux/SCOPE.md), and the live plan is
@@ -13,7 +13,7 @@
   - Figma: https://www.figma.com/design/CAuJVJyM5yY7PnyQQK9X24/VLC-Redesign--Community-?node-id=0-1 (file key `CAuJVJyM5yY7PnyQQK9X24`)
 - **Platform:** Linux only, as a Flatpak (D13). Windows, macOS and AppImage are not planned.
 - **Who builds it:** Claude implements, you review and test.
-- **Repo:** `IamAndelib/VLC-Redux`. **Product name:** Redux Video Player (D16).
+- **Repo:** `IamAndelib/Redux-Video-Player`. **Product name:** Redux Video Player (D16).
 
 ## 2. What the Figma design contains (all ~100 frames reviewed)
 All frames are on one page, `0:1`.
@@ -39,7 +39,7 @@ All frames are on one page, `0:1`.
 - Thin line icons.
 - Inter-like sans typography.
 - Rounded 6–8px corners.
-- Library layout: icon rail sidebar (Home, Videos, Music, Network, Playlists, Recent, Add item), breadcrumbs, and a floating miniplayer card in the bottom-right corner.
+- Library layout: icon rail sidebar (Home, Videos, Music, Network, Playlists, Recent, Add item; Music and Network cut, D14), breadcrumbs, and a floating miniplayer card in the bottom-right corner.
 
 ### 2a. Design intent from the video
 Moved to [`redux/design/brief.md`](redux/design/brief.md): every decision from the designer's video with its reason,
@@ -72,7 +72,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
   - preferences (`dialogs/preferences/`)
   - first-run wizard (`dialogs/firstrun/`)
   - effects panels (`dialogs/extended/extended_panels.*`)
-- **Not in VLC at all:** the waveform seek bar. We build it (Phase 4).
+- **Not in VLC at all:** the waveform seek bar. We'd have built it in Phase 4 (cut, D14).
 - **Rejected alternative:** a standalone libVLC app (Qt/QML, Tauri, Electron or Flutter). It would mean rebuilding the media library, hundreds of preferences, effects, playlists and video embedding. Electron and Tauri have no maintained libVLC video embedding. A fork is much less work and keeps all of VLC's power.
 
 **Facts and caveats to accept:**
@@ -80,16 +80,16 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 - **Qt version:** master needs Qt ≥ 6.2; some features need 6.5–6.7, and VLC's contribs use **Qt 6.8.3**. Ubuntu 24.04's Qt 6.4 is too old, so use VLC's Docker image or `aqtinstall` to get Qt 6.8.
 - **QML is compiled into the Qt plugin (qrc).** Every UI change means rebuilding `libqt_plugin`. That's an incremental build, so it's fast.
 - **License:** `modules/gui/qt` is GPL-2.0+ and libvlc/libvlccore are LGPL-2.1+. Our fork is GPL-2.0+ with public source, which is fine.
-- **Trademark:** "VLC", "VideoLAN" and the cone are registered trademarks. Normal redistribution of the OSS code is allowed, but a public fork should use **its own product name**, e.g. "Redux Player, powered by VLC". Decide before release.
+- **Trademark:** "VLC", "VideoLAN" and the cone are registered trademarks. Normal redistribution of the OSS code is allowed, but a public fork needs its own product name: decided as **Redux Video Player** (D16).
 - **Design credit:** the Figma file is a Community file; check its license. Credit Juxtopposed in the README and About dialog, and contact her before the public launch.
 
 ## 4. Repo strategy
-- `VLC-Redux` is a full fork: it imports VLC `master` with history and keeps an `upstream` remote (`https://code.videolan.org/videolan/vlc.git`).
-- Our work goes on feature branches with one PR per phase.
+- The repo (`Redux-Video-Player`, formerly `VLC-Redux`) is a full fork: it imports VLC `master` with history and keeps an `upstream` remote (`https://code.videolan.org/videolan/vlc.git`).
+- Our work goes on feature branches (now one PR per milestone, D8).
 - Our own files live in a top-level `redux/` directory:
   - `redux/design/`: `tokens.json`, `screen-map.md` (Figma frame → QML file), `transcript.md`, reference PNGs
   - `redux/tools/`: build script, screenshot harness, diff script, test-media generator
-  - `redux/packaging/`: Flatpak manifest (AppImage dropped, D13)
+  - `redux/packaging/` (created in M0.7): Flatpak manifest (AppImage dropped, D13)
   - `redux/README.md`: the project front page; set the GitHub repo README to point here
 - Keep edits outside `modules/gui/qt` minimal so upstream merges stay easy.
 
@@ -115,7 +115,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 4. **Test media. Done:** `redux/tools/make-media.sh` writes about 50 MB of synthetic media into `build/media/`:
    - "The Wand/S01" with 15 episodes, a flat-gray 1080p E04 for player diffs, and `.srt` files with matching and mismatched names.
    - A 4K HDR10 clip.
-   - The "My Songs" album with cover art and varied loudness for the waveform.
+   - The "My Songs" album with cover art and varied loudness for the waveform (removed with the music cut, D14).
    - The "Cool Songs" and "Anime to Watch" playlists.
 5. **Visual harness. Done:**
    - `redux/tools/shoot.sh` captures scenes at 1920×1080 under Xvfb: `first-run`, `library`, `player` and `music`.
@@ -124,11 +124,11 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
      - The default theme is Night.
    - `redux/tools/compare.sh` diffs the shots against Figma frames listed in `redux/tools/shots.tsv` and writes `build/shots/report.html` (side by side, a diff image and RMSE).
    - Baseline: stock VLC 4 scores RMSE 0.17 against the Figma player frame 187:328.
-6. **Design inventory. Partly done.**
+6. **Design inventory. Done.**
    - Done: `redux/design/screen-map.md` maps each Figma frame to the VLC QML/C++ files it affects.
    - Partial: `redux/design/tokens.json` has the full dark palette, part of the light palette, and the effects. The Figma MCP Starter-plan limit stopped further queries.
-   - Pending: `redux/tools/figma-export.py`. It needs a Figma personal access token in `~/.config/vlc-redux/figma-token`, and uses about 3–5 REST calls to fetch the full file JSON, PNG renders of all frames and SVGs of all icons into the git-ignored `redux/design/source/`.
-   - Pending: the `.fig` local copy in the same folder, an offline source of truth that `fig2sketch` can parse.
+   - Done 2026-10-20 (6 REST calls, G1): `redux/tools/figma-export.py`. It needs a Figma personal access token in `~/.config/vlc-redux/figma-token`, and uses about 3–5 REST calls to fetch the full file JSON, PNG renders of all frames and SVGs of all icons into the git-ignored `redux/design/source/`.
+   - Done 2026-10-13: the `.fig` local copy in the same folder, an offline source of truth that `fig2sketch` can parse.
 7. **Transcript. Done:** `redux/design/transcript.md`, produced by `redux/tools/transcriber/transcribe.sh <url>`, which runs AI-Video-Transcriber with yt-dlp, deno and faster-whisper `medium`. Its design rationale is in `redux/design/brief.md`.
 
 ### Phase 1: Design system
@@ -158,11 +158,11 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
   - Item count, sort and view options, and search.
 - **Menus and dialogs.**
   - Context menus for files, folders and playlists.
-  - New playlist and Open network stream dialogs.
+  - New playlist dialog (Open network stream cut, D14).
 - **Miniplayer card.** The floating corner card (video preview, progress, file name, folder and playlist chips), adapted from `PIPPlayer.qml` / `MiniPlayer.qml`.
 - **End of Phase 3 = usable daily driver.** Cut the first prerelease.
 
-### Phase 4: Music mode and waveform
+### Phase 4: Music mode and waveform (cut, D14)
 - **Now-playing screen.** Blurred artwork backdrop, centered cover and "title – artist", with ±10s buttons in the bar.
 - **Waveform seek bar:** a new C++ `WaveformProvider` (`modules/gui/qt/player/`) exposed to QML.
   - It decodes in the background with a second libVLC media player using `libvlc_audio_set_callbacks`, no audio output and a high rate.
@@ -173,7 +173,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 ### Phase 5: Effects and subtitle panels in QML
 - **Audio panels.**
   - Equalizer with the presets dropdown, Compressor, Spatializer and Stereo Widener, each in an Expand/Collapse settings card.
-  - Audio visualizer picker.
+  - Audio visualizer picker (cut, D14).
   - These bind to the same variables and filter chain as `extended_panels.cpp`; move its logic into a shared C++ model.
 - **Video panels.** Essential (adjust), Crop, Colors and HDR options.
 - **Subtitle panels.**
@@ -181,7 +181,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
   - The "Add Subtitles to Playlist/Folder" flow, including sub-filename matching.
 
 ### Phase 6: Settings
-- **New dialog.** A QML settings dialog with a search box and the 14 categorized pages, matching the Figma frames.
+- **New dialog.** A QML settings dialog with a search box and the 14 categorized pages, matching the Figma frames (10 ship: no Network, Recording or Extensions, D14).
   - It binds to VLC config through a C++ model over `config_Get*` / `config_Put*`, reusing `dialogs/preferences/` logic.
 - **Advanced Options.** Opens the existing full advanced preference tree, so no capability is lost.
 - **Other dialogs.** Keyboard Shortcuts (editable) and Profiles.
@@ -196,10 +196,9 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 - **Branding.** Final product name, app ID, icons and About dialog credits (Juxtopposed, VideoLAN).
 - **Packages.**
   - Flatpak: adapt Flathub's `org.videolan.VLC` manifest, KDE 6.8 runtime.
-  - AppImage.
-- **CI.** GitHub Actions builds both on every PR and attaches them to tagged releases.
+- **CI.** GitHub Actions builds the Flatpak on every PR and attaches it to tagged releases.
 - **Launch.** README with screenshots, a changelog, and a contribution guide.
-- **Upstream (optional).** Propose generic features to VideoLAN, e.g. the waveform seek bar.
+- **Upstream (optional).** Propose generic features to VideoLAN, e.g. seek-bar thumbnails if they come back (the waveform was cut, D14).
 
 ## 6. Tools, agents and plugins
 - **Figma MCP** (remote: `claude mcp add --transport http figma https://mcp.figma.com/mcp`, then `/mcp` to log in):
@@ -208,24 +207,24 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
   - `get_variable_defs`
   - `get_screenshot` for reference PNGs
   - `download_assets` for SVG icons
-- **GitHub MCP or `gh`:** PRs per phase, CI status and issues.
+- **GitHub MCP or `gh`:** PRs per milestone (D8), CI status and issues.
 - **Claude Code agents and skills:**
   - Explore agents for codebase sweeps across VLC's large tree.
   - A Plan agent at the start of each phase.
   - `/code-review` and `/simplify` before each PR.
   - Optionally, a multi-agent workflow per phase to do screens in parallel (ask for it explicitly).
 - **Build and test:** Docker or Podman with the VLC CI image, meson, ninja, Qt 6.8 (aqtinstall), Xvfb, ffmpeg, ImageMagick, `qmltestrunner`, and the existing `modules/gui/qt/tests`.
-- **Third-party:** AI-Video-Transcriber with faster-whisper for the transcript, flatpak-builder and appimagetool for packaging.
+- **Third-party:** AI-Video-Transcriber with faster-whisper for the transcript, flatpak-builder for packaging (AppImage dropped, D13).
 
 ## 7. Verification (every phase)
 1. **Build:** `meson setup` and `ninja` succeed inside the dev container.
-2. **Smoke test:** `xvfb-run ./build/vlc --no-qt-privacy-ask <fixture>` starts, plays and quits cleanly.
+2. **Smoke test:** `xvfb-run build/meson/bin/vlc-static --no-qt-privacy-ask <fixture>` starts, plays and quits cleanly.
 3. **Visual diff:** the harness report compares each implemented screen with its Figma frame. Fix big deviations before the PR.
 4. **Functional checks:**
    - toolbar edits persist across restarts
    - theme and accent changes apply live
    - effects audibly or visibly change output (confirm in the VLC log `-vv`)
-   - the waveform matches the audio
+   - (the waveform check is gone with the music cut, D14)
    - settings write the correct keys to `vlcrc`
 5. **Tests:** `modules/gui/qt/tests` and the qml tests pass, and CI is green.
 6. **Real hardware:** you run the built player or CI Flatpak on your Linux machine and file feedback as issues.
@@ -234,7 +233,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 1. **Install tools.** The host needs only Podman, git and Claude Code; everything else runs in containers. Log in with `claude auth login`.
 2. **Clone the repo and build the dev image.**
    ```bash
-   git clone https://github.com/IamAndelib/VLC-Redux.git && cd VLC-Redux
+   git clone https://github.com/IamAndelib/Redux-Video-Player.git && cd Redux-Video-Player
    redux/dev.sh image
    ```
 3. **Add the Figma MCP.**

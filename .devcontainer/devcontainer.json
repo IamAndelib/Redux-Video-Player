@@ -1,6 +1,6 @@
 {
   // For VS Code Dev Containers / the devcontainer CLI. redux/dev.sh does the same with plain Podman.
-  "name": "VLC Redux",
+  "name": "Redux Video Player",
   "build": { "dockerfile": "Containerfile" },
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",

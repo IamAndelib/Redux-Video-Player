@@ -11,7 +11,8 @@ back, add a `DECISIONS.md` entry first, then a milestone.
 - **Platform:** Linux only, as a Flatpak (D13). No Windows, macOS or AppImage.
 - **Codecs:** a current FFmpeg bundled in the Flatpak, plus dav1d, libplacebo and libass (D15). VA-API hardware
   decoding.
-- **Name:** Redux Video Player (D16). "VLC" and the cone are VideoLAN trademarks; the repo keeps its `VLC-Redux` name.
+- **Name:** Redux Video Player (D16). "VLC" and the cone are VideoLAN trademarks. Repo `IamAndelib/Redux-Video-Player`,
+  app ID `io.github.iamandelib.Redux-Video-Player`. UI strings that say "VLC" in the design become "Redux Video Player".
 - **How cuts are made:** the module is switched off in the build (M0.6) and its entry points are removed from the UI
   (M0.8). Upstream code is never deleted, so upstream merges stay easy.
 
@@ -49,7 +50,7 @@ back, add a `DECISIONS.md` entry first, then a milestone.
 |---|---|---|
 | Video library from folders you add | Video only; no music sections | M3.1–M3.3 |
 | Home: Continue Watching, Recently Added, Frequently Visited Folders, Playlists | | M3.6 |
-| Recent, pins, sort (incl. Unwatched/Watched first), search, watched marks | | M3.1–M3.3 |
+| Recent, pins, sort (incl. Unwatched/Watched first), search, watched marks | | M3.1–M3.3, M3.6 |
 | User playlists and the queue | | M7.1, M2.4 |
 | Compact library beside the video; floating miniplayer | | M7.2, M3.5 |
 | Context menus (play, mark watched, favorite, add to queue/playlist, show in folder) | | M3.4 |
@@ -63,6 +64,7 @@ back, add a `DECISIONS.md` entry first, then a milestone.
 | Sidebar presets | | M5.9 |
 | Settings: General, Interface, Privacy, Controls, Playback, Video, Audio, Subtitles, Library, Performance | | M8.1–M8.3 |
 | Keyboard shortcuts editor | | M8.4 |
+| "Save a log" setting (replaces the log viewer) | For bug reports | M8.3 |
 | Media information (codec, resolution, bitrate, streams) | | M0.8 keeps it reachable |
 | 3-step onboarding | | M9.1 |
 | MPRIS and media keys, screensaver inhibition | | built in |
@@ -107,8 +109,8 @@ Each line says why. "Upstream" means the evidence comes from VideoLAN's own trac
 - **Skins, web/telnet/CLI remote, global hotkeys, mouse gestures.** Redundant with the new UI or niche.
 - **Last.fm, audio fingerprinting, metadata editing, ratings.** Music-library features.
 - **Video wallpaper, 3D output, novelty filters (puzzle, wall, clone, psychedelic …).** No evidence of use.
-- **Go to time, log viewer, system tray, dual subtitles, reverse playback, sleep timer.** Little use. The log becomes
-  a "Save a log" setting.
+- **Go to time, log viewer, system tray, dual subtitles, reverse playback, sleep timer, boss key.** Little use. The log
+  becomes a "Save a log" setting.
 - **Update checker.** Flatpak updates the app.
 
 ## Future
@@ -120,8 +122,8 @@ Parked; each needs a `DECISIONS.md` entry to become a milestone.
 - Two-tone menu icons (G16).
 
 ## Build allowlist (summary for M0.6)
-`build.sh` moves to `--auto-features=disabled` with an explicit allowlist. Source: the module inventory in this
-milestone's research.
+`build.sh` moves to `--auto-features=disabled` with an explicit allowlist. Source: the module inventory in
+[`milestones/M0.5-scope.md`](milestones/M0.5-scope.md).
 
 - **Keep:** local access (`filesystem`), `archive`, the demuxers (mp4, mkv, avi, asf, ogg, ts with libdvbpsi, ps, es,
   wav, flac, raw formats, `avformat` fallback, `subtitle`, local `playlist`), `avcodec` + `vaapi`, dav1d, vpx, flac,

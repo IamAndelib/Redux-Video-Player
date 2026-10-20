@@ -47,7 +47,7 @@ Related files:
 - **Upstream:** small, generally useful pieces are sent to VideoLAN as we go.
   - They are prepared on `up/<slug>` branches based on `upstream/master` in VLC commit style.
   - You submit them as MRs on code.videolan.org, and they're cherry-picked into `main`.
-- **Order:** player first. The redesigned player becomes usable, then the library, then settings and onboarding.
+- **Order:** scope foundations first (M0.5–M0.8: scope, lean build, Flatpak, trim), then player first: the redesigned player becomes usable, then the library, then settings and onboarding.
 
 ## Milestone ritual
 1. **Kickoff.** Read `CLAUDE.md`, `STATUS.md` and the milestone file. Run `git fetch upstream`. Create `redux/milestones/M<ID>-<slug>.md` from the template.
@@ -84,19 +84,19 @@ Related files:
 The RMSE (difference score) is a regression signal per screen region, calibrated in M0.3. Your eyes on the side-by-side are the final judge.
 
 ## Roadmap: 52 milestones (48 active, 3 cut, 1 future), 11 tracks, 4 release gates
-Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with a spike session).
+Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with a spike session). Ranges such as S–M round up for the GitHub `size:` label.
 
 ### Track A: Foundations
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M0.1** | Tracking scaffolding: `redux/milestones/{ROADMAP,STATUS,TEMPLATE,GAPS,DECISIONS}.md`, root `CLAUDE.md` (ritual, commands, rules), `main` as default branch, labels (`track:*`, `size:*`, `gap`, `upstreamable`, `needs-user`), GitHub milestones R0–R3, one issue per milestone | S | `gh` CLI (the GitHub MCP is down) | A fresh session can name the next milestone from `CLAUDE.md` + `STATUS.md` alone; `gh issue list` shows every ID |
-| **M0.2** | Complete the design source: run `figma-export.py` (≤5 calls), add offline `tokens-from-figma.py` (light palette, text styles, radii, spacing), commit `frames.tsv` and `icons.tsv` | S | Needs gap G1 (your token, or `.fig`/manual exports) | Light and dark token sets have the same keys; ≥95 frame PNGs; typography tokens present |
-| **M0.3** | Harness v2: per-region crops in `shots.tsv`/`compare.sh` (bottom bar, top bar, sidebar, grid); `player-controls` scene; isolated run profile for `build.sh run` (never touches system VLC config); test clip with chapters and 2 audio/2 subtitle tracks; baseline score per region | S–M | ffmpeg, existing harness | Report shows region rows; baselines in `STATUS.md`; `vlcrc` exists only in the redux profile |
+| **M0.1** | Tracking scaffolding: `redux/milestones/{ROADMAP,STATUS,TEMPLATE,GAPS,DECISIONS}.md`, root `CLAUDE.md` (ritual, commands, rules), `main` as default branch, labels (`track:*`, `size:*`, `gap`, `upstreamable`, `needs-user`; later `future` and `cut`, D14), GitHub milestones R0–R3, one issue per milestone | S | `gh` CLI (the GitHub MCP is down) | A fresh session can name the next milestone from `CLAUDE.md` + `STATUS.md` alone; `gh issue list` shows every ID |
+| **M0.2** | Complete the design source: the Figma export is done (G1 resolved: `file.json`, 103 frames, 206 icons); add offline `tokens-from-figma.py` (light palette, text styles, radii, spacing), commit `frames.tsv` and `icons.tsv` | S | `redux/design/source/file.json` (G1 resolved) | Light and dark token sets have the same keys; ≥95 frame PNGs; typography tokens present |
+| **M0.3** | Harness v2: per-region crops in `shots.tsv`/`compare.sh` (bottom bar, top bar, sidebar, grid); `player-controls` scene; isolated run profile for `build.sh run` (never touches system VLC config); test clip with chapters and 2 audio/2 subtitle tracks; baseline score per region (the `music` scene and music fixtures were already dropped, D14) | S–M | ffmpeg, existing harness | Report shows region rows; baselines in `STATUS.md`; `vlcrc` exists only in the redux profile |
 | **M0.4** | Video design brief: cleaned `transcript.md`; `brief.md` with every decision's reason, milestone, video time, frame and Figma node; 40–60 reference frames from `frame-picks.tsv` (frames stay out of git); gaps updated | S–M | `video-sheets.sh`, `video-frames.sh`, `check-brief.py`; 4 parallel review agents | `check-brief.py` passes; every sheet reviewed; GAPS updated |
 | **M0.5** | Scope foundation: `redux/SCOPE.md` (keep / cut / future), D13–D16, roadmap, brief and GitHub issues follow it | S | Feature inventory of `modules/gui/qt`, module inventory, community research | Every cut item maps to an M0.6 module switch or an M0.8 UI removal; issues match `STATUS.md` |
 | **M0.6** | Lean build profile and codec/format matrix: `build.sh` uses `--auto-features=disabled` plus an explicit allowlist and drops `stream_out`/`access_output`/network access; `make-matrix.sh` generates containers × codecs × subtitle formats (HEVC 10-bit HDR, AV1, VP9, H.264, MPEG-2, VC-1/WMV, AC-3/E-AC-3/DTS/TrueHD, FLAC, Opus, ASS, PGS, VobSub, files in archives); `play-matrix.sh` plays each headless | M | `meson_options.txt`, module `meson.build` guards, ffmpeg, `-I dummy --play-and-exit`, `-vv` log | Every matrix file plays with no decoder/demux errors; `vlc --list` shows no cut module |
-| **M0.7** | Flatpak skeleton: `redux/packaging/` manifest on the KDE runtime (Qt ≥ 6.8) with bundled FFmpeg, dav1d, libplacebo (Vulkan), libass and medialibrary 0.13.2; `--socket=wayland` + `fallback-x11`, `--device=dri`; the codec matrix runs inside the Flatpak | M | Flathub `org.videolan.VLC` manifest as reference (it pins FFmpeg 4.4 and VLC 3, so versions change) | `flatpak-builder` builds; matrix passes inside the sandbox; VA-API decodes on your GPU |
-| **M0.8** | Feature trim in the UI: remove the entry points of every cut feature (navigation Music/Browse/Discover; menus for disc, network, capture, convert, stream, renderer, VLM, EPG, visualizations, wallpaper, 3D, extensions, skins; toolbar controls record, renderer, teletext, DVD, program, reverse) at one model or menu place each | M | `navigationmodel.cpp`, `menus/menus.cpp`, `control_list_model.hpp`, `PlayerControlbarControls.qml`, `dialogs_provider.cpp` | No cut feature is reachable from any menu, toolbar or shortcut; Qt tests pass |
+| **M0.7** | Flatpak skeleton: `redux/packaging/` manifest on the KDE runtime (Qt ≥ 6.8) with bundled FFmpeg, dav1d, libplacebo (Vulkan), libass and medialibrary 0.13.2; `--socket=wayland` + `fallback-x11`, `--socket=pulseaudio`, `--device=dri`, `--share=network` only for M5.7's consented subtitle search; the codec matrix runs inside the Flatpak | M | Flathub `org.videolan.VLC` manifest as reference (it pins FFmpeg 4.4 and VLC 3, so versions change) | `flatpak-builder` builds; matrix passes inside the sandbox; VA-API decodes on your GPU |
+| **M0.8** | Feature trim in the UI: remove the entry points of every cut feature (navigation Music/Browse/Discover; menus for disc, network, capture, convert, stream, renderer, VLM, EPG, visualizations, wallpaper, 3D, extensions, skins; toolbar controls record, renderer, teletext, DVD, program, reverse) at one model or menu place each; the full list is in `redux/design/screen-map.md` § Feature trim; Media information stays reachable | M | `navigationmodel.cpp`, `menus/menus.cpp`, `control_list_model.hpp`, `PlayerControlbarControls.qml`, `dialogs_provider.cpp` | No cut feature is reachable from any menu, toolbar or shortcut; Qt tests pass |
 
 ### Track B: Design system
 | ID | Milestone | Size | Key reuse / files | Accept |
@@ -113,12 +113,12 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | **M2.1** | One-row bottom bar (prev, **play**, next, time, thick seek bar, duration, right group) as a new "Redux" default profile; pinned controls by default | M | `controlbar_profile_model.cpp`, `ControlBar`/`SliderBar`/`PlayerControlLayout.qml`; existing `qt-pin-controls` | Figma order; video never covered; bottom-bar score ≤ 0.5× baseline |
 | **M2.2** | Cone-shaped volume control | S | `VolumeWidget.qml` (Shape) | Drag, wheel, keys and mute work; >100% visually distinct |
 | **M2.3** | Top bar: cone, "…", sidebar toggle, folder/show name, centered title, window buttons | M | `TopBar.qml`, `CSD*.qml`, `MenuTopbar.qml` | Works with custom title bar on and off; folder name navigates |
-| **M2.4** | Separate Subtitle and Audio buttons (audio includes output device); Playlist button becomes Queue | M | Reserved control-ID slots; `TracksListPage`, `AudioDeviceModel`; old `LANG_BUTTON` profiles still load | Track/device switching verified on the multi-track clip |
+| **M2.4** | Separate Subtitle and Audio buttons (audio includes output device); Playlist button becomes Queue; restyle the queue panel (header "N items - duration", sort, repeat, shuffle, remove, add) | M | Reserved control-ID slots; `TracksListPage`, `AudioDeviceModel`; old `LANG_BUTTON` profiles still load | Track/device switching verified on the multi-track clip |
 | **M2.5** | Fullscreen edge-hover reveal, Hide UI, resume prompt near the controls | M | `PlayerToolbarVisibilityFSM` (+ unit test like `tst_FSM.qml`), `MinimalView`, `ResumeDialog` | New QML test passes; chrome hides instantly away from the edges |
 | **M2.6** | One shared "…" menu and right-click menu builder; Hide UI; Open entries limited to file(s), folder(s) and recent (no disc, network, capture, clipboard, convert, stream, plugins) | M | `menus/menus.cpp` | Same entries from both menus; per-entry checklist passes |
 | **M2.7** | Playback essentials: auto-next through the folder without building a playlist (upstream #22382), reliable per-file resume, mouse-wheel setting (volume or seek) | M | `vlc_playlist`, `ResumeDialog`, media library playback state, `MainCtx` wheel handling | Last episode in a folder rolls into the next; resume survives restart; wheel setting persists |
 
-**Gate R0 "Looks like Redux"** (internal screenshot review).
+**Gate R0 "Looks like Redux"** comes after M2.3 (internal screenshot review); M2.4–M2.7 count toward R1.
 
 ### Track D: Library core
 | ID | Milestone | Size | Key reuse / files | Accept |
@@ -141,7 +141,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 ### Track F: Right sidebar and panels
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M5.1** | Right sidebar with Subtitles, Audio, Video and Playback tabs, hosting the existing tracks pages | M | `TracksPage*.qml`, the queue pane's docking mechanism | Opens and closes; keyboard navigable |
+| **M5.1** | Right sidebar with Playback, Video, Audio and Subtitles tabs (Subtitles default), hosting the existing tracks pages | M | `TracksPage*.qml`, the queue pane's docking mechanism | Opens and closes; keyboard navigable |
 | **M5.2** | Audio effect cards (EQ, compressor, spatializer, stereo widener) with presets | M (spike) | New `AudioEffectsModel` lifted from `extended_panels.cpp` tables (that file stays untouched); `equalizer_presets.h` | Audible change; filter appears in the log |
 | **M5.3** | Video tab: aspect, zoom, crop, deinterlace, flip/rotate, adjust | M | `PlayerController`'s existing VLCVarChoiceModels; `adjust`/`transform` filters | Visible changes; reset works |
 | **M5.4** | Subtitle styling (relative/precise size, font, outline, position) and default language | M | `vlc_player_SetSubtitleTextScale`, `sub-language`, `TrackDelayButton` | Live updates; setting saved to `vlcrc` |
@@ -172,7 +172,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 |---|---|---|---|---|
 | **M8.1** | Settings framework and General page: declarative JSON page specs, generic rows, info icons, search, basic-then-advanced; legacy advanced tree still reachable | L (spike) | `dialogs/preferences/expert_model.*`, `vlc_config_Get*Choices`, `Dialogs.qml` host | Theme and accent change live and persist; search crosses pages; unknown config keys fail a check |
 | **M8.2** | Pages: Interface, Playback, Video, Audio, Subtitles (human-worded dropdowns, no duplicates) | M | `settings-map.tsv` | Sampled settings write the right `vlcrc` keys |
-| **M8.3** | Pages: Privacy (incl. online-subtitle consent), Controls, Library, Performance. No Network, Recording or Extensions pages (D14) | M | `settings-map.tsv` | Same as M8.2 |
+| **M8.3** | Pages: Privacy (incl. online-subtitle consent and the "Save a log" setting that replaces the log viewer), Controls, Library, Performance. No Network, Recording or Extensions pages (D14) | M | `settings-map.tsv` | Same as M8.2 |
 | **M8.4** | Keyboard shortcuts dialog (search, rebind, conflicts, reset) | M | Existing hotkeys panel logic, `vlc_actions` | Rebinding survives restart; conflicts flagged |
 
 ### Track J: Onboarding and polish
@@ -205,14 +205,14 @@ tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windo
 2. M1.1 → M0.2 → M0.3
 3. M1.2 → M1.5
 4. M2.1 → M2.3 → **R0**
-5. M2.4 → M2.7 → M3.6 → **R1**
+5. M2.4 → M2.7, then M3.1 → M3.6 → **R1**
 6. M4 → M5 (M5.1–M5.9) → M7 → **R2**
 7. M8 → M9 → M10 → **R3**
 
 ## Risks and mitigations
 | Risk | Mitigation |
 |---|---|
-| Upstream changes cause merge conflicts | Monthly syncs on `sync/<date>` branches; new files over deep edits; weekly `git log` watch |
+| Upstream changes cause merge conflicts | Monthly syncs on `sync/<date>-<sha>` branches; new files over deep edits; weekly `git log` watch |
 | VLC 4 master bugs unrelated to our work | Pin green commits; reproduce on stock VLC at the pin first |
 | Qt version skew (6.11 here, 6.8 in contribs and Flatpak) | Use no QML API newer than 6.8; CI builds against the Flatpak runtime |
 | Misleading diff scores | Region crops, video area masked; your eyes are final |
@@ -222,6 +222,8 @@ tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windo
 | Wayland limits (always-on-top, title bars differ) | In-window floating card; test title bar both ways |
 | Subtitle timeline or library scans cause UI stalls | Worker threads, cancellation, memory caps, QML profiler |
 | Licensing (GPL-3 code, fonts, design, trademark) | No GPL-3 copying; Inter under OFL; M10.1 checks; credit the designer |
+| Cutting a module breaks a format users expect | The M0.6 matrix runs on every build; a cut is reverted with a `DECISIONS.md` entry |
+| Codec licensing and patents in a public Flatpak | Bundle FFmpeg as Flathub VLC does; no encoders or disc decryption (D14, D15) |
 
 ## Upstream sync
 - **Cadence:** monthly or at each gate, only between milestones.
@@ -230,5 +232,3 @@ tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windo
   2. Run the full build, tests, all scenes and the diff report.
   3. Update `redux/UPSTREAM_COMMIT`.
   4. Log conflicts in `DECISIONS.md`.
-| Cutting a module breaks a format users expect | The M0.6 matrix runs on every build; a cut is reverted with a `DECISIONS.md` entry |
-| Codec licensing and patents in a public Flatpak | Bundle FFmpeg as Flathub VLC does; no encoders or disc decryption (D14, D15) |

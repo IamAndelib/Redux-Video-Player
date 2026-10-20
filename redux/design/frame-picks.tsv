@@ -2,6 +2,7 @@
 # Regenerate the images with: redux/dev.sh run redux/tools/video-frames.sh
 # Columns (tab-separated): time (m:ss or m:ss.s), slug (a-z0-9-), caption, optional crop WxH+X+Y in 1920x1080 source pixels.
 # The output file is MMSS-<slug>.jpg; cite it by that name in brief.md.
+# Frames of features cut under D14 (music, network streams, extensions) stay as design reference.
 0:58	palette-swatches	Palette: orange shades, neutral grays and near-blacks
 1:14	icon-sets-two-tone-mono	Same glyphs as two-tone decorative and monochrome clickable sets
 1:54	upstream-centered-controls	Upstream VLC 4 centered transport, the layout she rejects

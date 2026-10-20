@@ -23,7 +23,13 @@ while IFS=$'\t' read -r scene frame what; do
     continue
   fi
   ref_scaled="$shots/compare/$scene.ref.png"
-  magick "$ref" -resize 1920x1080! "$ref_scaled"
+  # Full-window frames (16:9) scale to the shot. Dialog-sized frames (onboarding, settings) keep
+  # their native size, centered on a dark canvas, so they aren't stretched over the whole screen.
+  if [[ "$(magick identify -format '%[fx:abs(w/h-16/9)<0.01]' "$ref")" == 1 ]]; then
+    magick "$ref" -resize 1920x1080! "$ref_scaled"
+  else
+    magick "$ref" -background '#111111' -gravity center -extent 1920x1080 "$ref_scaled"
+  fi
   # compare exits 1 when images differ; that's the normal case here.
   rmse="$(magick compare -metric RMSE "$shot" "$ref_scaled" "$shots/compare/$scene.diff.png" 2>&1 >/dev/null || true)"
   magick "$shot" "$ref_scaled" +append -resize 50% "$shots/compare/$scene.side.png"
@@ -33,9 +39,9 @@ while IFS=$'\t' read -r scene frame what; do
 done < redux/tools/shots.tsv
 
 cat > "$report" <<HTML
-<!doctype html><meta charset=utf-8><title>VLC Redux visual diff</title>
+<!doctype html><meta charset=utf-8><title>Redux Video Player visual diff</title>
 <style>body{font:14px system-ui;background:#111;color:#ddd;margin:24px}td{vertical-align:top;padding:8px;border-bottom:1px solid #333}img{border:1px solid #333}a{color:#d37918}</style>
-<h1>VLC Redux vs Figma</h1><p>Generated $(date -u +%F\ %TZ) from $(git rev-parse --short HEAD). RMSE: normalized root-mean-square difference (0 = identical).</p>
+<h1>Redux Video Player vs Figma</h1><p>Generated $(date -u +%F\ %TZ) from $(git rev-parse --short HEAD). RMSE: normalized root-mean-square difference (0 = identical).</p>
 <table><tr><th>Scene</th><th>RMSE</th><th>Side by side</th><th>Diff</th></tr>$rows</table>
 HTML
 echo "wrote $report"

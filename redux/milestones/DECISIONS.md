@@ -65,6 +65,8 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - History is never rewritten.
 - **Why:** reviewable units, easy rollback per milestone, and a readable history on top of VLC's.
 - **Alternatives:** direct commits with tags.
+- **Exception (2026-10-20):** M0.2's transcript work, M0.4, the local setup and M0.5 were done on the cloud-session
+  branch `claude/vlc-ui-redesign-scope-wzy21y` and reach `main` through one PR. From M0.6 on, the rule applies again.
 
 ### D9 · 2026-10-13 · Upstream contributions as we go
 - **Decision:**
@@ -74,13 +76,15 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - `systempalette.cpp:635` alpha bug
   - swapped FRAME_PREV/NEXT entries in `PlayerControlbarControls.qml`
   - `MLBookmarkModel` invokables
-  - later: seek thumbnails, waveform
+  - later: seek thumbnails, if M6.1 comes back (the waveform was cut, D14)
 - **Why:** goodwill, fewer merge conflicts, and others benefit.
 - **Alternatives:** keep everything in the fork.
 
 ### D10 · 2026-10-13 · Player first
 - **Decision:** milestone order makes the redesigned player usable first (design system → player screen, gate R0), then the library (R1 daily driver), then customize, panels and visuals (R2), then settings, onboarding and release (R3).
 - **Why:** the player is where users spend their time, and the maintainer chose it.
+- **Amended by D14:** the scope foundations M0.5–M0.8 come first; Track G visuals are cut or future, so R2 is
+  customize, panels and library extended.
 - **Alternatives:** library first; restyle everything before any layout change.
 
 ### D11 · 2026-10-13 · Touch-to-tokenize, no global sweeps
@@ -122,8 +126,17 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Alternatives:** `codecs-extra`; VA-API plus NVDEC.
 
 ### D16 · 2026-10-20 · Name: Redux Video Player
-- **Decision:** the product is **Redux Video Player**. Proposed app ID `io.github.iamandelib.ReduxVideoPlayer`
-  (confirmed in M10.1, G21). The GitHub repo keeps the name `VLC-Redux`. The About dialog and README credit
+- **Decision:** the product is **Redux Video Player**. The GitHub repo is renamed `IamAndelib/Redux-Video-Player`
+  (2026-10-20), so the app ID is `io.github.iamandelib.Redux-Video-Player`: Flathub takes the ID's last part as the
+  repo name "as-is", and dashes are allowed only there (confirmed in M10.1, G21). The local checkout folder and
+  internal names (`vlc-redux-dev` image, `~/.config/vlc-redux/`) stay. The About dialog and README credit
   Juxtopposed (design) and VideoLAN (VLC).
 - **Why:** "VLC" and the cone are VideoLAN trademarks, and a renamed fork is the safe course.
 - **Alternatives:** "VLC Redux"; deciding the name at release.
+
+### D17 · 2026-10-20 · Fork front page in `.github/README.md`
+- **Decision:** the GitHub landing page is `.github/README.md` (GitHub shows it in place of the root README). It
+  explains Redux Video Player, links the fork's docs and credits Juxtopposed and VideoLAN. The root `README.md` stays
+  upstream VLC's, untouched.
+- **Why:** visitors land on a page about this project; editing the root README would conflict on every upstream merge.
+- **Alternatives:** a banner at the top of the root README.

@@ -20,6 +20,7 @@
 - New gaps: <G-numbers added to GAPS.md, or "none">
 
 ## Scope
+<!-- Only what redux/SCOPE.md keeps; cite D14 for anything left out. -->
 -
 
 ## Out of scope
@@ -38,6 +39,7 @@
 | Check | Command | Result |
 |---|---|---|
 | Build | `redux/dev.sh run redux/tools/build.sh qt` | |
+| Codec matrix (from M0.6 on) | `redux/dev.sh run redux/tools/play-matrix.sh` | |
 | Tests | `redux/dev.sh run meson test -C build/meson --suite qt` | |
 | Screens | `redux/dev.sh run redux/tools/shoot.sh <scenes>` + `compare.sh` | |
 | Review | `/code-review`, `qt-qml-review` / `qt-cpp-review`, `/simplify` | |

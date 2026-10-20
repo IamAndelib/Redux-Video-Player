@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run VLC Redux development commands inside a Podman container so the host stays untouched.
+# Run Redux Video Player development commands inside a Podman container so the host stays untouched.
 #
 #   redux/dev.sh image          build (or rebuild) the dev image
 #   redux/dev.sh shell          interactive shell in the container

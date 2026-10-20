@@ -24,6 +24,8 @@ and About dialog (M10.1).
 - **Build:** the milestone in `redux/milestones/ROADMAP.md` and the upstream code to reuse.
 - **Refs:** video time, frame files (open them; they're the visual spec the Figma lacks), Figma nodes.
 - **Open:** the matching row in `redux/milestones/GAPS.md`, if a question remains.
+- **UI strings:** where the design says "VLC" ("About VLC", "Welcome to VLC!", "Quit VLC", "VLC Settings"), the
+  app says "Redux Video Player" (D16).
 
 ## Principles
 These eight rules decide anything the entries below don't cover.
@@ -41,7 +43,7 @@ These eight rules decide anything the entries below don't cover.
 - **Two icon sets.** Two-tone gray and orange icons for non-clickable places (menu item icons); monochrome icons for everything clickable.
   - Each two-tone icon is the monochrome glyph with one inner part filled orange, so a base layer plus an accent layer reproduces it.
   - Why: VLC's two-tone icons are recognizable but inconsistent.
-  - Build: M1.4 (monochrome set), two-tone deferred.
+  - Build: M1.4 (monochrome set); two-tone is **future (D14)**.
   - Refs: [01:14](https://youtu.be/ERFeOgqk324?t=74) [`0114-icon-sets-two-tone-mono.jpg`](source/video-frames/0114-icon-sets-two-tone-mono.jpg) · Figma 42:356 (`two-tone=yes/no` variants)
   - Open: G16
 - **Neutral palette plus one accent.** Neutral grays and black backgrounds; VLC orange as the default accent, user-changeable (General settings, 9 square swatches). Theme and accent apply live, to the whole window, while Settings is open.
@@ -67,7 +69,7 @@ These eight rules decide anything the entries below don't cover.
   - Why: keep VLC's spirit instead of a generic slider.
   - Build: M2.2 · Refs: [03:06](https://youtu.be/ERFeOgqk324?t=186) · [04:36](https://youtu.be/ERFeOgqk324?t=276) [`0436-tracks-popup-audio-output.jpg`](source/video-frames/0436-tracks-popup-audio-output.jpg) · Figma 244:184
 - **Seek thumbnails.** Scrubbing the seek bar shows a rounded dark card with the frame and its timecode above the thumb.
-  - Build: M6.1 · Refs: [03:30](https://youtu.be/ERFeOgqk324?t=210) [`0330-seek-thumbnail-card.jpg`](source/video-frames/0330-seek-thumbnail-card.jpg) · Figma 2151:9673
+  - Build: **future (D14)**, M6.1 · Refs: [03:30](https://youtu.be/ERFeOgqk324?t=210) [`0330-seek-thumbnail-card.jpg`](source/video-frames/0330-seek-thumbnail-card.jpg) · Figma 2151:9673
   - Open: G5
 - **Audio and subtitle buttons, bottom-right**, in that order. Both open one **tracks popup** with tabs **Video | Audio | Subtitles**; the button's tab is active (accent underline).
   - Sections: Embedded Tracks (None, Track 1 - English, accent check); for subtitles, External Tracks with a + that opens Add Subtitles; for audio, **Output Device** (speakers, headphones) with a refresh icon. A full-width **Show Preferences** button opens the right sidebar.
@@ -78,7 +80,7 @@ These eight rules decide anything the entries below don't cover.
 - **The playlist button becomes a Queue button.**
   - The **queue** auto-plays what's next. **Playlists** are saved collections. They're two separate concepts.
   - Queue panel: header "11 items - 4h 12m" with sort, repeat, shuffle, remove (−) and add (+); rows have a drag handle, file name and duration; the current item is accent with a ▷. It opens in the right-side slot the sidebar uses. Add by dragging files in or with +.
-  - Build: M2.4 (button), M7.2 (panel) · Refs: [02:40](https://youtu.be/ERFeOgqk324?t=160) · [09:30](https://youtu.be/ERFeOgqk324?t=570) [`0930-queue-panel.jpg`](source/video-frames/0930-queue-panel.jpg)
+  - Build: M2.4 (button and queue panel restyle) · Refs: [02:40](https://youtu.be/ERFeOgqk324?t=160) · [09:30](https://youtu.be/ERFeOgqk324?t=570) [`0930-queue-panel.jpg`](source/video-frames/0930-queue-panel.jpg)
 - **Bookmarks and chapters are tabs of the queue panel**: Queue | Bookmarks | Chapters. **Ctrl+B adds a bookmark instantly.**
   - Bookmarks: "2 Bookmarks" with − and +; rows show a name and a time with milliseconds (00:00:42:023). Chapters: accent number, name, start time.
   - Why: Ctrl+B currently opens a dialog.
@@ -106,7 +108,7 @@ These eight rules decide anything the entries below don't cover.
   - Why: today sorting hides in the right-click menu, and the view icon doesn't show its state.
   - Build: M3.2 · Refs: [10:24](https://youtu.be/ERFeOgqk324?t=624) · [10:58](https://youtu.be/ERFeOgqk324?t=658) [`1058-library-full-grid.jpg`](source/video-frames/1058-library-full-grid.jpg) · Figma 970:3308, 856:2215, 858:3290
 - **Sort menu:** Unwatched First, Watched First, Newest First, Oldest First, Title A-Z, Title Z-A. The active option has an accent check.
-  - Build: M3.2 · Refs: [10:47](https://youtu.be/ERFeOgqk324?t=647) [`1048-library-sort-menu.jpg`](source/video-frames/1048-library-sort-menu.jpg) · Figma 856:2215
+  - Build: M3.2 · Refs: [10:48](https://youtu.be/ERFeOgqk324?t=648) [`1048-library-sort-menu.jpg`](source/video-frames/1048-library-sort-menu.jpg) · Figma 856:2215
 - **A "…" menu in the header:** Add File, Add Folder, Edit Subtitle Tracks, Edit Audio Tracks, Resync, Info.
   - Build: M3.2, M3.4 · Refs: [10:53](https://youtu.be/ERFeOgqk324?t=653) [`1055-library-header-more-menu.jpg`](source/video-frames/1055-library-header-more-menu.jpg)
 - **Folders are first-class.** The library browses by folder, not one flat pile of files.
@@ -155,7 +157,7 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Build: M5.4 · Refs: [06:42](https://youtu.be/ERFeOgqk324?t=402) [`0642-old-sync-spinboxes.jpg`](source/video-frames/0642-old-sync-spinboxes.jpg) (before) · [07:12](https://youtu.be/ERFeOgqk324?t=432) · [07:22](https://youtu.be/ERFeOgqk324?t=442) [`0722-sidebar-subtitles-sync-sliders.jpg`](source/video-frames/0722-sidebar-subtitles-sync-sliders.jpg) · [07:50](https://youtu.be/ERFeOgqk324?t=470) [`0750-sidebar-subtitles-appearance.jpg`](source/video-frames/0750-sidebar-subtitles-appearance.jpg) · [08:40](https://youtu.be/ERFeOgqk324?t=520) [`0840-sidebar-subtitles-defaults.jpg`](source/video-frames/0840-sidebar-subtitles-defaults.jpg) · Figma 3180:17989
 - **Subtitle timeline.** With "Show Subtitle Timeline on Seekbar" on, the seek bar zooms to a window around the playhead (its times marked with `*`) and draws each cue as a block, accent when played and gray when upcoming. Accent ‹ − and + › buttons at the two ends nudge the timing. You pause on the audio and drag the subtitles into sync.
   - Why: syncing today means typing a delay, closing the window, rewinding, and repeating.
-  - Build: backlog · Refs: [06:56](https://youtu.be/ERFeOgqk324?t=416) [`0656-subtitle-timeline-seekbar.jpg`](source/video-frames/0656-subtitle-timeline-seekbar.jpg)
+  - Build: M5.8 · Refs: [06:56](https://youtu.be/ERFeOgqk324?t=416) [`0656-subtitle-timeline-seekbar.jpg`](source/video-frames/0656-subtitle-timeline-seekbar.jpg)
   - Open: G7 (where the cue times come from)
 - **Audio tab:**
   - Defaults: Audio Track, Audio Language, Stereo Mode (dropdown, e.g. Mono) with a Test button.
@@ -164,37 +166,36 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Fix the design's typos: the delay slider's right label reads "-10 s" (should be "+10 s") and "Full base" should be "Full bass".
   - Build: M5.2 · Refs: [08:42](https://youtu.be/ERFeOgqk324?t=522) [`0842-sidebar-audio-tab.jpg`](source/video-frames/0842-sidebar-audio-tab.jpg) · [08:48](https://youtu.be/ERFeOgqk324?t=528) [`0848-audio-filter-cards.jpg`](source/video-frames/0848-audio-filter-cards.jpg) · [08:54](https://youtu.be/ERFeOgqk324?t=534) [`0854-eq-preset-menu.jpg`](source/video-frames/0854-eq-preset-menu.jpg) · Figma 6114:13610, 536:1513, 536:1703, 612:1223, 2372:8487
 - **Video tab:** Flip (None | Horizontal | Vertical), Rotate (deg), Zoom, HDR, Resolution, Aspect Ratio, Crop and Render, then Filters › Essential, Crop, Colors.
-  - The video never shows the filter previews; build them from the Figma panels.
+  - Live filter previews are **future (D14)**; build the panels from Figma without them.
   - Build: M5.3 · Refs: [08:58](https://youtu.be/ERFeOgqk324?t=538) [`0858-sidebar-video-tab.jpg`](source/video-frames/0858-sidebar-video-tab.jpg) · Figma 536:1855, 543:990, 614:1430, 2372:8733
   - Open: G10, G11
 - **Playback tab:** toggles Show Subtitle Timeline on Seekbar, Show Waveform on Seekbar, Show Metadata and **Reverse**; **Sleep Timer** and **Audio Visualizer** dropdowns; Speed slider from 0.25 to 2 with ticks.
   - **Out of scope (D14):** Show Waveform on Seekbar, Reverse, Sleep Timer and Audio Visualizer. The tab gains A-B loop and frame stepping.
   - Build: M5.5 · Refs: [09:08](https://youtu.be/ERFeOgqk324?t=548) · [09:18](https://youtu.be/ERFeOgqk324?t=558) [`0918-sidebar-playback-tab.jpg`](source/video-frames/0918-sidebar-playback-tab.jpg)
-  - Open: G12
 - **Presets.** A preset is a user-named bundle of the sidebar's settings across all tabs ("Anime", "Loud and then Quiet Movies", "The Wand Subtitle Preset"), not something tied to a folder automatically. The menu has "+ New Custom Preset", a "…" menu per preset and an accent check on the active one.
-  - Build: backlog · Refs: [07:56](https://youtu.be/ERFeOgqk324?t=476) · [08:00](https://youtu.be/ERFeOgqk324?t=480) [`0800-preset-menu.jpg`](source/video-frames/0800-preset-menu.jpg) · Figma 2372:8834
+  - Build: M5.9 · Refs: [07:56](https://youtu.be/ERFeOgqk324?t=476) · [08:00](https://youtu.be/ERFeOgqk324?t=480) [`0800-preset-menu.jpg`](source/video-frames/0800-preset-menu.jpg) · Figma 2372:8834
   - Open: G8
 - **Add Subtitles dialog**, opened from External Tracks +.
   - Scope: To This File, To This Folder, To This Playlist. Source: From Computer, From OpenSubtitles, From Link …. Plus a search field and a language dropdown.
   - Rows pair each video with a subtitle file, **auto-matched** by name; hovering a row shows a ⇄ swap icon to **match manually**, and manual matches are remembered. Cancel, and an accent Save.
   - Why: a downloaded subtitle pack rarely matches the episode names, so today you drag each file in by hand.
-  - Build: M5.6 (local files), backlog (OpenSubtitles, links) · Refs: [06:02](https://youtu.be/ERFeOgqk324?t=362) · [06:06](https://youtu.be/ERFeOgqk324?t=366) [`0606-add-subtitles-scope-menu.jpg`](source/video-frames/0606-add-subtitles-scope-menu.jpg) · [06:12](https://youtu.be/ERFeOgqk324?t=372) [`0612-add-subtitles-source-menu.jpg`](source/video-frames/0612-add-subtitles-source-menu.jpg) · [06:20](https://youtu.be/ERFeOgqk324?t=380) [`0620-add-subtitles-match-dialog.jpg`](source/video-frames/0620-add-subtitles-match-dialog.jpg) · Figma 1911:7545, 3336:11929, 1919:8707, 1919:9278, 6456:13892
+  - Build: M5.6 (local files), M5.7 (OpenSubtitles). **Out of scope (D14):** From Link … · Refs: [06:02](https://youtu.be/ERFeOgqk324?t=362) · [06:06](https://youtu.be/ERFeOgqk324?t=366) [`0606-add-subtitles-scope-menu.jpg`](source/video-frames/0606-add-subtitles-scope-menu.jpg) · [06:12](https://youtu.be/ERFeOgqk324?t=372) [`0612-add-subtitles-source-menu.jpg`](source/video-frames/0612-add-subtitles-source-menu.jpg) · [06:20](https://youtu.be/ERFeOgqk324?t=380) [`0620-add-subtitles-match-dialog.jpg`](source/video-frames/0620-add-subtitles-match-dialog.jpg) · Figma 1911:7545, 3336:11929, 1919:8707, 1919:9278, 6456:13892
   - Open: G9
 
 ## G. Media visuals
 **Out of scope (D14):** the whole section (music is cut). Kept as design reference.
 
 - **Music now-playing screen.** Large cover art over a blurred backdrop, "title - artist" below, and ±15 s skip buttons beside play.
-  - Build: M6.2 · Refs: [12:16](https://youtu.be/ERFeOgqk324?t=736) [`1216-music-now-playing.jpg`](source/video-frames/1216-music-now-playing.jpg) · Figma 4767:23726
+  - Build: none (cut, D14; was M6.2) · Refs: [12:16](https://youtu.be/ERFeOgqk324?t=736) [`1216-music-now-playing.jpg`](source/video-frames/1216-music-now-playing.jpg) · Figma 4767:23726
 - **Waveform seek bar** for audio, optional (Playback tab toggle): the played part in the accent color with a thick accent playhead.
-  - Build: M6.3, M6.4 · Refs: [12:20](https://youtu.be/ERFeOgqk324?t=740) [`1216-music-now-playing.jpg`](source/video-frames/1216-music-now-playing.jpg) · Figma 4767:23726
+  - Build: none (cut, D14; was M6.3, M6.4) · Refs: [12:20](https://youtu.be/ERFeOgqk324?t=740) [`1216-music-now-playing.jpg`](source/video-frames/1216-music-now-playing.jpg) · Figma 4767:23726
   - Open: G6
 - **Music sections:** Songs, Albums, Artists and Genres; lists start with a "+ Add" row.
-  - Build: M3.1 · Refs: [12:10](https://youtu.be/ERFeOgqk324?t=730) [`1210-music-sections.jpg`](source/video-frames/1210-music-sections.jpg)
+  - Build: none (cut, D14) · Refs: [12:10](https://youtu.be/ERFeOgqk324?t=730) [`1210-music-sections.jpg`](source/video-frames/1210-music-sections.jpg)
 
 ## H. Library extended
 - **Out of scope (D14). Network streams.** A saved list with "+ Add Network Stream", Podcasts and Radio by default. Pasting an M3U link (the video uses `https://iptv-org.github.io/iptv/index.m3u`) turns it into an automatic playlist ("Index", 110 items).
-  - Build: M7.1 · Refs: [12:22](https://youtu.be/ERFeOgqk324?t=742) · [12:24](https://youtu.be/ERFeOgqk324?t=744) [`1224-network-streams-list.jpg`](source/video-frames/1224-network-streams-list.jpg) · [13:14](https://youtu.be/ERFeOgqk324?t=794) · Figma 6216:13614
+  - Build: none (cut, D14) · Refs: [12:22](https://youtu.be/ERFeOgqk324?t=742) · [12:24](https://youtu.be/ERFeOgqk324?t=744) [`1224-network-streams-list.jpg`](source/video-frames/1224-network-streams-list.jpg) · [13:14](https://youtu.be/ERFeOgqk324?t=794) · Figma 6216:13614
 - **Split Open dialogs.** The all-in-one "Open Media" factory becomes separate "…" menu actions (list in section C), each with its own small dialog.
   - **Scope (D14):** only Open File(s) and Open Folder(s) ship; Open Network Stream is out of scope.
   - Open Network Stream: "Network URL" ("You can enter multiple links to load.") over a multi-line field, "Playlist Name (optional)" ("The playlist will be saved and displayed with this title."), Cancel and Save.
@@ -220,12 +221,13 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Build: M8.1–M8.3 · Refs: [16:38](https://youtu.be/ERFeOgqk324?t=998) · [17:16](https://youtu.be/ERFeOgqk324?t=1036) [`1716-old-subtitle-fuzziness.jpg`](source/video-frames/1716-old-subtitle-fuzziness.jpg) · [17:30](https://youtu.be/ERFeOgqk324?t=1050) [`1730-file-name-matching-dropdown.jpg`](source/video-frames/1730-file-name-matching-dropdown.jpg) · [18:10](https://youtu.be/ERFeOgqk324?t=1090) [`1810-settings-subtitles-page.jpg`](source/video-frames/1810-settings-subtitles-page.jpg)
   - Open: G14
 - **Out of scope (D14). Extensions page** ("Extensions & Scripts"): a list with search, Find more extensions, Add and Remove, and "Load extensions on startup". VLC's internal plugins move to the Advanced part (the frames don't show where).
-  - Build: M8.3 · Refs: [18:26](https://youtu.be/ERFeOgqk324?t=1106) [`1827-settings-extensions-page.jpg`](source/video-frames/1827-settings-extensions-page.jpg) · Figma 6575:17137
+  - Build: none (cut, D14) · Refs: [18:27](https://youtu.be/ERFeOgqk324?t=1106) [`1827-settings-extensions-page.jpg`](source/video-frames/1827-settings-extensions-page.jpg) · Figma 6575:17137
 - **Keyboard Shortcuts dialog** of its own: search, an "All Fields" filter, columns Action / Hotkey / Global Hotkey, groups (Basic, Playback …), Cancel and Save. It opens from the "…" menu and from "Edit Keyboard Shortcuts" on the Controls page.
+  - **Out of scope (D14):** the Global Hotkey column (global hotkeys are cut).
   - Build: M8.4 · Refs: [16:00](https://youtu.be/ERFeOgqk324?t=960) [`1600-keyboard-shortcuts-dialog.jpg`](source/video-frames/1600-keyboard-shortcuts-dialog.jpg) · [17:58](https://youtu.be/ERFeOgqk324?t=1078) [`1758-settings-controls-page.jpg`](source/video-frames/1758-settings-controls-page.jpg) · Figma 2437:14832
 - **On-screen messages name the key.** Two lines: the action ("Crop: 2.35:1") and, smaller and gray, "Pressed C". Controlled by "Show feedback for shortcuts" and a duration slider on the Subtitles page.
   - Why: an accidental key press today leaves you guessing what happened.
-  - Build: backlog · Refs: [15:18](https://youtu.be/ERFeOgqk324?t=918) · [15:26](https://youtu.be/ERFeOgqk324?t=926) [`1526-osd-pressed-key.jpg`](source/video-frames/1526-osd-pressed-key.jpg) · [18:14](https://youtu.be/ERFeOgqk324?t=1094)
+  - Build: **future (D14)** · Refs: [15:18](https://youtu.be/ERFeOgqk324?t=918) · [15:26](https://youtu.be/ERFeOgqk324?t=926) [`1526-osd-pressed-key.jpg`](source/video-frames/1526-osd-pressed-key.jpg) · [18:14](https://youtu.be/ERFeOgqk324?t=1094)
   - Open: G13 (core change or QML overlay)
 
 ## J. Onboarding
@@ -248,8 +250,8 @@ Figma wins on visuals and the video on behavior, unless a row says otherwise.
 | Video tracks | A tab of the bar's tracks popup ([04:46](https://youtu.be/ERFeOgqk324?t=286)) | Only subtitle popups (1915:8397, 1919:9121) | Video |
 | Bookmarks and chapters | Tabs of the queue panel ([15:12](https://youtu.be/ERFeOgqk324?t=912)) | Not drawn | Video |
 | Right sidebar tab order | Playback, Video, Audio, Subtitles ([09:18](https://youtu.be/ERFeOgqk324?t=558)) | Panels only, no tab bar | Video |
-| Video filter previews | Never shown | Video panels (536:1855, 543:990, 614:1430) | Figma |
-| Home page | Continue Watching, Listen Again, Frequently Visited Folders ([13:52](https://youtu.be/ERFeOgqk324?t=832)) | Not drawn | Video |
+| Video filter previews | Never shown | Video panels (536:1855, 543:990, 614:1430) | Future (D14); panels from Figma without previews |
+| Home page | Continue Watching, Listen Again, Frequently Visited Folders ([13:52](https://youtu.be/ERFeOgqk324?t=832)) | Not drawn | Video, minus Listen Again (D14) |
 | Onboarding | 3 steps ([19:48](https://youtu.be/ERFeOgqk324?t=1188)–[19:52](https://youtu.be/ERFeOgqk324?t=1192)) | 12 frames: the same 3 steps, step 2 once per accent | Both agree: 3 steps |
 | Accent swatches | Round in onboarding, square in Settings | Same | Keep as drawn |
 | Info icons | Missing on some rows ([17:58](https://youtu.be/ERFeOgqk324?t=1078), [18:10](https://youtu.be/ERFeOgqk324?t=1090)) | Same | Narration: every setting with help text gets one |
