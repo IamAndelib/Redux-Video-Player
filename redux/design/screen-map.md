@@ -38,18 +38,18 @@ relative to `modules/gui/qt/`.
 ## Library (Phase 3): frames 970:3308, 848:1996 (sidebar), 856:2215, 858:3290, context menus
 | Design element | Code | Kind |
 |---|---|---|
-| Icon rail sidebar: Home, Videos, Music, Network, Playlists, Recent, Add, plus pinned items | `maininterface/qml/SideNavigationPane.qml`, `SideNavigationDelegate.qml` | Rework + New pins |
+| Icon rail sidebar: Home, Videos, Playlists, Recent, Add, plus pinned items (Music and Network out of scope, D14) | `maininterface/qml/SideNavigationPane.qml`, `SideNavigationDelegate.qml` | Rework + New pins |
 | Compact library panel next to the video | `maininterface/qml/MainDisplay.qml`, `playlist/qml/PlaylistPane.qml` | New |
 | Folder browser with clickable address bar, back/forward, sort/view/search | `network/qml/BrowseTreeDisplay.qml`, `NetworkAddressbar.qml`, `widgets/qml/SortControl.qml`, `ViewHeader.qml` | Rework |
-| Videos, music (songs/albums/artists/genres) and playlists | `medialibrary/qml/Video*.qml`, `Music*.qml`, `PlaylistMedia*.qml` | Rework |
+| Videos and playlists (music sections out of scope, D14) | `medialibrary/qml/Video*.qml`, `Music*.qml`, `PlaylistMedia*.qml` | Rework |
 | Home page and Recent | `medialibrary/qml/HomePage.qml`, `HomeDisplay.qml` | Rework |
 | Sorting: Unwatched/Watched first | `medialibrary/` C++ models (`mlvideomodel.*`) | New |
 | File, folder and playlist context menus, frames 2404:13340, 2139:8935, 2459:9389 | `medialibrary/qml/MLContextMenu.qml`, `menus/menus.cpp` | Rework |
 | Floating miniplayer card, frame 970:3091 | `player/qml/PIPPlayer.qml`, `MiniPlayer.qml` | Rework |
 | New playlist dialog, frame 6259:14954 | `dialogs/playlists/` | Rework (to QML) |
-| Open network stream, frame 6216:13614; split Open actions | `dialogs/open/open.cpp`, `network/qml/DiscoverUrlDisplay.qml` | Rework |
+| Open file(s) and folder(s) (network stream, frame 6216:13614, out of scope, D14) | `dialogs/open/open.cpp`, `network/qml/DiscoverUrlDisplay.qml` | Rework |
 
-## Music mode (Phase 4): frames 4767:23726, 4778:25123
+## Music mode (Phase 4): frames 4767:23726, 4778:25123. Out of scope (D14)
 | Design element | Code | Kind |
 |---|---|---|
 | Blurred artwork backdrop, centered cover, title and artist | `player/qml/Player.qml` (audio branch) | Rework |
@@ -70,9 +70,21 @@ relative to `modules/gui/qt/`.
 |---|---|---|
 | Settings dialog with search and basic-then-advanced pages | `dialogs/preferences/` (QtWidgets today) | Rework (to QML) |
 | Keyboard shortcuts dialog | `dialogs/preferences/` hotkeys panel | Rework (to QML) |
-| Extensions page | `dialogs/extensions/`, `dialogs/plugins/` | Rework |
+| Extensions page (out of scope, D14) | `dialogs/extensions/`, `dialogs/plugins/` | Rework |
 
 ## Onboarding (Phase 7): frames 1899:3055, 1902:3670 … 1902:6465
 | Design element | Code | Kind |
 |---|---|---|
 | 3-step onboarding (welcome and media folder, theme and accent, shortcuts) | `dialogs/firstrun/firstrunwizard.*` (QtWidgets) | Rework (to QML) |
+
+## Feature trim (M0.8): entry points to remove
+Features cut by `redux/SCOPE.md` (D14) disappear from the UI at one place each; their modules are switched off by
+the M0.6 build profile. Upstream files are not deleted.
+| Cut feature | Entry points | Kind |
+|---|---|---|
+| Browse, Discover and Music sections | `maininterface/navigationmodel.cpp` (+ `tests/test_navigation_model.cpp`) | Remove from model |
+| Disc, network, capture, clipboard, convert, stream, VLM, EPG, renderer, visualizations, wallpaper, 3D, skins, extensions, update check, go to time, messages | `menus/menus.cpp`, `menus/qml_menu_wrapper.cpp`, `dialogs/dialogs_provider.cpp` | Remove menu entries and shortcuts |
+| Record, renderer, teletext, DVD menu, DVD navigation, program, reverse (A-B loop stays) | `player/control_list_model.hpp`, `player/qml/PlayerControlbarControls.qml` | Hide from the toolbar editor list (IDs stay for old profiles) |
+| Online subtitle search via VLSub | `player/player_controller.cpp` (`openVLsub`) | Replaced by M5.7 |
+| System tray, now-playing popup | `dialogs/systray/systray.cpp`, `qt.cpp` options | Disable by default, hide settings |
+| Lyrics view, dual-subtitle selection, metadata editing in Media Information, boss key | `player/qml/Player.qml`, `menus/qml_menu_wrapper.cpp` (`QmlSubtitleMenu`), `dialogs/mediainfo/info_panels.cpp`, `maininterface/mainctx.cpp` | Hide; Media Information stays read-only |

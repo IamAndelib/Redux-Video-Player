@@ -95,3 +95,35 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - **Fullscreen sits with the window buttons**, top-right; the bottom bar has none.
 - **Why:** the M0.4 frame review (`redux/design/brief.md`, Video vs Figma) shows all three in the video, and Figma agrees on the first and third.
 - **Alternatives:** keeping the earlier readings (an 11-step wizard from the frame count; bookmarks in the sidebar from the narration; fullscreen bottom-right from "move them to the right side").
+
+### D13 · 2026-10-20 · Linux only, shipped as a Flatpak
+- **Decision:** Redux Video Player targets Linux only and ships as a Flatpak. AppImage, Windows and macOS are dropped.
+  The Flatpak is built from M0.7 on, not only at release.
+- **Why:** one packaging format reaches every distro; the maintainer runs Linux; VLC's macOS UI is native Cocoa, not
+  Qt, so other platforms would double the work.
+- **Alternatives:** Flatpak plus AppImage; distro packages; keeping Windows/macOS in the backlog.
+
+### D14 · 2026-10-20 · Product scope: offline video, maximum formats, minimal features
+- **Decision:** what ships is fixed in `redux/SCOPE.md` (keep / cut / future). Cut features are switched off in the
+  build (M0.6) and their entry points removed from the UI (M0.8); upstream code is not deleted. Milestones M6.2–M6.4
+  are cut and M6.1 is future; new milestones M0.5–M0.8, M2.7 and M5.7–M5.9 are added.
+- **Why:** the maintainer wants a simple player focused on offline video with the best of VLC. Community research
+  (VideoLAN forum, upstream issues, Lemmy/Reddit mirrors, Flathub's VLC) shows the cut features are online-only,
+  broken, niche or better served by other tools. Disabling instead of deleting keeps upstream merges cheap (D2, D11).
+- **Alternatives:** the full redesign including music, streaming and conversion; deleting upstream code.
+
+### D15 · 2026-10-20 · Bundle FFmpeg in the Flatpak; VA-API only
+- **Decision:** the Flatpak bundles a current FFmpeg plus dav1d, libplacebo (with Vulkan, for HDR tone-mapping) and
+  libass, instead of relying on `org.freedesktop.Platform.codecs-extra`. Hardware decoding is VA-API only (Intel,
+  AMD, and NVIDIA through nvidia-vaapi-driver); NVDEC is future. No encoders and no disc-decryption libraries ship.
+- **Why:** maximum codec support has to work out of the box and on our versions. Flathub's VLC also bundles its own
+  FFmpeg; users report H.264 failing with `codecs-extra`; VLC 4 needs a far newer FFmpeg (and libplacebo) than
+  Flathub's VLC 3 build pins.
+- **Alternatives:** `codecs-extra`; VA-API plus NVDEC.
+
+### D16 · 2026-10-20 · Name: Redux Video Player
+- **Decision:** the product is **Redux Video Player**. Proposed app ID `io.github.iamandelib.ReduxVideoPlayer`
+  (confirmed in M10.1, G21). The GitHub repo keeps the name `VLC-Redux`. The About dialog and README credit
+  Juxtopposed (design) and VideoLAN (VLC).
+- **Why:** "VLC" and the cone are VideoLAN trademarks, and a renamed fork is the safe course.
+- **Alternatives:** "VLC Redux"; deciding the name at release.

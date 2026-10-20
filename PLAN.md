@@ -1,14 +1,19 @@
 # VLC Redux: scope assessment and implementation plan
 
+> **Superseded in part (2026-10-20).** The product is now **Redux Video Player**, a Linux-only Flatpak for offline
+> video (D13–D16). What ships is fixed in [`redux/SCOPE.md`](redux/SCOPE.md), and the live plan is
+> [`redux/milestones/ROADMAP.md`](redux/milestones/ROADMAP.md). The phases below are the original assessment, kept
+> as history; music mode, the waveform, network streams and AppImage are no longer planned.
+
 > A handoff document for running Claude Code locally. Put it in your repo as `PLAN.md` and point Claude Code at it (see "Getting started locally" at the bottom).
 
 ## 1. Goal and decisions so far
 - **Goal:** build the VLC redesign by **Juxtopposed** as a real, usable player, first for you and then as a **public open-source release**.
   - Video: "I Redesigned VLC After 25 Years", https://youtu.be/ERFeOgqk324
   - Figma: https://www.figma.com/design/CAuJVJyM5yY7PnyQQK9X24/VLC-Redesign--Community-?node-id=0-1 (file key `CAuJVJyM5yY7PnyQQK9X24`)
-- **Platform:** Linux first. Windows and macOS later, if ever. On macOS, official VLC uses a separate native Cocoa UI, so it would be extra scope.
+- **Platform:** Linux only, as a Flatpak (D13). Windows, macOS and AppImage are not planned.
 - **Who builds it:** Claude implements, you review and test.
-- **Repo:** `IamAndelib/VLC-Redux`, currently empty.
+- **Repo:** `IamAndelib/VLC-Redux`. **Product name:** Redux Video Player (D16).
 
 ## 2. What the Figma design contains (all ~100 frames reviewed)
 All frames are on one page, `0:1`.
@@ -84,7 +89,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
 - Our own files live in a top-level `redux/` directory:
   - `redux/design/`: `tokens.json`, `screen-map.md` (Figma frame → QML file), `transcript.md`, reference PNGs
   - `redux/tools/`: build script, screenshot harness, diff script, test-media generator
-  - `redux/packaging/`: Flatpak manifest and AppImage recipe
+  - `redux/packaging/`: Flatpak manifest (AppImage dropped, D13)
   - `redux/README.md`: the project front page; set the GitHub repo README to point here
 - Keep edits outside `modules/gui/qt` minimal so upstream merges stay easy.
 

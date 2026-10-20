@@ -1,11 +1,14 @@
-# VLC Redux roadmap
+# Redux Video Player roadmap
 
-**North Star:** ship Juxtopposed's VLC redesign (Figma `CAuJVJyM5yY7PnyQQK9X24`, plus the video's rationale in
-`redux/design/transcript.md` and `PLAN.md` §2a) as a new player built entirely on VLC. It is a fork of VLC master
-whose Qt/QML interface is redesigned.
+**North Star:** ship **Redux Video Player**, a lean, Linux-only Flatpak video player built on VLC: offline video
+playback with maximum codec and format support, wearing Juxtopposed's redesign (Figma `CAuJVJyM5yY7PnyQQK9X24`;
+the reasoning is in [`redux/design/brief.md`](../design/brief.md)). It is a fork of VLC master whose Qt/QML interface
+is redesigned. **What ships and what doesn't is fixed in [`redux/SCOPE.md`](../SCOPE.md) (D14);** milestones only
+build what it keeps.
 
 Related files:
 - Progress for each milestone: [`STATUS.md`](STATUS.md)
+- Product scope (keep / cut / future): [`../SCOPE.md`](../SCOPE.md)
 - Open unknowns: [`GAPS.md`](GAPS.md)
 - Why we chose what we chose: [`DECISIONS.md`](DECISIONS.md)
 - Per-milestone working files: `M<ID>-<slug>.md`, created from [`TEMPLATE.md`](TEMPLATE.md) when the milestone starts
@@ -80,7 +83,7 @@ Related files:
 
 The RMSE (difference score) is a regression signal per screen region, calibrated in M0.3. Your eyes on the side-by-side are the final judge.
 
-## Roadmap: 43 milestones, 11 tracks, 4 release gates
+## Roadmap: 52 milestones (48 active, 3 cut, 1 future), 11 tracks, 4 release gates
 Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with a spike session).
 
 ### Track A: Foundations
@@ -90,6 +93,10 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | **M0.2** | Complete the design source: run `figma-export.py` (≤5 calls), add offline `tokens-from-figma.py` (light palette, text styles, radii, spacing), commit `frames.tsv` and `icons.tsv` | S | Needs gap G1 (your token, or `.fig`/manual exports) | Light and dark token sets have the same keys; ≥95 frame PNGs; typography tokens present |
 | **M0.3** | Harness v2: per-region crops in `shots.tsv`/`compare.sh` (bottom bar, top bar, sidebar, grid); `player-controls` scene; isolated run profile for `build.sh run` (never touches system VLC config); test clip with chapters and 2 audio/2 subtitle tracks; baseline score per region | S–M | ffmpeg, existing harness | Report shows region rows; baselines in `STATUS.md`; `vlcrc` exists only in the redux profile |
 | **M0.4** | Video design brief: cleaned `transcript.md`; `brief.md` with every decision's reason, milestone, video time, frame and Figma node; 40–60 reference frames from `frame-picks.tsv` (frames stay out of git); gaps updated | S–M | `video-sheets.sh`, `video-frames.sh`, `check-brief.py`; 4 parallel review agents | `check-brief.py` passes; every sheet reviewed; GAPS updated |
+| **M0.5** | Scope foundation: `redux/SCOPE.md` (keep / cut / future), D13–D16, roadmap, brief and GitHub issues follow it | S | Feature inventory of `modules/gui/qt`, module inventory, community research | Every cut item maps to an M0.6 module switch or an M0.8 UI removal; issues match `STATUS.md` |
+| **M0.6** | Lean build profile and codec/format matrix: `build.sh` uses `--auto-features=disabled` plus an explicit allowlist and drops `stream_out`/`access_output`/network access; `make-matrix.sh` generates containers × codecs × subtitle formats (HEVC 10-bit HDR, AV1, VP9, H.264, MPEG-2, VC-1/WMV, AC-3/E-AC-3/DTS/TrueHD, FLAC, Opus, ASS, PGS, VobSub, files in archives); `play-matrix.sh` plays each headless | M | `meson_options.txt`, module `meson.build` guards, ffmpeg, `-I dummy --play-and-exit`, `-vv` log | Every matrix file plays with no decoder/demux errors; `vlc --list` shows no cut module |
+| **M0.7** | Flatpak skeleton: `redux/packaging/` manifest on the KDE runtime (Qt ≥ 6.8) with bundled FFmpeg, dav1d, libplacebo (Vulkan), libass and medialibrary 0.13.2; `--socket=wayland` + `fallback-x11`, `--device=dri`; the codec matrix runs inside the Flatpak | M | Flathub `org.videolan.VLC` manifest as reference (it pins FFmpeg 4.4 and VLC 3, so versions change) | `flatpak-builder` builds; matrix passes inside the sandbox; VA-API decodes on your GPU |
+| **M0.8** | Feature trim in the UI: remove the entry points of every cut feature (navigation Music/Browse/Discover; menus for disc, network, capture, convert, stream, renderer, VLM, EPG, visualizations, wallpaper, 3D, extensions, skins; toolbar controls record, renderer, teletext, DVD, program, reverse) at one model or menu place each | M | `navigationmodel.cpp`, `menus/menus.cpp`, `control_list_model.hpp`, `PlayerControlbarControls.qml`, `dialogs_provider.cpp` | No cut feature is reachable from any menu, toolbar or shortcut; Qt tests pass |
 
 ### Track B: Design system
 | ID | Milestone | Size | Key reuse / files | Accept |
@@ -108,26 +115,27 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | **M2.3** | Top bar: cone, "…", sidebar toggle, folder/show name, centered title, window buttons | M | `TopBar.qml`, `CSD*.qml`, `MenuTopbar.qml` | Works with custom title bar on and off; folder name navigates |
 | **M2.4** | Separate Subtitle and Audio buttons (audio includes output device); Playlist button becomes Queue | M | Reserved control-ID slots; `TracksListPage`, `AudioDeviceModel`; old `LANG_BUTTON` profiles still load | Track/device switching verified on the multi-track clip |
 | **M2.5** | Fullscreen edge-hover reveal, Hide UI, resume prompt near the controls | M | `PlayerToolbarVisibilityFSM` (+ unit test like `tst_FSM.qml`), `MinimalView`, `ResumeDialog` | New QML test passes; chrome hides instantly away from the edges |
-| **M2.6** | One shared "…" menu and right-click menu builder; Hide UI and split Open entries | M | `menus/menus.cpp` | Same entries from both menus; per-entry checklist passes |
+| **M2.6** | One shared "…" menu and right-click menu builder; Hide UI; Open entries limited to file(s), folder(s) and recent (no disc, network, capture, clipboard, convert, stream, plugins) | M | `menus/menus.cpp` | Same entries from both menus; per-entry checklist passes |
+| **M2.7** | Playback essentials: auto-next through the folder without building a playlist (upstream #22382), reliable per-file resume, mouse-wheel setting (volume or seek) | M | `vlc_playlist`, `ResumeDialog`, media library playback state, `MainCtx` wheel handling | Last episode in a folder rolls into the next; resume survives restart; wheel setting persists |
 
 **Gate R0 "Looks like Redux"** (internal screenshot review).
 
 ### Track D: Library core
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M3.1** | Icon rail: Home, Videos, Music, Network, Playlists, Recent, Add | M | `navigationmodel.cpp` (+ update `tests/test_navigation_model.cpp`), `SideNavigationPane.qml` | All entries navigate; tests pass; sidebar score ≤ 0.5× baseline |
+| **M3.1** | Icon rail: Home, Videos, Playlists, Recent, pinned folders/playlists, Add (no Music or Network, D14) | M | `navigationmodel.cpp` (+ update `tests/test_navigation_model.cpp`), `SideNavigationPane.qml` | All entries navigate; tests pass; sidebar score ≤ 0.5× baseline |
 | **M3.2** | Library header: back/forward, breadcrumb address bar, count, view toggle, sort (incl. Unwatched/Watched first via existing `playcount` sort), search | M | `ViewHeader`, `SortControl`, `NetworkAddressbar`, `MLVideoModel` | Sorts and search work; breadcrumbs navigate |
 | **M3.3** | Grid and list items with watched-progress underline | M | `VideoGridItem`, `GridItem`, `VideoProgressBar`, `EnhancedImageExt` | Partially watched item shows underline; grid score ≤ 0.5× baseline |
-| **M3.4** | File, folder and playlist context menus (incl. mark watched/unwatched, favorite) | M | `MLContextMenu.qml`, medialibrary favorites | Every entry works |
+| **M3.4** | File, folder and playlist context menus (incl. mark watched/unwatched, favorite; no Stream or Convert) | M | `MLContextMenu.qml`, medialibrary favorites | Every entry works |
 | **M3.5** | Floating miniplayer card in the corner, draggable | M | `PIPPlayer.qml` / `MiniPlayer.qml` | Library shows the card while video keeps playing; expand returns to the player |
-| **M3.6** | Home (Continue, Latest, Playlists, Streams) and Recent | M | `HomePage`/`HomeDisplay`, `MLRecentVideoModel` | A partly played episode resumes from Continue |
+| **M3.6** | Home (Continue Watching, Recently Added, Frequently Visited Folders, Playlists) and Recent | M | `HomePage`/`HomeDisplay`, `MLRecentVideoModel` | A partly played episode resumes from Continue |
 
 **Gate R1 "Daily driver":** prerelease `r1`. You use it for a week; the old Preferences dialog stays reachable on purpose until M8.
 
 ### Track E: Customize Player
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M4.1** | Missing controls (±10/15s, PiP, Go Home, Settings, Replay, Bookmarks, Chapters, Playlists, Zoom, name labels, Favorite); fix the swapped FRAME_PREV/NEXT files (upstreamable) | M | `control_list_model.hpp` (append only into the 22 free slots), `PlayerControlbarControls.qml`, `jumpTime()` | Each item placeable, working and persisted; old profiles unaffected |
+| **M4.1** | Missing controls (±10/15s, PiP, Go Home, Settings, Replay, Bookmarks, Chapters, Playlists, Zoom, file/folder/playlist name labels, Favorite; no Record or Artist Name); fix the swapped FRAME_PREV/NEXT files (upstreamable) | M | `control_list_model.hpp` (append only into the 22 free slots), `PlayerControlbarControls.qml`, `jumpTime()` | Each item placeable, working and persisted; old profiles unaffected |
 | **M4.2** | Customize modal over the player plus profile management | M | `dialogs/toolbar/qml/*`, `ControlbarProfileModel`, `Dialogs.qml` host | Live preview; Cancel reverts; Save persists |
 
 ### Track F: Right sidebar and panels
@@ -137,21 +145,24 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | **M5.2** | Audio effect cards (EQ, compressor, spatializer, stereo widener) with presets | M (spike) | New `AudioEffectsModel` lifted from `extended_panels.cpp` tables (that file stays untouched); `equalizer_presets.h` | Audible change; filter appears in the log |
 | **M5.3** | Video tab: aspect, zoom, crop, deinterlace, flip/rotate, adjust | M | `PlayerController`'s existing VLCVarChoiceModels; `adjust`/`transform` filters | Visible changes; reset works |
 | **M5.4** | Subtitle styling (relative/precise size, font, outline, position) and default language | M | `vlc_player_SetSubtitleTextScale`, `sub-language`, `TrackDelayButton` | Live updates; setting saved to `vlcrc` |
-| **M5.5** | Playback tab: speed, reverse, sleep timer, metadata; bookmarks and chapters as queue-panel tabs (D12); Ctrl+B | M | `MLBookmarkModel` (make add/remove invokable; upstreamable), `Player.reverse()` | Bookmarks persist and show as ticks; timer fires |
+| **M5.5** | Playback tab: speed, A-B loop, frame stepping (forward and back), metadata; bookmarks and chapters as queue-panel tabs (D12); Ctrl+B. No reverse or sleep timer (D14) | M | `MLBookmarkModel` (make add/remove invokable; upstreamable), existing A-B loop and frame-next player calls | Bookmarks persist and show as ticks; A-B loop and frame steps work |
 | **M5.6** | Add Subtitles dialog (file/folder/playlist, auto and manual matching), local files only | M | VLC's own autodetect heuristics (`src/input/subtitles.c`); matcher written test-first | Mismatched test `.srt` files auto-match; manual matches survive restart |
+| **M5.7** | Online subtitle search: OpenSubtitles REST API via Qt networking, inside the Add Subtitles dialog and the tracks popup; off until the user consents (Privacy page) | M | `QNetworkAccessManager`; no VLSub/Lua; G9 (API key, terms) | Search, download and auto-load work on a test title; no network traffic before consent |
+| **M5.8** | Subtitle timeline on the seek bar (zoomed window, cue blocks, nudge buttons) | L (spike) | G7: where cue times come from (parse external files ourselves vs a core hook) | Cue blocks match the subtitle file; nudging changes the delay |
+| **M5.9** | Sidebar presets: named bundles of subtitle, audio and video settings, re-applied in one click | M | G8; sidebar models from M5.2–M5.4 | Saving and applying a preset restores every included setting |
 
-### Track G: Media visuals
+### Track G: Media visuals (cut or future under D14)
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M6.1** | Seek-bar thumbnails | L (spike) | Core `vlc_preparser_req_NewThumbnail` (fast seek), IINA's pre-generate approach, closed upstream MR !7822 as reference, `EnhancedImageExt` | Preview frames on hover; idle CPU afterwards; no crash on media change |
-| **M6.2** | Music now-playing screen (blurred artwork, centered cover, title–artist) | M | Existing `DualKawaseBlur` in `Player.qml`'s audio branch | Music score ≤ 0.5× baseline |
-| **M6.3** | Waveform provider (background thread, cached) | L (spike) | Choose between a second VLC player (`amem`) and libav decode; BBC `.dat` cache format; no GPL-3 code | Unit test passes; a 4-min track takes under 2 s; cache hits are instant |
-| **M6.4** | Waveform seek bar (played part in the accent color) | M | `SliderBar.qml` | Loud and quiet sections visible; seeking unchanged |
+| **M6.1** | *Future.* Seek-bar thumbnails | L (spike) | Core `vlc_preparser_req_NewThumbnail` (fast seek), IINA's pre-generate approach, closed upstream MR !7822 as reference, `EnhancedImageExt` | Preview frames on hover; idle CPU afterwards; no crash on media change |
+| **M6.2** | *Cut (D14).* Music now-playing screen (blurred artwork, centered cover, title–artist) | M | Existing `DualKawaseBlur` in `Player.qml`'s audio branch | Music score ≤ 0.5× baseline |
+| **M6.3** | *Cut (D14).* Waveform provider (background thread, cached) | L (spike) | Choose between a second VLC player (`amem`) and libav decode; BBC `.dat` cache format; no GPL-3 code | Unit test passes; a 4-min track takes under 2 s; cache hits are instant |
+| **M6.4** | *Cut (D14).* Waveform seek bar (played part in the accent color) | M | `SliderBar.qml` | Loud and quiet sections visible; seeking unchanged |
 
 ### Track H: Library extended
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M7.1** | Network stream list, M3U import, split Open dialogs, New playlist dialog | M | `MLUrlModel`, `UrlListDisplay`, M3U demux, `dialogs/playlists` | Streams persist; M3U imports N entries |
+| **M7.1** | Open file(s) and Open folder(s) dialogs, New playlist dialog (no network streams, M3U lists or capture, D14) | M | `dialogs/open` file pane, `dialogs/playlists` | Files and folders open into the queue; a new playlist saves with its name and thumbnail |
 | **M7.2** | Compact library panel beside the video, opened from the folder name in the top bar | M | Queue-pane docking | Matches frame 187:328 (G19: it is this panel) |
 
 **Gate R2 "Feature preview":** `r2` goes to a wider group of testers.
@@ -161,7 +172,7 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 |---|---|---|---|---|
 | **M8.1** | Settings framework and General page: declarative JSON page specs, generic rows, info icons, search, basic-then-advanced; legacy advanced tree still reachable | L (spike) | `dialogs/preferences/expert_model.*`, `vlc_config_Get*Choices`, `Dialogs.qml` host | Theme and accent change live and persist; search crosses pages; unknown config keys fail a check |
 | **M8.2** | Pages: Interface, Playback, Video, Audio, Subtitles (human-worded dropdowns, no duplicates) | M | `settings-map.tsv` | Sampled settings write the right `vlcrc` keys |
-| **M8.3** | Pages: Privacy, Controls, Library, Network, Performance, Recording, Extensions | M | `dialogs/extensions`, `dialogs/plugins` | Same as M8.2 |
+| **M8.3** | Pages: Privacy (incl. online-subtitle consent), Controls, Library, Performance. No Network, Recording or Extensions pages (D14) | M | `settings-map.tsv` | Same as M8.2 |
 | **M8.4** | Keyboard shortcuts dialog (search, rebind, conflicts, reset) | M | Existing hotkeys panel logic, `vlc_actions` | Rebinding survives restart; conflicts flagged |
 
 ### Track J: Onboarding and polish
@@ -173,32 +184,30 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 ### Track K: Release
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
-| **M10.1** | Identity: name, app ID, icon, About credits, licences, designer contact | S | Your decisions (G15) | Decisions recorded; credits shown |
-| **M10.2** | CI: GitHub Actions builds the image and VLC, runs tests and the screenshot diff, uploads the report | M | Existing tools | PRs show green checks plus a report artifact |
-| **M10.3** | Flatpak and AppImage, tagged release, CONTRIBUTING | L | Flathub `org.videolan.VLC` manifest, medialibrary 0.13.2 module | Installs and plays on your machine and on a second distro |
+| **M10.1** | Identity: app ID, icon, About credits, licences, designer contact (name decided: Redux Video Player, D16) | S | D16, G21 | App ID confirmed; credits shown |
+| **M10.2** | CI: GitHub Actions builds the image and VLC, runs tests, the codec matrix and the screenshot diff, builds the Flatpak, uploads the report | M | Existing tools, M0.6 matrix, M0.7 manifest | PRs show green checks plus a report artifact |
+| **M10.3** | Flathub submission, tagged release, CONTRIBUTING (Flatpak only, D13) | L | M0.7 manifest | Installs from Flathub (or the repo's own Flatpak remote) and plays the matrix on your machine and a second distro |
 
 **Gate R3 "1.0 public".**
 
-**Backlog** (each item becomes a milestone once its gap is resolved):
-- sidebar pins
-- subtitle timeline
-- OpenSubtitles
-- per-show presets
-- live filter previews
-- HDR options
+**Future** (parked under D14; each needs a `DECISIONS.md` entry to become a milestone):
+- seek-bar thumbnails (M6.1)
+- NVDEC hardware decoding
+- live video-filter previews
 - key shown in on-screen messages
 - two-tone menu icons
-- visualizer picker
-- fullscreen library with the queue
-- Windows/macOS
+
+Pins, subtitle timeline, OpenSubtitles and presets moved into milestones (M3.1, M5.7–M5.9). HDR stays as the Video
+tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windows, macOS, AppImage (D13).
 
 **Execution order:**
-1. M0.1 → M1.1 → M0.2 → M0.3
-2. M1.2 → M1.5
-3. M2.1 → M2.3 → **R0**
-4. M2.4 → M3.6 → **R1**
-5. M4 → M5 → M6 → M7 → **R2**
-6. M8 → M9 → M10 → **R3**
+1. M0.5 → M0.6 → M0.7 → M0.8 (scope, lean build, Flatpak, trim)
+2. M1.1 → M0.2 → M0.3
+3. M1.2 → M1.5
+4. M2.1 → M2.3 → **R0**
+5. M2.4 → M2.7 → M3.6 → **R1**
+6. M4 → M5 (M5.1–M5.9) → M7 → **R2**
+7. M8 → M9 → M10 → **R3**
 
 ## Risks and mitigations
 | Risk | Mitigation |
@@ -209,9 +218,9 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | Misleading diff scores | Region crops, video area masked; your eyes are final |
 | Scope creep (~100 frames) | Strict out-of-scope per milestone; backlog; gates |
 | Context loss between sessions | `CLAUDE.md` + `STATUS.md` + "next step" log entries |
-| Clash with an installed system VLC config | Isolated profile (M0.3); Flatpak at release |
+| Clash with an installed system VLC config | Isolated profile (M0.3); Flatpak from M0.7 |
 | Wayland limits (always-on-top, title bars differ) | In-window floating card; test title bar both ways |
-| Thumbnails or waveform cause UI stalls | Worker threads, cancellation, memory caps, QML profiler |
+| Subtitle timeline or library scans cause UI stalls | Worker threads, cancellation, memory caps, QML profiler |
 | Licensing (GPL-3 code, fonts, design, trademark) | No GPL-3 copying; Inter under OFL; M10.1 checks; credit the designer |
 
 ## Upstream sync
@@ -221,3 +230,5 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
   2. Run the full build, tests, all scenes and the diff report.
   3. Update `redux/UPSTREAM_COMMIT`.
   4. Log conflicts in `DECISIONS.md`.
+| Cutting a module breaks a format users expect | The M0.6 matrix runs on every build; a cut is reverted with a `DECISIONS.md` entry |
+| Codec licensing and patents in a public Flatpak | Bundle FFmpeg as Flathub VLC does; no encoders or disc decryption (D14, D15) |

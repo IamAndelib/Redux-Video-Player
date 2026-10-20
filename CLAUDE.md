@@ -1,7 +1,8 @@
-# VLC Redux: working agreement
+# Redux Video Player: working agreement
 
-VLC Redux is a fork of VLC master whose Qt/QML interface (`modules/gui/qt/`) is redesigned to Juxtopposed's
-concept. The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the video's design intent is in `redux/design/brief.md` (build from this),
+Redux Video Player (repo `VLC-Redux`) is a fork of VLC master whose Qt/QML interface (`modules/gui/qt/`) is
+redesigned to Juxtopposed's concept. It is a Linux-only Flatpak for offline video with maximum codec and format
+support. **What ships is fixed in `redux/SCOPE.md` (D14): build only what it keeps.** The design is Figma `CAuJVJyM5yY7PnyQQK9X24`; the video's design intent is in `redux/design/brief.md` (build from this),
 backed by `redux/design/transcript.md`.
 Everything specific to this fork lives in `redux/`. Everything else is upstream VLC.
 

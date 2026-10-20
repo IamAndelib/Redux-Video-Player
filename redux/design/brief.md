@@ -1,7 +1,11 @@
-# VLC Redux design brief
+# Redux Video Player design brief
 
 The streamlined guide to Juxtopposed's redesign: every design decision from the video, why it was made, and where
 it lands in our code. Use this file while building. Go to the sources only to check a detail.
+
+> **Scope first.** Redux Video Player ships a subset of this design: offline video, maximum formats, minimal
+> features ([`../SCOPE.md`](../SCOPE.md), D14). Entries or details marked **Out of scope (D14)** are kept here as
+> design reference only; don't build them.
 
 | Source | What it settles | Where |
 |---|---|---|
@@ -88,6 +92,7 @@ These eight rules decide anything the entries below don't cover.
 - **One menu instead of two.** The old top menu bar and the right-click menu duplicate each other. They merge into one "…" menu, and the right-click menu is cleaned up and restyled. Menu items use the two-tone icons and show their shortcuts.
   - Final "…" menu: Open File(s) Ctrl+O, Open Folder(s) Ctrl+F, Open Disc Ctrl+D, Open Network Stream Ctrl+N, Open Capture Device Ctrl+C, Open from Clipboard Ctrl+V, Convert Ctrl+R, Stream Ctrl+S, Open Recent ›, divider, Customize Player, Plugins & Extensions ›, Settings Ctrl+P, About VLC Shift+F1. Later versions add Profile › and Keyboard Shortcuts (section E).
   - Right-click menu: Play Space, Stop S, Previous Item P, Next Item N, Record R | Playback ›, Video ›, Audio ›, Subtitle › | More Settings ›, Playlist ›, Open Media ›, Quit VLC Ctrl+Q | Hide UI Ctrl+\\.
+  - **Out of scope (D14):** Open Disc, Open Network Stream, Open Capture Device, Open from Clipboard, Convert, Stream and Plugins & Extensions leave the "…" menu; Record leaves the right-click menu.
   - Build: M2.6 · Refs: [05:04](https://youtu.be/ERFeOgqk324?t=304) [`0504-old-menubar-and-context-menu.jpg`](source/video-frames/0504-old-menubar-and-context-menu.jpg) · [13:09](https://youtu.be/ERFeOgqk324?t=789) [`1309-app-menu-cleaned.jpg`](source/video-frames/1309-app-menu-cleaned.jpg) · Figma 6065:13616, 6062:13354
 - **Resume prompt near the controls.** A bottom-center card just above the control bar: "You already watched till 00:00:02", an accent **Continue Watching** button, and ✕. It replaces the banner at the top of the window.
   - Why: the prompt only lasts a few seconds.
@@ -95,6 +100,7 @@ These eight rules decide anything the entries below don't cover.
 
 ## D. Library
 - **Sections:** Home, Videos, Music, Network, Playlists, Recent, pinned items, and "+ Add item". The label is "Network", not "Network streams".
+  - **Out of scope (D14):** the Music and Network sections. The rail is Home, Videos, Playlists, Recent, pins and "+ Add item".
   - Build: M3.1 · Refs: [10:22](https://youtu.be/ERFeOgqk324?t=622) · [13:47](https://youtu.be/ERFeOgqk324?t=827) [`1347-sidebar-rail-home-recent-pins.jpg`](source/video-frames/1347-sidebar-rail-home-recent-pins.jpg) · Figma 848:1996
 - **Header:** back and forward buttons, a clickable breadcrumb **address bar** ("Videos › Shows › The Wand › S01"), then "15 items", sort, view toggle (grid, list, detail), search and a "…" menu.
   - Why: today sorting hides in the right-click menu, and the view icon doesn't show its state.
@@ -110,12 +116,14 @@ These eight rules decide anything the entries below don't cover.
   - Build: M3.3 · Refs: [10:58](https://youtu.be/ERFeOgqk324?t=658) [`1058-library-full-grid.jpg`](source/video-frames/1058-library-full-grid.jpg) · Figma 970:3308
 - **Context menus** for files, folders and playlists, opened from a "…" that appears on row hover or by right-click.
   - File menu: Play, Mark as Watched, Favorite, Stream, Convert, Add to Queue, Add to Playlist, Show in File Explorer, Add Subtitle Tracks, Add Audio Tracks (continues below the frame; use Figma 2404:13340 for the rest).
+  - **Out of scope (D14):** Stream and Convert.
   - Build: M3.4 · Refs: [13:32](https://youtu.be/ERFeOgqk324?t=812) [`1332-file-context-menu.jpg`](source/video-frames/1332-file-context-menu.jpg) · Figma 2404:13340, 2139:8935, 2459:9389
 - **Full-window library with a floating miniplayer card** and the queue, both draggable.
   - The queue panel (titled "Queue") sits bottom-right above the miniplayer.
   - Miniplayer: on hover, close, pop-out, previous, play and next over the video; below it a thin seek bar, the title, the folder ("S01") and an accent queue toggle.
   - Build: M3.5 · Refs: [11:50](https://youtu.be/ERFeOgqk324?t=710) · [11:56](https://youtu.be/ERFeOgqk324?t=716) [`1156-full-library-miniplayer-queue.jpg`](source/video-frames/1156-full-library-miniplayer-queue.jpg) · Figma 970:3308, 970:3091
 - **Home page:** Continue Watching, Listen Again and Frequently Visited Folders, each with a "›" to see more, so VLC never opens to a blank cone.
+  - **Out of scope (D14):** Listen Again (music). Home is Continue Watching, Recently Added, Frequently Visited Folders and Playlists.
   - Build: M3.6 · Refs: [13:46](https://youtu.be/ERFeOgqk324?t=826) · [13:52](https://youtu.be/ERFeOgqk324?t=832) [`1352-home-page.jpg`](source/video-frames/1352-home-page.jpg)
 - **Recent tab and pins.** Pin favorite playlists and folders to the sidebar rail.
   - Build: M3.1, M3.6 · Refs: [13:40](https://youtu.be/ERFeOgqk324?t=820) [`1347-sidebar-rail-home-recent-pins.jpg`](source/video-frames/1347-sidebar-rail-home-recent-pins.jpg) · Figma 848:1996
@@ -126,6 +134,7 @@ These eight rules decide anything the entries below don't cover.
   - Why: the current editor is hard to use.
   - Build: M4.2 · Refs: [19:14](https://youtu.be/ERFeOgqk324?t=1154) · [19:22](https://youtu.be/ERFeOgqk324?t=1162) [`1922-customize-player-canvas.jpg`](source/video-frames/1922-customize-player-canvas.jpg) · Figma 2107:5604 … 2160:8732
 - **Items (31):** Spacer, Divider, Playback Speed, Forward and Backward 10s and 15s, Stop, Repeat, Shuffle, Record, Snapshot, Picture in Picture, HDR, Zoom, Right Sidebar, Quit VLC, VLC Settings, Go Home, Thumbnail, File Name, Artist Name, Folder Name, Playlist Name, Properties, Replay, Chapters, Favorite, Bookmark, Bookmarks, Playlists.
+  - **Out of scope (D14):** Record and Artist Name.
   - Favorite matches the per-file Favorite action in the context menu.
   - Build: M4.1 · Refs: [19:16](https://youtu.be/ERFeOgqk324?t=1156) [`1922-customize-player-canvas.jpg`](source/video-frames/1922-customize-player-canvas.jpg) · Figma 2107:5604
   - Open: G3 (HDR, Replay, Properties, Go Home)
@@ -159,6 +168,7 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Build: M5.3 · Refs: [08:58](https://youtu.be/ERFeOgqk324?t=538) [`0858-sidebar-video-tab.jpg`](source/video-frames/0858-sidebar-video-tab.jpg) · Figma 536:1855, 543:990, 614:1430, 2372:8733
   - Open: G10, G11
 - **Playback tab:** toggles Show Subtitle Timeline on Seekbar, Show Waveform on Seekbar, Show Metadata and **Reverse**; **Sleep Timer** and **Audio Visualizer** dropdowns; Speed slider from 0.25 to 2 with ticks.
+  - **Out of scope (D14):** Show Waveform on Seekbar, Reverse, Sleep Timer and Audio Visualizer. The tab gains A-B loop and frame stepping.
   - Build: M5.5 · Refs: [09:08](https://youtu.be/ERFeOgqk324?t=548) · [09:18](https://youtu.be/ERFeOgqk324?t=558) [`0918-sidebar-playback-tab.jpg`](source/video-frames/0918-sidebar-playback-tab.jpg)
   - Open: G12
 - **Presets.** A preset is a user-named bundle of the sidebar's settings across all tabs ("Anime", "Loud and then Quiet Movies", "The Wand Subtitle Preset"), not something tied to a folder automatically. The menu has "+ New Custom Preset", a "…" menu per preset and an accent check on the active one.
@@ -172,6 +182,8 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Open: G9
 
 ## G. Media visuals
+**Out of scope (D14):** the whole section (music is cut). Kept as design reference.
+
 - **Music now-playing screen.** Large cover art over a blurred backdrop, "title - artist" below, and ±15 s skip buttons beside play.
   - Build: M6.2 · Refs: [12:16](https://youtu.be/ERFeOgqk324?t=736) [`1216-music-now-playing.jpg`](source/video-frames/1216-music-now-playing.jpg) · Figma 4767:23726
 - **Waveform seek bar** for audio, optional (Playback tab toggle): the played part in the accent color with a thick accent playhead.
@@ -181,9 +193,10 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Build: M3.1 · Refs: [12:10](https://youtu.be/ERFeOgqk324?t=730) [`1210-music-sections.jpg`](source/video-frames/1210-music-sections.jpg)
 
 ## H. Library extended
-- **Network streams.** A saved list with "+ Add Network Stream", Podcasts and Radio by default. Pasting an M3U link (the video uses `https://iptv-org.github.io/iptv/index.m3u`) turns it into an automatic playlist ("Index", 110 items).
+- **Out of scope (D14). Network streams.** A saved list with "+ Add Network Stream", Podcasts and Radio by default. Pasting an M3U link (the video uses `https://iptv-org.github.io/iptv/index.m3u`) turns it into an automatic playlist ("Index", 110 items).
   - Build: M7.1 · Refs: [12:22](https://youtu.be/ERFeOgqk324?t=742) · [12:24](https://youtu.be/ERFeOgqk324?t=744) [`1224-network-streams-list.jpg`](source/video-frames/1224-network-streams-list.jpg) · [13:14](https://youtu.be/ERFeOgqk324?t=794) · Figma 6216:13614
 - **Split Open dialogs.** The all-in-one "Open Media" factory becomes separate "…" menu actions (list in section C), each with its own small dialog.
+  - **Scope (D14):** only Open File(s) and Open Folder(s) ship; Open Network Stream is out of scope.
   - Open Network Stream: "Network URL" ("You can enter multiple links to load.") over a multi-line field, "Playlist Name (optional)" ("The playlist will be saved and displayed with this title."), Cancel and Save.
   - Build: M7.1, M2.6 · Refs: [12:58](https://youtu.be/ERFeOgqk324?t=778) · [13:10](https://youtu.be/ERFeOgqk324?t=790) [`1310-open-network-stream-dialog.jpg`](source/video-frames/1310-open-network-stream-dialog.jpg) · Figma 6216:13614
 - **New playlist:** Playlist Details (name and thumbnail), Select Files (a dashed drop zone: "Drag files into the box or click here to select files.", with +), Cancel and Save. The Playlists view starts with a "+ Create playlist" row, and any file can be added from its context menu.
@@ -195,6 +208,7 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
 ## I. Settings and on-screen messages
 - **Structure:**
   - 13 categories in three groups, with search at the top-left: **App** (General, Interface, Privacy, Controls), **Media** (Playback, Video, Audio, Subtitles, Library), **System** (Network, Performance, Recording, Extensions).
+  - **Out of scope (D14):** the Network, Recording and Extensions pages. Online-subtitle consent goes on the Privacy page.
   - Page titles differ from the sidebar labels: Global Settings, Mouse, Keyboard & Remote Controls, Playback Preferences, Video Defaults, Audio Defaults, Subtitle Defaults, Playlists, Folders & Files, Network Connections & Security, Recording, Casting & Streaming Out, Extensions & Scripts.
   - Each page has its **basic settings first, then a full-width "Advanced Options ›" bar that expands in place**, replacing the Simple/All split. Toggles are square two-part ON/OFF switches; sliders have ticks.
   - Build: M8.1–M8.3 · Refs: [17:36](https://youtu.be/ERFeOgqk324?t=1056) · [17:40](https://youtu.be/ERFeOgqk324?t=1060) [`1740-settings-general-page.jpg`](source/video-frames/1740-settings-general-page.jpg) · [18:52](https://youtu.be/ERFeOgqk324?t=1132) [`1852-settings-advanced-expanded.jpg`](source/video-frames/1852-settings-advanced-expanded.jpg) · Figma 999:5047 … 6575:17137
@@ -205,7 +219,7 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   - Numeric codes become **plain-language dropdowns**. Example: subtitle auto-detect fuzziness 0–4 becomes **File name matching** (Subtitles › Loading Subtitles): Off, Any title, Contains title, Title with extra characters, Exact title match.
   - Build: M8.1–M8.3 · Refs: [16:38](https://youtu.be/ERFeOgqk324?t=998) · [17:16](https://youtu.be/ERFeOgqk324?t=1036) [`1716-old-subtitle-fuzziness.jpg`](source/video-frames/1716-old-subtitle-fuzziness.jpg) · [17:30](https://youtu.be/ERFeOgqk324?t=1050) [`1730-file-name-matching-dropdown.jpg`](source/video-frames/1730-file-name-matching-dropdown.jpg) · [18:10](https://youtu.be/ERFeOgqk324?t=1090) [`1810-settings-subtitles-page.jpg`](source/video-frames/1810-settings-subtitles-page.jpg)
   - Open: G14
-- **Extensions page** ("Extensions & Scripts"): a list with search, Find more extensions, Add and Remove, and "Load extensions on startup". VLC's internal plugins move to the Advanced part (the frames don't show where).
+- **Out of scope (D14). Extensions page** ("Extensions & Scripts"): a list with search, Find more extensions, Add and Remove, and "Load extensions on startup". VLC's internal plugins move to the Advanced part (the frames don't show where).
   - Build: M8.3 · Refs: [18:26](https://youtu.be/ERFeOgqk324?t=1106) [`1827-settings-extensions-page.jpg`](source/video-frames/1827-settings-extensions-page.jpg) · Figma 6575:17137
 - **Keyboard Shortcuts dialog** of its own: search, an "All Fields" filter, columns Action / Hotkey / Global Hotkey, groups (Basic, Playback …), Cancel and Save. It opens from the "…" menu and from "Edit Keyboard Shortcuts" on the Controls page.
   - Build: M8.4 · Refs: [16:00](https://youtu.be/ERFeOgqk324?t=960) [`1600-keyboard-shortcuts-dialog.jpg`](source/video-frames/1600-keyboard-shortcuts-dialog.jpg) · [17:58](https://youtu.be/ERFeOgqk324?t=1078) [`1758-settings-controls-page.jpg`](source/video-frames/1758-settings-controls-page.jpg) · Figma 2437:14832
@@ -219,6 +233,7 @@ Subtitles** (Subtitles is the default). Each tab ends with a preset selector and
   1. "Welcome to VLC!": a short description and "Choose a Media Folder to get started with" (~/Videos, Browse). Next.
   2. "Select your preferred theme and color.": Light, Dark and System cards over a live preview, and 9 round accent swatches. Back, Next.
   3. "Learn the basic keyboard shortcuts.": 12 pairs (Play / Pause Space, Seek ← →, Previous / Next Item < >, Previous / Next Frame , ., Cycle Subtitle Track V, Cycle Audio Track B, Toggle Fullscreen F, Volume ↑ ↓, Show / Hide Queue Q, Show / Hide File Browser L, Take a Snapshot Shift+S, Record Shift+R) and "Find the full list in the menu." Back, Finish.
+  - **Out of scope (D14):** the Record Shift+R shortcut on step 3.
   - Why: about half of viewers want minimal customization, so the defaults must be good and the essentials introduced up front.
   - Build: M9.1 · Refs: [19:48](https://youtu.be/ERFeOgqk324?t=1188) [`1948-onboarding-welcome.jpg`](source/video-frames/1948-onboarding-welcome.jpg) · [19:50](https://youtu.be/ERFeOgqk324?t=1190) [`1950-onboarding-theme.jpg`](source/video-frames/1950-onboarding-theme.jpg) · [19:52](https://youtu.be/ERFeOgqk324?t=1192) [`1952-onboarding-shortcuts.jpg`](source/video-frames/1952-onboarding-shortcuts.jpg) · Figma 1899:3055 (step 1), 1902:3670 … 1902:6465 (step 2, one frame per accent), 1902:6770 (step 3)
 
