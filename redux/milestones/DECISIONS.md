@@ -180,3 +180,14 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Alternatives:** `--auto-features=disabled` plus an allowlist (misses option-less plugins such as http, udp,
   ftp and all of `stream_out/`); per-directory meson guards (many upstream hunks); deleting plugin files at
   packaging time (the dev app would differ from what ships).
+
+### D21 · 2026-10-21 · Play after the end restarts the video (player core)
+- **Decision:** when `play-and-pause` has paused a video on its last frame (M0.6 turns it on for the last item in the
+  queue), playing again starts it from the beginning. A flag `paused_at_eof` on the player input is set at that
+  pause, cleared by any seek, and `vlc_player_SetPause(false)` resets the position when it is set. 14 lines in
+  `src/player/{player.h,input.c,player.c}`.
+- **Why:** maintainer feedback; it is what other players (MPC-HC, IINA, web players) do. Doing it in the player core,
+  not the Qt button, covers every way of pressing play: the button, Space (VLC's hotkeys module), media keys and
+  MPRIS. A seek in between still resumes from the seek position. VLC's 20 player tests pass. Upstreamable.
+- **Alternatives:** handling it in Qt only (Space, media keys and MPRIS would bypass it); stopping instead of pausing
+  at the end (loses the last frame on screen).

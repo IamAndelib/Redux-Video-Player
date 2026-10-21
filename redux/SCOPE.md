@@ -27,6 +27,7 @@ back, add a `DECISIONS.md` entry first, then a milestone.
 | Resume where you left off | Per file, reliable; a top VLC complaint | M2.5, M2.7 |
 | Auto-next through the folder | Upstream #22382, one of the most-upvoted requests | M2.7 |
 | Stay on the player when the last video ends (paused on its last frame, like mpv's keep-open); a queue still plays through | Maintainer feedback | M0.6 (done) |
+| Play on a finished video starts it from the beginning | Maintainer feedback, D21 | M0.6 (done) |
 | Mouse wheel: volume or seek (setting) | | M2.7 |
 | Speed, repeat, shuffle | | M5.5, M4.1 |
 | A-B loop, frame stepping forward and back | Learners, animators, analysts | M5.5 |

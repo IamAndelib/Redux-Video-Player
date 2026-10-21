@@ -1341,6 +1341,14 @@ vlc_player_SetPause(vlc_player_t *player, bool pause)
     if (!input || !input->started)
         return;
 
+    /* Redux Video Player (D21): playing again after play-and-pause stopped at the end starts from the
+     * beginning, like other players; a seek in between clears this and playback resumes from there. */
+    if (!pause && input->paused_at_eof)
+    {
+        input->paused_at_eof = false;
+        input_ControlPush(input->thread, INPUT_CONTROL_RESET_POSITION, NULL);
+    }
+
     vlc_value_t val = { .i_int = pause ? PAUSE_S : PLAYING_S };
     int ret = input_ControlPushHelper(input->thread, INPUT_CONTROL_SET_STATE,
                                       &val);
