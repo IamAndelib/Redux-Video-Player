@@ -1886,8 +1886,9 @@ endif
 QML_LOG_COMPILER = $(builddir)/qml_test -input
 
 if HAVE_QT_QUICK_TEST
-# Redux (Q0.5, D34): the component tests compile the style sources against a stand-in MainCtx (tests/stub/, first on
-# the include path).
+# Redux (Q0.5, D34): the component tests compile the style sources against a stand-in MainCtx (tests/stub/). Automake
+# searches -I$(srcdir), where the real header is, before a target's flags, so the stub is force-included: it shares
+# the real header's include guard, which then turns the real one into a no-op.
 qml_test_SOURCES = tests/qml_test.cpp tests/qml_test.hpp tests/qml_baseline.cpp tests/qml_baseline.hpp \
 	tests/stub/maininterface/mainctx.cpp tests/stub/maininterface/mainctx.hpp \
 	style/colorcontext.cpp style/systempalette.cpp style/palettedump.cpp style/vlcicons.cpp \
@@ -1896,11 +1897,11 @@ nodist_qml_test_SOURCES = tests/qml_test.moc.cpp tests/qml_baseline.moc.cpp test
 	style/colorcontext.moc.cpp style/systempalette.moc.cpp style/vlcicons.moc.cpp util/color_scheme_model.moc.cpp \
 	widgets/native/navigation_attached.moc.cpp util/keyhelper.moc.cpp
 CLEANFILES += $(nodist_qml_test_SOURCES)
-qml_test_CPPFLAGS = -I$(srcdir)/tests/stub $(libqt_plugin_la_CPPFLAGS) \
+qml_test_CPPFLAGS = -include $(srcdir)/tests/stub/maininterface/mainctx.hpp -I$(srcdir)/tests/stub $(libqt_plugin_la_CPPFLAGS) \
 	-DREDUX_BASELINE_DIR="\"$(abs_top_srcdir)/redux/qa/components/baselines\""
 qml_test_CXXFLAGS = $(AM_CXXFLAGS) $(QT_CFLAGS) -fPIC $(CXXFLAGS_qt) ${QT_QUICK_TEST_CFLAGS} -DQUICK_TEST_SOURCE_DIR="\"${srcdir}/tests\"" -I"${builddir}/tests"
 qml_test_LDADD = $(QT_INDIRECT_LIBS) ${QT_QUICK_TEST_LIBS} $(QT_LIBS) $(LIBS_qt) libqml_module_util.a \
-	libqml_module_style.a libqml_module_widgets.a libqml_module_maininterface.a $(LIBVLCCORE)
+	libqml_module_style.a libqml_module_widgets.a libqml_module_maininterface.a $(LTLIBVLCCORE)
 qml_test_LDFLAGS = $(AM_LDFLAGS) $(QT_QUICK_TEST_LDFLAGS)
 check_PROGRAMS += qml_test
 EXTRA_DIST += tests/tst_FSM.qml tests/tst_ButtonExt.qml

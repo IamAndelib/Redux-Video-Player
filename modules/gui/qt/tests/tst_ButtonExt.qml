@@ -64,6 +64,11 @@ Item {
             button.parent.forceActiveFocus()
         }
 
+        function cleanup() {
+            if (button.down)   // a failed pressed row returns before its release
+                mouseRelease(button)
+        }
+
         function test_states(data) {
             MainCtx.setColorScheme(data.scheme)
             // Reach the state the way a user does, and check it was reached: a state whose colours equal Normal's
@@ -82,8 +87,6 @@ Item {
             }
             wait(VLCStyle.duration_long * 2)   // colour transitions run for duration_long
             compare(Baseline.check(button, "ButtonExt/" + data.tag), "")
-            if (data.state === "pressed")
-                mouseRelease(button)
         }
     }
 }

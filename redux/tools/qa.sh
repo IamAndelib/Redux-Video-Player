@@ -48,11 +48,17 @@ if wants L1; then
   fi
 fi
 
-if wants L3 || wants L4; then
-  # L3 is the whole suite; L4 alone is only the QML component tests (Qt Quick Test files tst_*, Q0.5).
-  tests=()
-  run=l3.run; wants L3 || run=l4.run
-  wants L3 || mapfile -t tests < <(meson test -C "$builddir" --list 2>/dev/null | sed -n 's/.*:\(tst_[A-Za-z0-9_]*\)$/\1/p')
+# L3 is the whole suite; L4 alone is only the QML component tests (Qt Quick Test files tst_*, Q0.5).
+tests=()
+run=l3.run
+if ! wants L3 && wants L4; then
+  run=l4.run
+  mapfile -t tests < <(meson test -C "$builddir" --list 2>/dev/null | sed -n 's/.*:\(tst_[A-Za-z0-9_]*\)$/\1/p')
+fi
+if [[ $run == l4.run && ${#tests[@]} -eq 0 ]]; then
+  # Without names, meson would run the whole suite under l4.run.
+  result l4.run fail "no QML component tests (tst_*) in meson test --list (Qt Quick Test missing?)"
+elif wants L3 || wants L4; then
   echo "== L3 VLC's test suite (meson test)${tests[*]:+: the L4 component tests}"
   # Upstream's CI gives each test 60 s (extras/ci/gitlab-ci.yml); the 10 s default fails under parallel load (G25).
   testlog="$builddir/meson-logs/testlog.json"

@@ -410,3 +410,4 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Alternatives:** the real `MainCtx` (needs the playlist, settings and models); the whole Qt plugin in the test;
   Lancelot (a baseline server; GPL-3/commercial); a libvlc interface with `qt-accent-color` set (more setup, no
   upstream edit).
+- **Edits outside `modules/gui/qt/` and `redux/`:** `CLAUDE.md` (the command row).

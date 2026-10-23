@@ -57,7 +57,12 @@ public:
 
     // Test only: pick the colour scheme (ColorSchemeModel row: 1 Day, 2 Night). There's no System scheme here: it
     // reads the desktop's theme through the interface's theme provider modules.
-    Q_INVOKABLE void setColorScheme(int index) { m_colorScheme->setCurrentIndex(index); }
+    Q_INVOKABLE void setColorScheme(int index)
+    {
+        if (index != 1 && index != 2)
+            qFatal("MainCtx stub: colour scheme %d isn't Day (1) or Night (2)", index);
+        m_colorScheme->setCurrentIndex(index);
+    }
 
 private:
     ColorSchemeModel* m_colorScheme;
