@@ -7,9 +7,9 @@
 #
 # Inside the session, `python3 -I redux/tools/kwin-shot.py <out.png>` takes a screenshot of the whole desktop.
 # Rendering is software everywhere (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one.
-# KWin composites with OpenGL, which its screenshots need; that takes a DRM device: the GPU on a desktop, or the
+# KWin composites with OpenGL, which its screenshots need; that takes a DRM render node: the GPU on a desktop, or the
 # kernel's virtual `vgem` device (as in KDE's CI). Without one, as on GitHub's runners (G27), KWin falls back to
-# QPainter: apps still run, but screenshots fail. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).
+# QPainter: apps still run, but screenshots fail. KWIN_SESSION_TIMEOUT (default 300 s) bounds the whole session. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).
 #
 # The session recipe follows KDE's own test runner, selenium-webdriver-at-spi's run.rb (ideas only; credited in
 # redux/CREDITS.md).
@@ -22,6 +22,7 @@ if [[ "${1:-}" == --inner ]]; then
   # address, so Qt apps find it without racing its on-demand start.
   shift
   /usr/libexec/at-spi-bus-launcher --launch-immediately >/dev/null 2>&1 &
+  atspi=$!
   for _ in $(seq 50); do
     addr="$(gdbus call --session --dest org.a11y.Bus --object-path /org/a11y/bus \
               --method org.a11y.Bus.GetAddress 2>/dev/null | sed -n "s/^('\(.*\)',)$/\1/p")" || true
@@ -32,6 +33,7 @@ if [[ "${1:-}" == --inner ]]; then
   # KWin's own exit status doesn't carry the command's, so hand it over in a file.
   status=0
   "$@" || status=$?
+  kill "$atspi" 2>/dev/null || true   # its bus and registry daemon follow it
   echo "$status" > "$REDUX_SESSION_DIR/status"
   exit "$status"
 fi
@@ -57,11 +59,14 @@ printf '#!/usr/bin/env bash\nexec %q --inner' "$self" > "$session/command"
 printf ' %q' "$@" >> "$session/command"
 chmod +x "$session/command"
 
-dbus-run-session -- kwin_wayland --virtual --no-lockscreen --no-global-shortcuts \
+# A hung compositor or command must not stall the QA suite (or CI) until its job times out.
+timeout --kill-after=10 "${KWIN_SESSION_TIMEOUT:-300}" \
+  dbus-run-session -- kwin_wayland --virtual --no-lockscreen --no-global-shortcuts \
   --width="${KWIN_WIDTH:-1920}" --height="${KWIN_HEIGHT:-1080}" --socket=wayland-redux \
   --exit-with-session "$session/command" || true
 if [[ ! -s "$session/status" ]]; then
-  echo "kwin-session: the session ended before the command finished (KWin failed to start?)" >&2
+  echo "kwin-session: the session ended before the command finished (KWin failed to start, or it timed out after" \
+       "${KWIN_SESSION_TIMEOUT:-300} s)" >&2
   exit 125
 fi
 exit "$(<"$session/status")"

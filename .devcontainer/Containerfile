@@ -91,7 +91,7 @@ RUN apt-get update && apt-get install -y \
 # kernel refuses to run the binary at all. Without it KWin just runs without real-time priority.
 RUN apt-get update && apt-get install -y \
       kwin-wayland at-spi2-core dbus python3-gi libcap2-bin \
- && setcap -r /usr/bin/kwin_wayland \
+ && { getcap /usr/bin/kwin_wayland | grep -q . && setcap -r /usr/bin/kwin_wayland || true; } \
  && rm -rf /var/lib/apt/lists/*
 
 ENV LANG=C.UTF-8 \

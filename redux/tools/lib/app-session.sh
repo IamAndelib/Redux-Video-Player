@@ -34,7 +34,7 @@ app_start() {
   "$vlc" --no-qt-system-tray --no-qt-video-autoresize --aout=dummy "$@" >"$log" 2>&1 &
   app_pid=$!
   for _ in $(seq 100); do
-    if [[ "${QT_QPA_PLATFORM:-}" == wayland* ]]; then
+    if [[ -n "${REDUX_SESSION_DIR:-}" ]]; then   # inside redux/tools/kwin-session.sh
       grep -q 'using vout display module' "$log" 2>/dev/null && return 0
     else
       xdotool search --onlyvisible --pid "$app_pid" >/dev/null 2>&1 && return 0

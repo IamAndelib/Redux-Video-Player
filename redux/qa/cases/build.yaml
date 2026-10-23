@@ -73,5 +73,5 @@
   milestone: Q0.2
   sources: [decision:D30]
   steps: [In the same session, take a ScreenShot2 screenshot while the bars play]
-  expected: the screenshot shows the bars' yellow, cyan and magenta. Skipped where there is no DRM device for OpenGL compositing (GitHub's runners, G27).
+  expected: the screenshot shows the bars' yellow, cyan and magenta. Skipped where there is no DRM render node for OpenGL compositing (GitHub's runners, G27); a cancelled screenshot despite a render node fails.
   check: l1.kwin-screenshot

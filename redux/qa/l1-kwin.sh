@@ -2,8 +2,8 @@
 # QA checks for the headless KDE session (Q0.2, redux/QA.md), run by redux/tools/qa.sh (L1) inside the dev container:
 #   l1.kwin-session     the real app runs as a Wayland client in redux/tools/kwin-session.sh: it opens SMPTE colour
 #                       bars and quits cleanly with no unexplained log problems
-#   l1.kwin-screenshot  a screenshot through KWin shows the bars; needs OpenGL compositing, so a DRM device (a GPU, or
-#                       vgem); skipped where there is none, e.g. GitHub's runners (G27)
+#   l1.kwin-screenshot  a screenshot through KWin shows the bars; needs OpenGL compositing, so a DRM render node (a GPU,
+#                       or vgem); skipped where there is none, e.g. GitHub's runners (G27)
 # Appends the results to $QA_RESULTS and keeps the log and screenshot in $QA_OUT/l1/.
 set -uo pipefail
 
@@ -48,13 +48,20 @@ source redux/qa/lib/log-problems.sh
 # llvmpipe, #72, and its GBM path can crash under software GL, #73; the Qt interface still renders with OpenGL) and
 # software decoding (with a GPU visible, VA-API frames can't take the OSD title blend in shared memory; CI has no
 # VA-API at all). Hardware decoding is a hand check on a real desktop (M0.7-3).
-app_start "$log" -vv --no-qt-privacy-ask --vout=wl --no-hw-dec "$clip" || verdict fail "no video output; see $log"
+if ! app_start "$log" -vv --no-qt-privacy-ask --vout=wl --no-hw-dec "$clip"; then
+  app_stop >/dev/null 2>&1
+  problems "$log" > "$out/kwin-app.problems"
+  verdict fail "no video output; see $log"
+fi
 sleep 3   # a few frames on screen
-# KWin takes screenshots only when it composites with OpenGL, which needs a suitable DRM device (D30, G27). Ask KWin
-# rather than guess from /dev/dri: an Azure VM's display-only card0, for one, doesn't qualify.
-python3 -I redux/tools/kwin-shot.py "$shot" >> "$out/kwin-session.log" 2>&1
+# KWin takes screenshots only when it composites with OpenGL, which needs a DRM render node (D30, G27); an Azure VM's
+# display-only card0 doesn't count. A cancelled screenshot is a skip only where there is no render node at all;
+# with one, KWin should have composited with OpenGL, so it's a failure (a broken GPU stack mustn't hide as a skip).
+python3 -I redux/tools/kwin-shot.py "$shot" > "$out/kwin-shot.log" 2>&1
 shot_status=$?
-[[ $shot_status -eq 3 ]] && shot_status=skip
+if [[ $shot_status -eq 3 ]] && ! compgen -G '/dev/dri/renderD*' >/dev/null; then
+  shot_status=skip
+fi
 alive=yes; kill -0 "$app_pid" 2>/dev/null || alive=no
 app_stop; status=$?
 
@@ -69,9 +76,9 @@ bars_seen() {
 }
 
 if [[ "$shot_status" == skip ]]; then
-  screenshot=(skip "no DRM device for OpenGL compositing (G27)")
+  screenshot=(skip "no DRM render node for OpenGL compositing (G27)")
 elif [[ "$shot_status" -ne 0 ]]; then
-  screenshot=(fail "no screenshot; see $out/kwin-session.log")
+  screenshot=(fail "no screenshot; see $out/kwin-shot.log")
 elif ! bars_seen; then
   screenshot=(fail "the screenshot doesn't show the colour bars; see $shot")
 else
