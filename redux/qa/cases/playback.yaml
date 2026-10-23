@@ -1,0 +1,56 @@
+# L3 player core (VLC's own tests in test/, run by meson test).
+- id: L3-eof-stays
+  title: The last video ends paused on its last frame
+  layer: L3
+  milestone: M0.6
+  sources: [scope:K6, accept:M0.6]
+  expected: with play-and-pause the player pauses at the end and stays paused.
+  check: l3.test_src_player_eof
+
+- id: L3-restart-after-end
+  title: Play on a finished video starts it from the beginning; a seek in between wins
+  layer: L3
+  milestone: Q0.1
+  sources: [scope:K7, decision:D21]
+  expected: resuming at the end plays from near 0; after a seek it resumes from the seek position.
+  check: l3.test_src_player_eof
+
+- id: L3-player-core
+  title: VLC's player core tests pass
+  layer: L3
+  milestone: Q0.1
+  sources: [scope:K1, scope:K9, scope:K10, scope:K14]
+  expected: every test_src_player_* test passes (pause, seeks, tracks, A-B loop, next/previous, timers …).
+  check: l3.test_src_player_*
+
+- id: L3-library-models
+  title: The Qt library and navigation models pass their tests
+  layer: L3
+  milestone: Q0.1
+  sources: [scope:K22]
+  check: l3.test_qt_*
+  expected: every test_qt_* test passes.
+
+- id: L3-medialibrary
+  title: The media library plugin opens, indexes and closes cleanly
+  layer: L3
+  milestone: M0.7
+  sources: [scope:K22, decision:D24]
+  expected: test_modules_misc_medialibrary passes, including the exit (G24).
+  check: l3.test_modules_misc_medialibrary
+
+- id: L3-thumbnails
+  title: Thumbnails and snapshots encode in the formats that are built
+  layer: L3
+  milestone: M0.7
+  sources: [scope:K12, scope:K23, decision:D24]
+  expected: the thumbnailer tests pass; formats without an encoder are skipped, not failed.
+  check: l3.test_src_preparser_thumbnail*
+
+- id: L3-all
+  title: VLC's whole test suite passes
+  layer: L3
+  milestone: Q0.1
+  sources: [dod:build-and-tests]
+  expected: every test that is built passes; tests that need cut features are disabled at configure time.
+  check: l3.*

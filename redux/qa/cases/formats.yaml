@@ -1,0 +1,9 @@
+# L2 codecs and formats (redux/tools/play-matrix.sh).
+- id: L2-matrix
+  title: Every container, codec and subtitle format in scope opens and decodes
+  layer: L2
+  milestone: M0.6
+  sources: [scope:K39, scope:K40, scope:K41, scope:K15, decision:D15, accept:M0.6]
+  steps: [Play each of the 51 synthetic files and 28 FATE samples headless for up to 5 s]
+  expected: every file finds a demuxer and a decoder for each of its streams; no unsupported-codec error.
+  check: l2.matrix

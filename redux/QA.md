@@ -33,11 +33,34 @@ occasional spot checks of what only a real desktop shows: audio, GPU and feel.
 L5 and L7 start non-blocking and become blocking once they have run green and stable.
 
 ## Test case sources (traceability)
-- `redux/qa/cases/*.yaml`: one case per brief decision, scope item and acceptance criterion. Each has an ID, layer,
-  steps, expected result, its source (brief entry, scope item or acceptance criterion), the Figma node and video
-  frame it comes from, and its milestone.
-- A coverage report: per milestone, which brief entries have passing tests.
-- One entry point, `redux/tools/qa.sh`, runs every layer built so far and writes `build/qa/report.md`.
+- **Stable IDs in the source documents.** The brief's principles are P1–P9 and its decision entries carry their
+  section letter (`- **C3** · …`); SCOPE.md's kept features are K1… (an ID column) and its cuts X1…. IDs are never
+  renumbered: a new entry takes the next free number (`check-brief.py` enforces unique brief IDs).
+- **Cases** live in `redux/qa/cases/*.yaml`, one file per area. One case per brief decision, scope item or acceptance
+  criterion it proves; `redux/qa/report.py` validates them on every run.
+- **Coverage:** the report lists every brief and scope ID with its cases and their status, and the milestone that
+  plans the item, so gaps are visible per milestone.
+- **One entry point:** `redux/dev.sh run redux/tools/qa.sh [L1 L2 L3]` runs every layer built so far and writes
+  `build/qa/report.md` (exit 0 green, 1 a check failed, 2 an invalid case).
+
+## Test case format
+```yaml
+- id: L3-restart-after-end            # unique; <layer>-<slug>, or the EVALUATION.md item ID for hand checks
+  title: Play on a finished video starts it from the beginning
+  layer: L3                           # L1–L9
+  milestone: Q0.1                     # the milestone that added the case (an ID in ROADMAP.md)
+  sources: [scope:K7, decision:D21]   # brief:<P1|C3…>, scope:<K…|X…>, decision:<D…>, accept:<milestone>,
+                                      # dod:<build-and-tests|keyboard|qml-clean|tokens|spacing|status-log|crops|qa-green>
+  steps: [ ... ]                      # optional, for anything not obvious from the check
+  expected: resuming at the end plays from near 0; after a seek it resumes from the seek position.
+  check: l3.test_src_player_eof       # a result ID from qa.sh (globs allowed: l3.test_src_player_*),
+                                      # or manual:<EVALUATION.md item> for a hand check
+  figma: 2151:9673                    # optional: the Figma node it comes from
+  frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
+```
+Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l2.matrix`,
+`l3.<meson test name>`, `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
+are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 ## The agent loop (per milestone)
 1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.
