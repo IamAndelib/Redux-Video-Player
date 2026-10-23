@@ -1,101 +1,41 @@
 #!/usr/bin/env bash
-# Capture screenshots of the built player at 1920x1080 on a headless X server, for
+# Capture screenshots of the built player at 1920x1080 in the headless KDE session (redux/tools/kwin-session.sh), for
 # comparison against the Figma frames (redux/tools/compare.sh). Run inside the dev container:
 #
 #   redux/dev.sh run redux/tools/shoot.sh [scene...]        (default: all scenes)
 #
-# Scenes: first-run, library, player. Output: build/shots/<scene>.png
-# THEME=night|day|system picks VLC's color scheme for the later scenes (default night, to
-# match the dark Figma frames).
-# The player uses a throwaway profile (build/shots/profile) whose Videos folder points at the
-# generated test media. The first-run scene walks the first-run wizard, which adds that folder
-# to the media library, so run it before library (the default order does). The library is
-# video-only (redux/SCOPE.md), so there is no music scene.
+# Scenes (redux/qa/visual/scenes.py, Q0.4): first-run, library, player, window. Output: build/shots/<scene>.png.
+# THEME=night|day|system picks VLC's color scheme (default night, to match the dark Figma frames).
+# The scenes drive the app through AT-SPI like a user and share a throw-away profile (build/shots/session/) whose
+# Videos folder is the generated test media. The first-run scene walks the first-run wizard, which indexes that
+# folder for the library scene, so run it first (the default order does).
+# KWin takes screenshots only with a DRM render node (a GPU or vgem), so this doesn't run on GitHub's runners (G27).
 set -euo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
-root="$PWD"
-builddir="${BUILD_DIR:-build/meson}"
-vlc="$root/$builddir/bin/vlc-static"
-media="$root/build/media"
-out="$root/build/shots"
-profile="$out/profile"
-W=1920 H=1080
-case "${THEME:-night}" in system) scheme=0 ;; day) scheme=1 ;; night) scheme=2 ;; *) echo "THEME must be night, day or system" >&2; exit 1 ;; esac
+out=build/shots
 
-[[ -x "$vlc" ]] || { echo "no player at $vlc; run redux/tools/build.sh first" >&2; exit 1; }
-[[ -d "$media" ]] || redux/tools/make-media.sh "$media" >/dev/null
+if [[ "${1:-}" == --in-session ]]; then
+  source redux/qa/lib/webdriver.sh
+  webdriver_start "$out/session/driver.log" || { echo "the WebDriver server didn't start" >&2; exit 1; }
+  /opt/e2e/bin/python -I redux/qa/visual/scenes.py "$2"   # not exec: the server must stop with this script
+  exit 0   # (set -e already left with the runner's status if it failed)
+fi
 
-mkdir -p "$out" "$profile/.config"
-printf 'XDG_VIDEOS_DIR="%s"\n' "$media/Videos" > "$profile/.config/user-dirs.dirs"
-
-source redux/tools/lib/app-session.sh
-export HOME="$profile"
-xvfb_start :99 "$W" "$H"
-trap 'app_stop || true; xvfb_stop' EXIT
-
-start_vlc() { app_start "$out/vlc.log" "$@"; }
-stop_vlc() { app_stop || true; }
-
-fill_screen() {
-  # VLC maps several windows; there's no window manager, so size them all ourselves.
-  # (xdotool --sync would wait forever for a window manager's reply.)
-  local w
-  for w in $(xdotool search --onlyvisible --pid "$app_pid" 2>/dev/null || true); do
-    xdotool windowmove "$w" 0 0 windowsize "$w" "$W" "$H" 2>/dev/null || true
-  done
-  sleep 1
-}
-
-shoot() { # shoot <scene> <settle-seconds>
-  sleep "$2"
-  import -window root "$out/$1.png"
-  echo "captured $out/$1.png"
-}
-
-scene_first_run() {
-  rm -rf "$profile/.config/vlc" "$profile/.local/share/vlc" "$profile/.cache/vlc"
-  start_vlc --qt-privacy-ask
-  shoot first-run 3
-  # Accept the wizard defaults, which include the XDG Videos folder. Use the buttons'
-  # mnemonics (&Next, &Finish): Return would hit the folder page's "add folder" button.
-  for _ in 1 2 3 4; do xdotool key alt+n; sleep 1; done
-  xdotool key alt+f
-  sleep 10   # let the media library index the test media
-  stop_vlc
-  set_scheme
-}
-
-set_scheme() {
-  local conf="$profile/.config/vlc/vlc-qt-interface.conf"
-  [[ -f "$conf" ]] || return 0
-  if grep -q '^color-scheme-index=' "$conf"; then
-    sed -i "s/^color-scheme-index=.*/color-scheme-index=$scheme/" "$conf"
-  else
-    sed -i "s/^\\[MainWindow\\]$/[MainWindow]\\ncolor-scheme-index=$scheme/" "$conf"
-  fi
-}
-
-scene_library() {
-  start_vlc --no-qt-privacy-ask
-  fill_screen
-  shoot library 4
-  stop_vlc
-}
-
-scene_player() {
-  start_vlc --no-qt-privacy-ask --start-time=40 --start-paused \
-    "$media/Videos/Shows/The Wand/S01/The_Wand_S01E04.mp4"
-  fill_screen
-  xdotool mousemove $((W / 2)) $((H - 60))   # hovering reveals the player controls
-  shoot player 3
-  stop_vlc
-}
-
+[[ -x "${BUILD_DIR:-build/meson}/bin/vlc-static" ]] || { echo "no player; run redux/tools/build.sh first" >&2; exit 1; }
+compgen -G '/dev/dri/renderD*' >/dev/null || { echo "no DRM render node: KWin can't take screenshots (G27)" >&2; exit 1; }
+[[ -d build/media ]] || redux/tools/make-media.sh >/dev/null
+mkdir -p "$out/session"
 scenes=("$@")
-[[ ${#scenes[@]} -gt 0 ]] || scenes=(first-run library player)
-for s in "${scenes[@]}"; do
-  fn="scene_${s//-/_}"
-  declare -F "$fn" >/dev/null || { echo "unknown scene: $s" >&2; exit 1; }
-  "$fn"
+[[ ${#scenes[@]} -gt 0 ]] || scenes=(first-run library player window)
+for scene in "${scenes[@]}"; do
+  [[ "$scene" =~ ^(first-run|library|player|window)$ ]] || { echo "unknown scene: $scene" >&2; exit 1; }
+  # One session per scene. The window scene sits away from the corner so its shadow shows.
+  position=0,0; [[ "$scene" == window ]] && position=160,90
+  if ! KWIN_WINDOW_POSITION="$position" redux/tools/kwin-session.sh "$0" --in-session "$scene" \
+       > "$out/session/$scene.log" 2>&1; then
+    echo "scene $scene failed; see $out/session/$scene.log" >&2
+    exit 1
+  fi
+  grep -o 'captured .*' "$out/session/$scene.log"
 done

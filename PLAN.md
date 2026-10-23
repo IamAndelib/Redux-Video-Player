@@ -122,7 +122,7 @@ milestone and references. The full narration is in `redux/design/transcript.md`.
      - Each run uses a throwaway profile whose XDG folders point at the test media.
      - The first-run wizard is driven with xdotool so the media library gets indexed.
      - The default theme is Night.
-   - `redux/tools/compare.sh` diffs the shots against Figma frames listed in `redux/tools/shots.tsv` and writes `build/shots/report.html` (side by side, a diff image and RMSE).
+   - `redux/tools/compare.sh` compares the shots region by region with their Figma frames and committed baselines (regions in `redux/qa/visual/regions/`, Q0.4) and writes `build/shots/report.html`.
    - Baseline: stock VLC 4 scores RMSE 0.17 against the Figma player frame 187:328.
 6. **Design inventory. Done.**
    - Done: `redux/design/screen-map.md` maps each Figma frame to the VLC QML/C++ files it affects.

@@ -97,12 +97,14 @@ public:
         Hovered = VQTC_STATE_HOVERED,
         Focused =  VQTC_STATE_FOCUSED
     };
+    Q_ENUM(ColorState)
 
     enum ColorSection {
         Fg = VQTC_SECTION_FG,
         Bg = VQTC_SECTION_BG,
         Decoration = VQTC_SECTION_DECORATION
     };
+    Q_ENUM(ColorSection)
 
     enum ColorName {
         Primary = VQTC_NAME_PRIMARY,
@@ -121,6 +123,7 @@ public:
         Separator = VQTC_NAME_SEPARATOR,
         Indicator = VQTC_NAME_INDICATOR
     };
+    Q_ENUM(ColorName)
 
     Q_PROPERTY(SystemPalette* palette READ palette WRITE setPalette NOTIFY paletteChanged FINAL)
     Q_PROPERTY(ColorSet colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged FINAL)

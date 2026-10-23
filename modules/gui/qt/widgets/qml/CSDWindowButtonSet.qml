@@ -108,6 +108,20 @@ Row {
                 console.assert(false, "unreachable")
             }
 
+            // The icon is a glyph, so the button needs a name for screen readers (and AT-SPI tests).
+            Accessible.name: {
+                switch (modelData.type) {
+                case CSDButton.Minimize:
+                    return qsTr("Minimize")
+                case CSDButton.MaximizeRestore:
+                    return (MainCtx.intfMainWindow.visibility === Window.Maximized) ? qsTr("Restore")
+                                                                                     : qsTr("Maximize")
+                case CSDButton.Close:
+                    return qsTr("Close")
+                }
+                return ""
+            }
+
             onClicked: modelData.click()
 
             // handles VLCStyle.scale changes

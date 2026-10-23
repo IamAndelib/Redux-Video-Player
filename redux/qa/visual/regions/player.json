@@ -1,0 +1,9 @@
+{
+  "what": "A video paused with the player controls showing (Figma: compact library panel open, G19)",
+  "figma": "187:328",
+  "area": [
+    {"name": "title-bar", "xpos": 0, "ypos": 0, "width": 1920, "height": 40},
+    {"name": "side-panel", "xpos": 0, "ypos": 40, "width": 430, "height": 920},
+    {"name": "controls", "xpos": 0, "ypos": 960, "width": 1920, "height": 120}
+  ]
+}

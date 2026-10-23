@@ -34,21 +34,9 @@ fi
 
 # --- inside the session ----------------------------------------------------------------------------------------
 shift
-# The driver injects keyboard and mouse input through this KWin's fake-input protocol.
-KWIN_PID="$(pidof kwin_wayland)"
-export KWIN_PID
-driver_dir=/usr/local/share/selenium-webdriver-at-spi
-(cd "$driver_dir" && exec env FLASK_APP=selenium-webdriver-at-spi.py python3 -m flask run --port 4723 --no-reload) \
-  > "$out/driver.log" 2>&1 &
-driver=$!
-trap 'kill "$driver" 2>/dev/null || true' EXIT
-ready=
-for _ in $(seq 100); do
-  curl -fs http://127.0.0.1:4723/status >/dev/null 2>&1 && { ready=1; break; }
-  sleep 0.1
-done
-if [[ -z "$ready" ]]; then
-  printf '%s\t%s\t%s\n' l5.driver fail "the WebDriver server didn't start in 10 s; see $out/driver.log" > "$out/results.tsv"
+source redux/qa/lib/webdriver.sh
+if ! webdriver_start "$out/driver.log"; then
+  printf '%s\t%s\t%s\n' l5.driver fail "the WebDriver server didn't start; see $out/driver.log" > "$out/results.tsv"
   exit 1
 fi
 
