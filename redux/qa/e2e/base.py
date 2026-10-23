@@ -34,17 +34,26 @@ TIME_LABEL = re.compile(r"^\d{2}:\d{2}(:\d{2})?$")
 
 
 class PlayerTest(unittest.TestCase):
-    media = []        # paths under build/media, opened in this order (the queue)
-    extra_args = []   # more player options for this class
+    media = []            # paths under build/media, opened in this order (the queue)
+    extra_args = []       # more player options for this class
+    out = OUT             # where profiles and logs go
+    profile = None        # the profile's name (default: the class's); classes can share one
+    keep_profile = False  # start from the profile as the last class left it (default: a fresh one)
+
+    @classmethod
+    def prepare_profile(cls, profile):
+        """Called before the player starts, to put settings into the profile directory."""
 
     @classmethod
     def setUpClass(cls):
-        profile = os.path.join(OUT, "profile-" + cls.__name__)
-        shutil.rmtree(profile, ignore_errors=True)
-        os.makedirs(profile)
+        profile = os.path.join(cls.out, "profile-" + (cls.profile or cls.__name__))
+        if not cls.keep_profile:
+            shutil.rmtree(profile, ignore_errors=True)
+        os.makedirs(profile, exist_ok=True)
+        cls.prepare_profile(profile)
         # Software only, as in l1.kwin-session (D30): shared-memory video output, software decoding.
         args = [VLC, "--control=dbus", "--no-qt-privacy-ask", "--aout=dummy", "--vout=wl", "--no-hw-dec",
-                "--file-logging", f"--logfile={os.path.join(OUT, 'vlc-' + cls.__name__ + '.log')}",
+                "--file-logging", f"--logfile={os.path.join(cls.out, 'vlc-' + cls.__name__ + '.log')}",
                 *cls.extra_args, *(os.path.join(MEDIA, m) for m in cls.media)]
         options = AppiumOptions()
         options.set_capability("app", shlex.join(args))
