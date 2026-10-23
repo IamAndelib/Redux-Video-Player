@@ -15,7 +15,7 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | done | [#52](https://github.com/IamAndelib/Redux-Video-Player/issues/52) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
 | M0.5 | Scope foundation (SCOPE.md, D13–D16, roadmap, issues) | A | S | done | [#44](https://github.com/IamAndelib/Redux-Video-Player/issues/44) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
 | M0.6 | Lean build profile and codec/format matrix | A | M | done | [#45](https://github.com/IamAndelib/Redux-Video-Player/issues/45) / [PR #55](https://github.com/IamAndelib/Redux-Video-Player/pull/55) | | 2026-10-23 |
-| M0.7 | Flatpak skeleton | A | M | review | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) | | 2026-10-23 |
+| M0.7 | Flatpak skeleton | A | M | review | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) / [PR #67](https://github.com/IamAndelib/Redux-Video-Player/pull/67) | | 2026-10-23 |
 | Q0.1 | QA foundations | Q | M | todo | [#56](https://github.com/IamAndelib/Redux-Video-Player/issues/56) | |  |
 | Q0.2 | Headless desktop | Q | M | todo | [#57](https://github.com/IamAndelib/Redux-Video-Player/issues/57) | |  |
 | Q0.3 | End-to-end driver | Q | M | todo | [#58](https://github.com/IamAndelib/Redux-Video-Player/issues/58) | |  |
