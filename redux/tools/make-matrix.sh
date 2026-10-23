@@ -11,8 +11,10 @@ set -euo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 out="${1:-build/matrix}"
-rm -rf "$out"
+# Start clean, but keep real/: fetch-samples.sh downloads the FATE samples there, and play-matrix.sh calls this
+# script when the synthetic files are missing, which would otherwise delete samples fetched earlier.
 mkdir -p "$out"
+find "$out" -mindepth 1 -maxdepth 1 ! -name real -exec rm -rf {} +
 ff=(ffmpeg -hide_banner -loglevel error -nostdin -y)
 export SVT_LOG=1   # keep the SVT-AV1 encoder quiet
 V=(-f lavfi -i "testsrc2=size=640x360:rate=25:duration=2")
