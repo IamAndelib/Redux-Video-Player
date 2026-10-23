@@ -69,6 +69,8 @@ struct vlc_player_input
     int capabilities;
     vlc_tick_t length;
     bool live;
+    /* Redux Video Player: paused by play-and-pause at the end of the media; resuming restarts it (D21) */
+    bool paused_at_eof;
 
     double position;
     vlc_tick_t time;

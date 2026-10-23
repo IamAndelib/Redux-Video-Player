@@ -860,3 +860,10 @@ option('wix',
 # TODO: Missing kwallet
 # TODO: Missing osx_notifications
 # TODO: Missing chromecast
+
+# Redux Video Player (D20): plugins in this list are marked `enabled: false` in modules/meson.build.
+# redux/tools/build.sh fills it from redux/cut-modules.txt.
+option('redux_cut_modules',
+    type: 'array',
+    value: [],
+    description: 'VLC plugins not to build (Redux Video Player product scope)')

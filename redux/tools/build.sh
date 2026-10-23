@@ -12,17 +12,34 @@ set -euo pipefail
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 builddir="${BUILD_DIR:-build/meson}"
 
-configure() {
+options() {
   # The Qt interface and the media library are what this project is about, so they're required;
-  # skins2 stays off since we replace the UI rather than skin it. Everything else is still "auto"
-  # until M0.6 switches to an allowlist that matches redux/SCOPE.md (then run `build.sh reconfigure`).
-  meson setup "$builddir" ${1:+"$1"} \
-    --buildtype=debugoptimized \
-    -Dqt=enabled \
-    -Dmedialibrary=enabled \
-    -Dskins2=disabled \
-    -Dtests=enabled \
+  # skins2 stays off since we replace the UI rather than skin it. Plugins outside the product scope
+  # (redux/SCOPE.md) are listed in redux/cut-modules.txt and not built (D20). After editing that list,
+  # run `build.sh reconfigure`.
+  local cut
+  cut="$(grep -v '^[[:space:]]*#' redux/cut-modules.txt | sed '/^[[:space:]]*$/d' | paste -sd, -)"
+  opts=(
+    --buildtype=debugoptimized
+    -Dqt=enabled
+    -Dmedialibrary=enabled
+    -Dskins2=disabled
+    -Dtests=enabled
+    -Dredux_cut_modules="$cut"
     ${MESON_OPTS:-}
+  )
+}
+
+configure() {
+  options
+  meson setup "$builddir" "${opts[@]}"
+}
+
+reconfigure() {
+  # Two steps, so options added to meson_options.txt since the last setup are known before they're set.
+  options
+  meson setup --reconfigure "$builddir"
+  meson configure "$builddir" "${opts[@]}"
 }
 
 ensure_configured() {
@@ -43,7 +60,7 @@ case "${1:-build}" in
     exec "$builddir/bin/vlc-static" "$@"
     ;;
   reconfigure)
-    if [[ -f "$builddir/build.ninja" ]]; then configure --reconfigure; else configure; fi
+    if [[ -f "$builddir/build.ninja" ]]; then reconfigure; else configure; fi
     ;;
   *)
     sed -n '2,9p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'

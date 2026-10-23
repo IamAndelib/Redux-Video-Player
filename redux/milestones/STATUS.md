@@ -4,7 +4,7 @@ One row per milestone. Update the row (and the milestone file's status log) when
 Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap); `cut` and `future` (out of scope or parked under D14, see `redux/SCOPE.md`). Scores are the region
 RMSE from `compare.sh` (baseline set in M0.3).
 
-**Next up: merge [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53)** (M0.4 + M0.5, in review), then **M0.6** (lean build profile and codec/format matrix) on `m/M0.6-lean-build`, then M0.7 → M0.8 before the design work resumes at M1.1. Scope: [`redux/SCOPE.md`](../SCOPE.md).
+**Next up: M0.7** (Flatpak skeleton, in progress on `m/M0.7-flatpak`), then M0.8 (UI trim) before the design work resumes at M1.1. Scope: [`redux/SCOPE.md`](../SCOPE.md).
 
 | ID | Milestone | Track | Size | Status | Issue / PR | Region score | Updated |
 |---|---|---|---|---|---|---|---|
@@ -12,10 +12,10 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M0.1 | Tracking scaffolding | A | S | done | [#1](https://github.com/IamAndelib/Redux-Video-Player/issues/1) | | 2026-10-13 |
 | M0.2 | Complete the design source | A | S | todo | [#2](https://github.com/IamAndelib/Redux-Video-Player/issues/2) | |  |
 | M0.3 | Harness v2 and isolated run profile | A | S–M | todo | [#3](https://github.com/IamAndelib/Redux-Video-Player/issues/3) | |  |
-| M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | review | [#52](https://github.com/IamAndelib/Redux-Video-Player/issues/52) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-20 |
-| M0.5 | Scope foundation (SCOPE.md, D13–D16, roadmap, issues) | A | S | review | [#44](https://github.com/IamAndelib/Redux-Video-Player/issues/44) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-20 |
-| M0.6 | Lean build profile and codec/format matrix | A | M | todo | [#45](https://github.com/IamAndelib/Redux-Video-Player/issues/45) | |  |
-| M0.7 | Flatpak skeleton | A | M | todo | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) | |  |
+| M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | done | [#52](https://github.com/IamAndelib/Redux-Video-Player/issues/52) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
+| M0.5 | Scope foundation (SCOPE.md, D13–D16, roadmap, issues) | A | S | done | [#44](https://github.com/IamAndelib/Redux-Video-Player/issues/44) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
+| M0.6 | Lean build profile and codec/format matrix | A | M | done | [#45](https://github.com/IamAndelib/Redux-Video-Player/issues/45) / [PR #55](https://github.com/IamAndelib/Redux-Video-Player/pull/55) | | 2026-10-23 |
+| M0.7 | Flatpak skeleton | A | M | wip | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) | | 2026-10-23 |
 | M0.8 | Feature trim in the UI | A | M | todo | [#47](https://github.com/IamAndelib/Redux-Video-Player/issues/47) | |  |
 | M1.1 | Night palette from Figma tokens | B | S | todo | [#4](https://github.com/IamAndelib/Redux-Video-Player/issues/4) | |  |
 | M1.2 | Typography and shape tokens | B | M | todo | [#5](https://github.com/IamAndelib/Redux-Video-Player/issues/5) | |  |

@@ -123,6 +123,7 @@ vlc_player_input_SeekByPos(struct vlc_player_input *input, double position,
 {
     vlc_player_t *player = input->player;
     vlc_player_assert_seek_params(speed, whence);
+    input->paused_at_eof = false; /* resume from where the user seeked to (D21) */
 
     /* Assert before we modify position internally, this only check that user
      * positions are correct. */
@@ -160,6 +161,7 @@ vlc_player_input_SeekByTime(struct vlc_player_input *input, vlc_tick_t time,
 {
     vlc_player_t *player = input->player;
     vlc_player_assert_seek_params(speed, whence);
+    input->paused_at_eof = false; /* resume from where the user seeked to (D21) */
 
     if (whence != VLC_PLAYER_WHENCE_ABSOLUTE)
         time += vlc_player_input_GetTime(input, true, vlc_tick_now());
@@ -1023,6 +1025,7 @@ input_thread_Events(input_thread_t *input_thread,
             if (player->play_and_pause)
             {
                 vlc_player_Pause(player);
+                input->paused_at_eof = true;
                 handled = true;
             }
             else if (input->repeat > 0)
@@ -1259,6 +1262,7 @@ vlc_player_input_New(vlc_player_t *player, input_item_t *item)
     input->capabilities = 0;
     input->length = input->time = VLC_TICK_INVALID;
     input->live = false;
+    input->paused_at_eof = false;
     input->normal_time = VLC_TICK_0;
     input->pause_date = VLC_TICK_INVALID;
     input->position = 0.f;

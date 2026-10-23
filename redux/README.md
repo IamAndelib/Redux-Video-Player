@@ -40,6 +40,9 @@ redux/dev.sh app [file...]                        # open the built player on you
 redux/tools/launcher.sh install                   # on the host: add "Redux Video Player (dev)" to the app menu
 redux/dev.sh run redux/tools/build.sh run         # start the player with a throwaway profile
 redux/dev.sh run redux/tools/make-media.sh        # synthetic test media in build/media
+redux/dev.sh run redux/tools/make-matrix.sh       # codec/format matrix in build/matrix
+redux/tools/fetch-samples.sh                      # real samples from FFmpeg's FATE suite into build/matrix/real
+redux/dev.sh run redux/tools/play-matrix.sh       # play the whole matrix headless; report in build/matrix/report.tsv
 redux/dev.sh run redux/tools/shoot.sh             # 1920x1080 screenshots in build/shots (THEME=day for light)
 redux/dev.sh run redux/tools/compare.sh           # diff against Figma; open build/shots/report.html
 python3 -I redux/tools/figma-export.py            # on the host: Figma frames/icons into redux/design/source

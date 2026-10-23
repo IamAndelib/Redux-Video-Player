@@ -18,8 +18,12 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 ## Philosophy
 - **Slow and steady:** one milestone at a time, reviewed and merged before the next.
 - **KISS:** the simplest thing that meets the acceptance criteria.
-- **Don't reinvent the wheel:** reuse upstream VLC code, then established libraries, then write new code.
-- **Research first:** a time-boxed research step opens every milestone and is written into its file.
+- **Don't reinvent the wheel; steal like an artist:** before building or experimenting with anything, search for
+  the best existing open-source implementation (upstream VLC and its MRs, other players such as mpv, IINA, Haruna,
+  Celluloid and MPC-HC, KDE/Qt components, established libraries and test suites) and adopt it, with credit in
+  `redux/CREDITS.md`. Write new code only when nothing fits.
+- **Research first:** a time-boxed research step opens every milestone and is written into its file, including
+  what prior art was found and what was adopted.
 - **Clean, maintainable code:** follow `modules/gui/qt/HACKING` and Qt QML practices.
   - Small focused files.
   - No duplication.
@@ -40,6 +44,8 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 2. Cover every user-visible change of the milestone, plus a quick regression check of what it touched.
 3. Then "known not working yet" (out of scope or later milestones), so nothing is reported twice.
 4. End with how to report: the item number and what you saw (a screenshot helps).
+5. Anything the maintainer does by hand uses test media at least 30 s long (e.g. `build/media/`), never the 2 s
+   matrix clips: a check must not be over before it can be done.
 
 ## Commands (all builds and tools run in the Podman dev container)
 | What | Command |
@@ -52,6 +58,7 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 | Run the player with a throwaway profile | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
+| Codec/format matrix (generate, fetch real samples, play all) | `redux/dev.sh run redux/tools/make-matrix.sh`, `redux/tools/fetch-samples.sh`, `redux/dev.sh run redux/tools/play-matrix.sh` |
 | Screenshots (1920×1080, Night) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light) |
 | Diff vs Figma | `redux/dev.sh run redux/tools/compare.sh`, then open `build/shots/report.html` |
 | Shell in the container | `redux/dev.sh shell` |
