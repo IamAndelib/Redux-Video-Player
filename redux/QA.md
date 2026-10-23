@@ -27,7 +27,7 @@ occasional spot checks of what only a real desktop shows: audio, GPU and feel.
 | L5 End-to-end flows | real user journeys in the real app: open, play, seek, tracks, subtitles, library, settings, Customize, onboarding | `selenium-webdriver-at-spi` driving the container build under a headless `kwin_wayland --virtual` session | Q0.2, Q0.3 |
 | L6 Visual fidelity | screens match Figma per region; spacing, colours, radii and fonts follow tokens | `shoot.sh` + `compare.sh` (region RMSE with masks), KWin ScreenShot2 for chrome and shadows, token linter | Q0.1 (lint), Q0.4 |
 | L7 UX heuristics | keyboard reachability, focus order, contrast (WCAG AA), hit-target sizes, no element touching another (principle 9), no dead entries for cut features | AT-SPI tree audit, contrast check on every `ColorContext` set × state × theme, layout-overlap check | Q0.3, Q0.4 |
-| L8 Sandbox | Flatpak permissions, portal file dialog, MPRIS, VA-API inside the sandbox | `flatpak.sh run` + log checks (the AT-SPI driver can't attach to a Flatpak) | Q0.7 |
+| L8 Sandbox | Flatpak permissions, portal file dialog, MPRIS, VA-API inside the sandbox | `flatpak.sh matrix` (the codec matrix inside the installed bundle; in CI: `flatpak.yml`, D29), `flatpak.sh run` + log checks (the AT-SPI driver can't attach to a Flatpak) | Q0.7 (matrix in CI); checks grow per milestone |
 | L9 Agent review | an "expert QA" agent reads the screenshots against the brief and Figma frames and files findings | review agents with a fixed rubric | Q0.6 |
 
 L5 and L7 start non-blocking and become blocking once they have run green and stable.

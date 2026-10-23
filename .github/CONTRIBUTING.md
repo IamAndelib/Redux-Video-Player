@@ -56,8 +56,10 @@ redux/dev.sh run redux/tools/make-media.sh  # test media in build/media/
 ## 6. Hand over
 1. Fill in the milestone file's Verification table with real command output, and add the checks only a person can
    judge (sound, GPU, feel, looks) to [`redux/EVALUATION.md`](../redux/EVALUATION.md).
-2. Mark the PR ready for review. From M0.8 on, attach the QA report (`redux/tools/qa.sh`, see
-   [`redux/QA.md`](../redux/QA.md)).
+2. Wait for CI to pass on the PR (D29): the `CI` workflow runs the QA suite (`redux/tools/qa.sh`, see
+   [`redux/QA.md`](../redux/QA.md)) and attaches its report as the `qa-report` artifact; the `Flatpak` workflow builds
+   the Flatpak and plays the codec matrix inside it when you touch code or packaging. Then mark the PR ready for
+   review.
 3. The maintainer, or the maintainer's Claude session after its QC pass (D26), reviews and squash-merges. Don't
    merge your own PR.
 4. If you stop mid-milestone, add a dated "stopped at / next step" line to the milestone file's status log and push,

@@ -52,7 +52,8 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 ## Milestone ritual (D18, amended by D23 and D26)
 Research → plan → implement in small commits → **QC** → PR → squash-merge → update `STATUS.md` and the milestone's
 status log → start the next milestone (D26: the maintainer evaluates the complete project at the end, not each
-milestone). **QC before every merge:** the build; VLC's test suite (`meson test -C build/meson`); the codec matrix;
+milestone). **QC before every merge:** CI green on the PR (D29: `ci.yml` runs the QA suite; `flatpak.yml` builds the
+Flatpak and plays the matrix in it when code or packaging changed); locally: the build; VLC's test suite (`meson test -C build/meson`); the codec matrix;
 the Flatpak build and `flatpak.sh matrix` when packaging or `src/`/`modules/` outside the Qt UI changed; the QA suite
 (`redux/tools/qa.sh`) as Track Q builds it; an independent review agent on the diff; fix and re-run until green, and
 record the results in the PR and the milestone file. Keep "Redux Video Player (dev)" working (`redux/dev.sh app`).
