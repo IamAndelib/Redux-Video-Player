@@ -1,5 +1,5 @@
 {
-  "what": "The window as it opens, not maximised: VLC's own title bar and its shadow",
+  "what": "The window as it opens, not maximised: VLC's own title bar and frame (its shadow doesn't show on KWin's black desktop)",
   "figma": null,
   "area": [
     {"name": "window", "xpos": 120, "ypos": 50, "width": 720, "height": 560}

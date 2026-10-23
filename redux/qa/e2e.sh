@@ -36,7 +36,7 @@ fi
 shift
 source redux/qa/lib/webdriver.sh
 if ! webdriver_start "$out/driver.log"; then
-  printf '%s\t%s\t%s\n' l5.driver fail "the WebDriver server didn't start in 10 s; see $out/driver.log" > "$out/results.tsv"
+  printf '%s\t%s\t%s\n' l5.driver fail "the WebDriver server didn't start; see $out/driver.log" > "$out/results.tsv"
   exit 1
 fi
 

@@ -99,6 +99,8 @@ if wants L6; then
   elif redux/tools/shoot.sh > "$QA_OUT/shoot.log" 2>&1; then
     python3 -I redux/qa/visual/compare.py > "$QA_OUT/compare.log" 2>&1   # its results go to $QA_RESULTS
     grep -E '^  (pass|fail|skip)  ' "$QA_OUT/compare.log"
+    # A crash writes no rows; it must not read as green.
+    grep -q '^l6\.' "$QA_RESULTS" || result l6.compare fail "compare.py wrote no results; see $QA_OUT/compare.log"
   else
     result l6.shoot fail "a scene failed; see $QA_OUT/shoot.log"
   fi

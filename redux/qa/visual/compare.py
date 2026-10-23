@@ -21,6 +21,7 @@ import html
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -34,22 +35,32 @@ W, H = 1920, 1080
 THRESHOLD = 0.0002
 
 
-def magick(*args):
-    return subprocess.run(["magick", *args], capture_output=True, text=True)
+def magick(*args, ok=(0,)):
+    """Run ImageMagick; any exit status not in `ok` is an error (never a silent pass on a missing image)."""
+    result = subprocess.run(["magick", *args], capture_output=True, text=True)
+    if result.returncode not in ok:
+        raise RuntimeError(f"magick {args[0]}: {result.stderr.strip() or f'exit {result.returncode}'}")
+    return result
 
 
 def dssim(a, b, mask, diff):
     """DSSIM of two same-size images with the mask's black pixels left out, and a diff image."""
-    result = magick("compare", "-metric", "DSSIM", "-read-mask", mask, a, b, diff)
-    found = re.search(r"\(([-0-9.e]+)\)", result.stderr)   # "<absolute> (<normalised>)"; exit 1 just means "differs"
-    if result.returncode > 1 or not found:
-        raise RuntimeError(f"magick compare failed: {result.stderr.strip()}")
+    # Given images of different sizes, `compare` searches for the smaller one inside the larger and can report a
+    # perfect match: a region resized without --update must fail instead.
+    sizes = [magick("identify", "-format", "%wx%h", image).stdout for image in (a, b)]
+    if sizes[0] != sizes[1]:
+        raise RuntimeError(f"sizes differ ({sizes[0]} vs {sizes[1]}); after changing a region, run with --update")
+    result = magick("compare", "-metric", "DSSIM", "-read-mask", mask, a, b, diff, ok=(0, 1))   # 1: they differ
+    found = re.search(r"\(([-0-9.e]+)\)", result.stderr)   # "<absolute> (<normalised>)"
+    if not found:
+        raise RuntimeError(f"magick compare: no score in {result.stderr.strip()!r}")
     return float(found[1])
 
 
-def figma_frame(node):
+def figma_frame(node, anchor):
     """The Figma frame scaled like a screenshot: full-window (16:9) frames to 1920x1080, smaller ones (dialogs) at
-    their own size centred on a dark canvas. None when it isn't exported."""
+    their own size on a dark canvas, where the app puts them (`anchor`: center, or northwest for a window the session
+    places at the origin). None when it isn't exported."""
     found = glob.glob(os.path.join(FRAMES, f"*--{node.replace(':', '-')}.png")) if node else []
     if not found:
         return None
@@ -58,7 +69,7 @@ def figma_frame(node):
     if ratio == "1":
         magick(found[0], "-resize", f"{W}x{H}!", out)
     else:
-        magick(found[0], "-background", "#111111", "-gravity", "center", "-extent", f"{W}x{H}", out)
+        magick(found[0], "-background", "#111111", "-gravity", anchor, "-extent", f"{W}x{H}", out)
     return out
 
 
@@ -86,24 +97,35 @@ def compare_scene(scene, update):
     rows, results = [], []
     if not os.path.exists(shot):
         return [(f"l6.{scene}", "fail", f"no screenshot; run redux/tools/shoot.sh {scene}")], f"<h2>{scene}</h2><p>no screenshot</p>"
-    figma = figma_frame(spec.get("figma"))
+    try:
+        figma = figma_frame(spec.get("figma"), spec.get("anchor", "center"))
+        figma_note = "no Figma frame"
+    except RuntimeError as error:   # the Figma score is progress only: a bad frame mustn't stop the regression check
+        figma, figma_note = None, f"Figma frame unusable ({error})"
     areas = [a for a in spec["area"] if a.get("type", "match") == "match"]
     excludes = [a for a in spec["area"] if a.get("type") == "exclude"]
     for area in areas:
         name, prefix = area["name"], os.path.join(WORK, f"{scene}-{area['name']}")
-        ours, m = crop(shot, area, f"{prefix}.png"), mask(area, excludes, f"{prefix}.mask.png")
-        to_figma = dssim(ours, crop(figma, area, f"{prefix}.figma.png"), m, f"{prefix}.figma-diff.png") if figma else None
-        baseline = os.path.join(HERE, "baselines", scene, f"{name}.png")
-        if update:
-            os.makedirs(os.path.dirname(baseline), exist_ok=True)
-            magick(ours, "-strip", "-define", "png:compression-level=9", baseline)
         threshold = area.get("threshold", THRESHOLD)
-        if os.path.exists(baseline):
-            to_base = dssim(ours, baseline, m, f"{prefix}.baseline-diff.png")
-            status = "pass" if to_base <= threshold else "fail"
-        else:
-            to_base, status = None, "skip"
-        figma_text = f"Figma {to_figma:.4f}" if to_figma is not None else "no Figma frame"
+        baseline = os.path.join(HERE, "baselines", scene, f"{name}.png")
+        try:
+            ours, m = crop(shot, area, f"{prefix}.png"), mask(area, excludes, f"{prefix}.mask.png")
+            to_figma = (dssim(ours, crop(figma, area, f"{prefix}.figma.png"), m, f"{prefix}.figma-diff.png")
+                        if figma else None)
+            if update:
+                os.makedirs(os.path.dirname(baseline), exist_ok=True)
+                magick(ours, "-strip", "-define", "png:compression-level=9", baseline)
+            if os.path.exists(baseline):
+                to_base = dssim(ours, baseline, m, f"{prefix}.baseline-diff.png")
+                status = "pass" if to_base <= threshold else "fail"
+            else:
+                to_base, status = None, "skip"
+        except RuntimeError as error:   # e.g. a region resized without --update: a failure, never a silent pass
+            results.append((f"l6.{scene}.{name}", "fail", f"comparison error: {error}"))
+            rows.append(f"<tr><td><b>{html.escape(name)}</b><br><small>fail</small></td>"
+                        f"<td colspan=4>{html.escape(str(error))}</td></tr>")
+            continue
+        figma_text = f"Figma {to_figma:.4f}" if to_figma is not None else figma_note
         base_text = f"baseline {to_base:.5f} (≤ {threshold})" if to_base is not None else "no baseline (--update)"
         results.append((f"l6.{scene}.{name}", status, f"{base_text}; {figma_text}"))
         cells = [f"<td><b>{html.escape(name)}</b><br><small>{status}</small></td>",
@@ -124,7 +146,8 @@ def main():
     update = "--update" in args
     scenes = [a for a in args if a != "--update"] or sorted(
         os.path.basename(p)[:-5] for p in glob.glob(os.path.join(HERE, "regions", "*.json")))
-    os.makedirs(WORK, exist_ok=True)
+    shutil.rmtree(WORK, ignore_errors=True)   # never compare a previous run's crops
+    os.makedirs(WORK)
     results, sections = [], []
     for scene in scenes:
         found, section = compare_scene(scene, update)

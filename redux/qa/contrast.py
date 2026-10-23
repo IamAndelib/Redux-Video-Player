@@ -5,7 +5,8 @@
 Reads the palette dumps the app writes when REDUX_PALETTE_DUMP is set (night.tsv, day.tsv: every ColorContext set,
 section, name and state; modules/gui/qt/style/palettedump.cpp; run by redux/qa/contrast.sh) and writes a Markdown
 report with every foreground/background pair per set, its contrast ratio in each state, and the WCAG 2.x minimum:
-- text (every Fg colour on Bg.Primary and Bg.Secondary): 4.5:1 (1.4.3);
+- text: 4.5:1 (1.4.3), every Fg colour on Bg.Primary and Bg.Secondary, or a role colour (Highlight, Negative…) on
+  its own Bg colour where the set defines one (a selected row);
 - focus ring, borders and indicators (Decoration on Bg.Primary): 3:1 (1.4.11, 2.4.11).
 Disabled colours are listed but exempt (1.4.3 excludes inactive components); a fully transparent foreground
 isn't drawn ("none": the focus ring outside Focused). Translucent colours are composited
@@ -64,7 +65,13 @@ def scheme_rows(colors):
     view_bg = rgba(colors["View", "Bg", "Primary", "Normal"])
     rows, failing = [], 0
     for s in sets:
-        pairs = [(f"Fg.{n}", ("Fg", n), f"Bg.{b}", b, TEXT) for b in ("Primary", "Secondary") for n in fg_names]
+        # A role colour (Highlight, Negative…) is drawn on its own background where the set defines one (a selected
+        # row: Fg.Highlight on Bg.Highlight); otherwise text goes on the primary and secondary backgrounds.
+        own_bg = {n for n in fg_names if n not in ("Primary", "Secondary")
+                  and colors.get((s, "Bg", n, "Normal"), UNDEFINED) != UNDEFINED}
+        pairs = [(f"Fg.{n}", ("Fg", n), f"Bg.{n}", n, TEXT) for n in sorted(own_bg)]
+        pairs += [(f"Fg.{n}", ("Fg", n), f"Bg.{b}", b, TEXT)
+                  for b in ("Primary", "Secondary") for n in fg_names if n not in own_bg]
         pairs += [(f"Decoration.{n}", ("Decoration", n), "Bg.Primary", "Primary", NON_TEXT) for n in decorations]
         for fg_label, (section, name), bg_label, bg_name, minimum in pairs:
             ratios = {}

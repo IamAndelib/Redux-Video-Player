@@ -1,7 +1,8 @@
 {
-  "what": "Onboarding, welcome step (VLC's first-run wizard until M9.1 replaces it)",
+  "what": "Onboarding, welcome step (VLC's first-run wizard until M9.1 replaces it). The session places windows at the origin, so the Figma frame is anchored there too",
   "figma": "1899:3055",
+  "anchor": "northwest",
   "area": [
-    {"name": "dialog", "xpos": 403, "ypos": 148, "width": 1114, "height": 783}
+    {"name": "dialog", "xpos": 0, "ypos": 0, "width": 1114, "height": 783}
   ]
 }

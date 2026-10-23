@@ -82,9 +82,15 @@ class FirstRun(Scene):
             self.press("Next >")
             time.sleep(0.5)
         self.press("Finish")
-        self.wait_for("the media library to finish indexing", lambda: not [
-            e for e in self.driver.find_elements(AppiumBy.XPATH, "//label")
-            if (e.text or "").startswith("Indexing")], timeout=60)
+        # The media library shows "Scanning …" or "Indexing Medias (n%)" while it works: wait for it to start, then
+        # to end (a short scan may already be over by the first look).
+        scanning = lambda: [e for e in self.driver.find_elements(AppiumBy.XPATH, "//label")
+                            if (e.text or "").startswith(("Scanning", "Indexing"))]
+        try:
+            self.wait_for("the media library to start scanning", scanning, timeout=10)
+        except AssertionError:
+            pass
+        self.wait_for("the media library to finish scanning", lambda: not scanning(), timeout=60)
 
 
 class Library(Scene):

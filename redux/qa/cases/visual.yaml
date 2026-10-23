@@ -28,11 +28,11 @@
   check: l6.first-run.*
 
 - id: L6-window-chrome
-  title: The window's own title bar and shadow match their baseline
+  title: The window's own title bar and frame match their baseline
   layer: L6
   milestone: Q0.4
   sources: [dod:crops, accept:Q0.4]
-  expected: the window as it opens (not maximised), with VLC's title bar and shadow, is within its threshold.
+  expected: the window as it opens (not maximised), with VLC's title bar and frame, is within its threshold.
   check: l6.window.*
 
 - id: L7-contrast
@@ -41,6 +41,6 @@
   milestone: Q0.4
   sources: [dod:keyboard, accept:Q0.4]
   expected: >-
-    text 4.5:1 and focus ring, borders and indicators 3:1 on their backgrounds, in every active state of every
+    text 4.5:1 (a role colour such as Highlight on its own background) and focus ring, borders and indicators 3:1, in every active state of every
     ColorContext set (disabled exempt). Expected to fail until M1.1 sets the new palette; the report lists every pair.
   check: l7.contrast
