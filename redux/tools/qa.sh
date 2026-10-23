@@ -28,6 +28,7 @@ wants() { [[ " ${layers[*]} " == *" $1 "* ]]; }
 if wants L1; then
   echo "== L1 build and hygiene"
   redux/qa/l1-hygiene.sh
+  redux/qa/l1-kwin.sh   # the app in a headless KWin Wayland session (Q0.2)
   if lint="$(redux/qa/token-lint.sh 2>&1)"; then   # exit 1: violations, 2: it couldn't run
     result l1.token-lint pass "$(tail -1 <<< "$lint")"
   else

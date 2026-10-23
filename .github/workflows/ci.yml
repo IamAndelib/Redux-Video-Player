@@ -94,6 +94,14 @@ jobs:
           redux/dev.sh run redux/tools/build.sh
           redux/dev.sh run ccache -s
 
+      - name: Virtual GPU device for the KDE session (vgem)
+        # KWin composites with OpenGL only on a DRM device, and its screenshots need OpenGL; the runner has no GPU, so
+        # load the kernel's virtual vgem device, as KDE's CI does (D30). redux/dev.sh passes /dev/dri through.
+        run: |
+          sudo modprobe vgem || { sudo apt-get install -y -q "linux-modules-extra-$(uname -r)" && sudo modprobe vgem; }
+          sudo chmod 666 /dev/dri/*
+          ls -l /dev/dri
+
       - name: QA suite
         run: redux/dev.sh run env QA_BASE=HEAD~1 redux/tools/qa.sh
 
