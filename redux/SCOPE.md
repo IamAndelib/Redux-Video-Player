@@ -19,101 +19,101 @@ back, add a `DECISIONS.md` entry first, then a milestone.
 ## Keep
 
 ### Playback
-| Feature | Notes | Milestone |
-|---|---|---|
-| Play, pause, stop, previous, next, seek | One-row bar, thick seek bar | M2.1 |
-| Volume, mute, boost above 100% | Cone control | M2.2 |
-| Fullscreen with edge-hover bars, Hide UI | | M2.5 |
-| Resume where you left off | Per file, reliable; a top VLC complaint | M2.5, M2.7 |
-| Auto-next through the folder | Upstream #22382, one of the most-upvoted requests | M2.7 |
-| Stay on the player when the last video ends (paused on its last frame, like mpv's keep-open); a queue still plays through | Maintainer feedback | M0.6 (done) |
-| Play on a finished video starts it from the beginning | Maintainer feedback, D21 | M0.6 (done) |
-| Mouse wheel: volume or seek (setting) | | M2.7 |
-| Speed, repeat, shuffle | | M5.5, M4.1 |
-| A-B loop, frame stepping forward and back | Learners, animators, analysts | M5.5 |
-| Bookmarks and chapters (queue-panel tabs, Ctrl+B) | D12 | M5.5 |
-| Snapshot | | M4.1 |
-| Picture-in-picture | Floating mini video | M3.5, M4.1 |
+| ID | Feature | Notes | Milestone |
+|---|---|---|---|
+| K1 | Play, pause, stop, previous, next, seek | One-row bar, thick seek bar | M2.1 |
+| K2 | Volume, mute, boost above 100% | Cone control | M2.2 |
+| K3 | Fullscreen with edge-hover bars, Hide UI | | M2.5 |
+| K4 | Resume where you left off | Per file, reliable; a top VLC complaint | M2.5, M2.7 |
+| K5 | Auto-next through the folder | Upstream #22382, one of the most-upvoted requests | M2.7 |
+| K6 | Stay on the player when the last video ends (paused on its last frame, like mpv's keep-open); a queue still plays through | Maintainer feedback | M0.6 (done) |
+| K7 | Play on a finished video starts it from the beginning | Maintainer feedback, D21 | M0.6 (done) |
+| K8 | Mouse wheel: volume or seek (setting) | | M2.7 |
+| K9 | Speed, repeat, shuffle | | M5.5, M4.1 |
+| K10 | A-B loop, frame stepping forward and back | Learners, animators, analysts | M5.5 |
+| K11 | Bookmarks and chapters (queue-panel tabs, Ctrl+B) | D12 | M5.5 |
+| K12 | Snapshot | | M4.1 |
+| K13 | Picture-in-picture | Floating mini video | M3.5, M4.1 |
 
 ### Tracks, subtitles and effects
-| Feature | Notes | Milestone |
-|---|---|---|
-| Audio, subtitle and video track popup; audio output device | | M2.4 |
-| External subtitle files, delay and sync sliders, styling, default language | ASS/SSA through libass | M5.4 |
-| Add Subtitles to a file, folder or playlist (auto and manual matching) | Local files | M5.6 |
-| Online subtitle search (OpenSubtitles) | Native Qt client; off until the user consents | M5.7 |
-| Subtitle timeline on the seek bar | Research spike | M5.8 |
-| Equalizer with presets, normalization, boost | | M5.2 |
-| Compressor, spatializer, stereo widener, pitch | | M5.2 |
-| Picture tools: adjust, crop, zoom, aspect ratio, rotate/flip, deinterlace, HDR option | | M5.3 |
+| ID | Feature | Notes | Milestone |
+|---|---|---|---|
+| K14 | Audio, subtitle and video track popup; audio output device | | M2.4 |
+| K15 | External subtitle files, delay and sync sliders, styling, default language | ASS/SSA through libass | M5.4 |
+| K16 | Add Subtitles to a file, folder or playlist (auto and manual matching) | Local files | M5.6 |
+| K17 | Online subtitle search (OpenSubtitles) | Native Qt client; off until the user consents | M5.7 |
+| K18 | Subtitle timeline on the seek bar | Research spike | M5.8 |
+| K19 | Equalizer with presets, normalization, boost | | M5.2 |
+| K20 | Compressor, spatializer, stereo widener, pitch | | M5.2 |
+| K21 | Picture tools: adjust, crop, zoom, aspect ratio, rotate/flip, deinterlace, HDR option | | M5.3 |
 
 ### Library
-| Feature | Notes | Milestone |
-|---|---|---|
-| Video library from folders you add | Video only; no music sections | M3.1–M3.3 |
-| Home: Continue Watching, Recently Added, Frequently Visited Folders, Playlists | | M3.6 |
-| Recent, pins, sort (incl. Unwatched/Watched first), search, watched marks | | M3.1–M3.3, M3.6 |
-| User playlists and the queue | | M7.1, M2.4 |
-| Compact library beside the video; floating miniplayer | | M7.2, M3.5 |
-| Context menus (play, mark watched, favorite, add to queue/playlist, show in folder) | | M3.4 |
+| ID | Feature | Notes | Milestone |
+|---|---|---|---|
+| K22 | Video library from folders you add | Video only; no music sections | M3.1–M3.3 |
+| K23 | Home: Continue Watching, Recently Added, Frequently Visited Folders, Playlists | | M3.6 |
+| K24 | Recent, pins, sort (incl. Unwatched/Watched first), search, watched marks | | M3.1–M3.3, M3.6 |
+| K25 | User playlists and the queue | | M7.1, M2.4 |
+| K26 | Compact library beside the video; floating miniplayer | | M7.2, M3.5 |
+| K27 | Context menus (play, mark watched, favorite, add to queue/playlist, show in folder) | | M3.4 |
 
 ### Interface and desktop
-| Feature | Notes | Milestone |
-|---|---|---|
-| The redesign: dark theme, VLC orange | | M1.x, M2.x |
-| Accent colors, Light/Dark/System | | M1.3, M9.2 |
-| Customize Player (drag-and-drop toolbar editor) and profiles | | M4.1, M4.2 |
-| Sidebar presets | | M5.9 |
-| Settings: General, Interface, Privacy, Controls, Playback, Video, Audio, Subtitles, Library, Performance | | M8.1–M8.3 |
-| Keyboard shortcuts editor | | M8.4 |
-| "Save a log" setting (replaces the log viewer) | For bug reports | M8.3 |
-| Media information (codec, resolution, bitrate, streams) | | M0.8 keeps it reachable |
-| 3-step onboarding | | M9.1 |
-| MPRIS and media keys, screensaver inhibition | | built in |
+| ID | Feature | Notes | Milestone |
+|---|---|---|---|
+| K28 | The redesign: dark theme, VLC orange | | M1.x, M2.x |
+| K29 | Accent colors, Light/Dark/System | | M1.3, M9.2 |
+| K30 | Customize Player (drag-and-drop toolbar editor) and profiles | | M4.1, M4.2 |
+| K31 | Sidebar presets | | M5.9 |
+| K32 | Settings: General, Interface, Privacy, Controls, Playback, Video, Audio, Subtitles, Library, Performance | | M8.1–M8.3 |
+| K33 | Keyboard shortcuts editor | | M8.4 |
+| K34 | "Save a log" setting (replaces the log viewer) | For bug reports | M8.3 |
+| K35 | Media information (codec, resolution, bitrate, streams) | | M0.8 keeps it reachable |
+| K36 | 3-step onboarding | | M9.1 |
+| K37 | MPRIS and media keys, screensaver inhibition | | built in |
 
 ### Input and formats
-| Feature | Notes | Milestone |
-|---|---|---|
-| Local files and folders, drag and drop | | M7.1 |
-| Files inside archives (zip, rar, 7z) | VLC's `archive` stream extractor | M0.6 |
-| Every container and codec FFmpeg and VLC's own demuxers handle | Proven by the codec matrix | M0.6, M0.7 |
-| Audio files still play | No music library or audio visuals | — |
+| ID | Feature | Notes | Milestone |
+|---|---|---|---|
+| K38 | Local files and folders, drag and drop | | M7.1 |
+| K39 | Files inside archives (zip, rar, 7z) | VLC's `archive` stream extractor | M0.6 |
+| K40 | Every container and codec FFmpeg and VLC's own demuxers handle | Proven by the codec matrix | M0.6, M0.7 |
+| K41 | Audio files still play | No music library or audio visuals | — |
 
 ## Cut
 Each line says why. "Upstream" means the evidence comes from VideoLAN's own tracker or commits.
 
 ### Online and streaming
-- **YouTube and other site scripts, `ytdl`.** They break whenever the sites change. Upstream removed `youtube.lua`
+- **X1** · **YouTube and other site scripts, `ytdl`.** They break whenever the sites change. Upstream removed `youtube.lua`
   in 2025 (commit `cd94dcaec9`) in favor of yt-dlp. Not offline.
-- **IPTV and M3U stream lists, podcasts, internet radio and Icecast, Lua services (Jamendo, LibriVox …).**
+- **X2** · **IPTV and M3U stream lists, podcasts, internet radio and Icecast, Lua services (Jamendo, LibriVox …).**
   Online-only directories.
-- **Paste a URL, network share browsing (SMB, NFS, SFTP, UPnP), SAP, RTSP.** Not offline. Files on a NAS still play
+- **X3** · **Paste a URL, network share browsing (SMB, NFS, SFTP, UPnP), SAP, RTSP.** Not offline. Files on a NAS still play
   from a mounted folder or the system file picker.
 
 ### Discs
-- **DVD, Blu-ray, VCD, audio CD.** A shrinking group, and they need decryption libraries with legal risk.
+- **X4** · **DVD, Blu-ray, VCD, audio CD.** A shrinking group, and they need decryption libraries with legal risk.
   Consequence: DVD and Blu-ray ISO images and `VIDEO_TS` folders won't play either.
 
 ### Conversion and sharing
-- **Convert/Save, stream wizard (sout), VLM, record.** Encoding tools; HandBrake, ffmpeg and OBS do this better.
-- **Chromecast and renderers, UPnP media server.** Network features with long-standing buffering bugs.
+- **X5** · **Convert/Save, stream wizard (sout), VLM, record.** Encoding tools; HandBrake, ffmpeg and OBS do this better.
+- **X6** · **Chromecast and renderers, UPnP media server.** Network features with long-standing buffering bugs.
 
 ### Capture and broadcast
-- **Webcam, screen capture, DVB/ATSC/SAT>IP tuners, teletext, EPG, programs.** Not file playback.
+- **X7** · **Webcam, screen capture, DVB/ATSC/SAT>IP tuners, teletext, EPG, programs.** Not file playback.
 
 ### Music
-- **Music library sections, music now-playing screen, waveform seek bar, visualizations, lyrics view.** The product
+- **X8** · **Music library sections, music now-playing screen, waveform seek bar, visualizations, lyrics view.** The product
   is a video player.
 
 ### Everything else
-- **Lua extensions and the add-ons store (including VLSub).** Fragile; VLSub breaks whenever OpenSubtitles changes.
+- **X9** · **Lua extensions and the add-ons store (including VLSub).** Fragile; VLSub breaks whenever OpenSubtitles changes.
   M5.7 replaces it with a native client.
-- **Skins, web/telnet/CLI remote, global hotkeys, mouse gestures.** Redundant with the new UI or niche.
-- **Last.fm, audio fingerprinting, metadata editing, ratings.** Music-library features.
-- **Video wallpaper, 3D output, novelty filters (puzzle, wall, clone, psychedelic …).** No evidence of use.
-- **Go to time, log viewer, system tray, dual subtitles, reverse playback, sleep timer, boss key.** Little use. The log
+- **X10** · **Skins, web/telnet/CLI remote, global hotkeys, mouse gestures.** Redundant with the new UI or niche.
+- **X11** · **Last.fm, audio fingerprinting, metadata editing, ratings.** Music-library features.
+- **X12** · **Video wallpaper, 3D output, novelty filters (puzzle, wall, clone, psychedelic …).** No evidence of use.
+- **X13** · **Go to time, log viewer, system tray, dual subtitles, reverse playback, sleep timer, boss key.** Little use. The log
   becomes a "Save a log" setting.
-- **Update checker.** Flatpak updates the app.
+- **X14** · **Update checker.** Flatpak updates the app.
 
 ## Future
 Parked; each needs a `DECISIONS.md` entry to become a milestone.

@@ -9,6 +9,8 @@ Checks:
   3. every decision entry (a "- **" bullet under a lettered section) has a Refs line
   4. every frame file named in the brief comes from frame-picks.tsv, and every pick is used
   5. no placeholder text is left
+  6. every decision entry starts with a unique ID of its section letter (`- **C3** · ...`); IDs are never
+     renumbered: a new entry takes its section's next free number (QA test cases cite them, redux/QA.md)
 --draft skips 4 and 5, for use before the frame analysis is done.
 Exits 1 if any check fails.
 """
@@ -57,12 +59,20 @@ def main():
             errors.append(f"transcript section {number} '{title}' is not cited in the brief")
 
     lettered = re.split(r"^## (?=[A-Z]\. )", brief, flags=re.M)[1:]
+    ids = set()
     for section in lettered:
         heading = section.splitlines()[0]
         entries = re.split(r"^- \*\*", section, flags=re.M)[1:]
         for entry in entries:
             if "Refs:" not in entry:
                 errors.append(f"entry without Refs in '{heading}': {entry.splitlines()[0][:60]}")
+            match = re.match(r"([A-Z])(\d+)\*\* · ", entry)
+            if not match or match.group(1) != heading[0]:
+                errors.append(f"entry without a '{heading[0]}<n>' ID in '{heading}': {entry.splitlines()[0][:60]}")
+            elif match.group(0) in ids:
+                errors.append(f"duplicate ID {match.group(1)}{match.group(2)}")
+            else:
+                ids.add(match.group(0))
 
     if not draft:
         picks = {}
