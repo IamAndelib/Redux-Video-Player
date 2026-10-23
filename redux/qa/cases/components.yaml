@@ -1,0 +1,20 @@
+# L4 QML component tests (modules/gui/qt/tests/tst_*.qml, Qt Quick Test through qml_test; Q0.5, D34).
+# Format: redux/QA.md § Test case format.
+- id: L4-button-states
+  title: ButtonExt looks as its baseline in every state, in Night and Day
+  layer: L4
+  milestone: Q0.5
+  sources: [dod:keyboard, accept:Q0.5]
+  steps: [Render the button alone; reach normal, hover, pressed, focus and disabled as a user does]
+  expected: >-
+    each state is reached (hovered, down, visual focus, disabled) and its grab matches the baseline in
+    redux/qa/components/baselines/ButtonExt/ within the per-channel tolerance.
+  check: l4.tst_ButtonExt
+
+- id: L4-runner
+  title: The QML test runner itself works
+  layer: L4
+  milestone: Q0.5
+  sources: [dod:build-and-tests]
+  expected: the existing FSM test (the player controls' visibility state machine) passes in the same runner.
+  check: l4.tst_FSM

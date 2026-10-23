@@ -79,6 +79,7 @@ this format:
 | Flatpak: build and install, run, lint, codec matrix in the sandbox (host) | `redux/tools/flatpak.sh build` / `run` / `lint` / `matrix` |
 | Run the player with a throwaway profile | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
+| Component tests (L4; new baselines: `REDUX_UPDATE_BASELINES=1`) | `redux/dev.sh run redux/tools/qa.sh L4`, or `redux/dev.sh run meson test -C build/meson tst_<Widget>` (D34) |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
 | Codec/format matrix (generate, fetch real samples, play all) | `redux/dev.sh run redux/tools/make-matrix.sh`, `redux/tools/fetch-samples.sh`, `redux/dev.sh run redux/tools/play-matrix.sh` |
 | Screenshots (1920×1080, Night, in the KDE session; needs a render node) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light; scenes in `redux/qa/visual/scenes.py`) |

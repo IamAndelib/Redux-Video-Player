@@ -389,3 +389,25 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Alternatives:** Playwright, odiff, pixelmatch, BackstopJS, reg-suit (new dependencies for what ImageMagick does);
   Qt's lancelot (GPL-3/commercial, client-server); a QtTest for the palette (needs `MainCtx`); parsing the C++ source.
 - **Edits outside `modules/gui/qt/` and `redux/`:** `PLAN.md` and `CLAUDE.md` (commands).
+
+### D34 · 2026-10-24 · Component tests: widgets alone in VLC's QML test runner, against baselines
+- **Decision (Q0.5):** QA layer L4 runs in VLC's own QML test runner (`modules/gui/qt/tests/qml_test.cpp`, Qt Quick
+  Test). Each `tests/tst_<Widget>.qml` renders a widget alone in every state and in Night and Day, checks that each
+  state was reached, and compares its grab with a committed baseline (`redux/qa/components/baselines/`, `Baseline`
+  singleton in `tests/qml_baseline.cpp`; `REDUX_UPDATE_BASELINES=1` rewrites them, Q0.4's convention).
+  - **A stand-in `MainCtx`** (`tests/stub/maininterface/mainctx.hpp`, first on `qml_test`'s include path without
+    meson's implicit directories): the real one needs a running interface. `qml_test` compiles its own copies of the
+    style sources (`ColorContext`, `SystemPalette`, `VLCIcons`, `ColorSchemeModel`, `Navigation`) against it and
+    registers them as `MainUI::registerQMLTypes` does.
+  - **`SystemPalette::componentComplete()`** keeps the default accent when there's no interface instead of asserting
+    (a one-line guard; upstreamable). The failing test came first: `config_GetPsz: Assertion 'param != NULL'`.
+  - **Rendering:** offscreen, Qt Quick's software backend (identical pixels), hover enabled
+    (`QT_QUICK_CONTROLS_HOVER_ENABLED`); shader effects aren't covered (G28).
+  - **QA:** the tests run with L3's `meson test` and report as `l4.tst_<Widget>`; `qa.sh L4` runs only them. Both
+    build systems list the new files.
+- **Why:** QA.md's L4 (D23); M1.5 rebuilds the base widgets and needs each state checked in both themes without
+  starting the whole app.
+- **Alternatives:** the real `MainCtx` (needs the playlist, settings and models); the whole Qt plugin in the test;
+  Lancelot (a baseline server; GPL-3/commercial); a libvlc interface with `qt-accent-color` set (more setup, no
+  upstream edit).
+- **Edits outside `modules/gui/qt/` and `redux/`:** `CLAUDE.md` (the command row).
