@@ -12,6 +12,8 @@ Closes #
 | Tests | |
 | Codec matrix | |
 | Screens / diff | |
+| QA report (`build/qa/report.md`: checks per layer; CI attaches it) | |
+| QA loop (agent findings and outcomes, QA.md) | |
 
 ## Hand checks
 <!-- Checks only a person at a real desktop can judge, added to redux/EVALUATION.md (D26): ID · Open · Do · Expect.
