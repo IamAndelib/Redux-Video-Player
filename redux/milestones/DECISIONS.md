@@ -257,3 +257,10 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Why:** the maintainer asked to evaluate the finished project once instead of every milestone, with rigorous QC
   between milestones.
 - **Alternatives:** keep per-milestone sign-off (D18; the maintainer becomes the bottleneck).
+
+### D27 · 2026-10-24 · Keep the playlist `export` plugin (amends D20)
+- **Decision:** `export` comes off `redux/cut-modules.txt`. 189 plugins are cut, 233 built.
+- **Why:** Q0.1's startup hygiene check found "Could not export playlist" at every quit. The Qt UI's
+  `ModelRecoveryAgent` saves the queue as M3U8 through this plugin so it can be restored after a crash; with it cut,
+  queue recovery silently failed. Crash recovery of the queue is part of the kept queue feature (SCOPE K25).
+- **Alternatives:** keep it cut and remove the recovery agent (loses a safety net to save a 30 KB plugin).

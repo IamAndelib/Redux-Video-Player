@@ -124,8 +124,8 @@ Parked; each needs a `DECISIONS.md` entry to become a milestone.
 - Two-tone menu icons (G16).
 
 ## What the build contains (M0.6, D20)
-The plugins outside this scope are listed by name in [`cut-modules.txt`](cut-modules.txt): 190 plugins are not
-built and 232 are. `redux/tools/build.sh` passes the list to meson; to bring one back, delete its line, add a
+The plugins outside this scope are listed by name in [`cut-modules.txt`](cut-modules.txt): 189 plugins are not
+built and 233 are. `redux/tools/build.sh` passes the list to meson; to bring one back, delete its line, add a
 `DECISIONS.md` entry and run `build.sh reconfigure`.
 
 - **Built:** local files and archives, every demuxer and decoder (FFmpeg's avcodec and avformat, dav1d, vpx, the

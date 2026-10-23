@@ -4,7 +4,8 @@
 # One plugin name per line (the name in its meson.build, i.e. lib<name>_plugin.so); `#` starts a comment.
 # Bringing a plugin back: delete its line, add a DECISIONS.md entry, run `build.sh reconfigure`.
 # Kept on purpose although close to a cut feature: decoders for subtitle and audio formats found inside files
-# (zvbi teletext, aribsub, scte27, cc, fluidsynth, gme, sid, mod), file_logger ("Save a log"), and the test helpers.
+# (zvbi teletext, aribsub, scte27, cc, fluidsynth, gme, sid, mod), file_logger ("Save a log"), export (the Qt UI
+# saves the queue with it for crash recovery, D27), and the test helpers.
 
 # Online and streaming: network access, protocols, streaming formats, site scripts
 access_http_put
@@ -143,7 +144,6 @@ aom
 addonsfsstorage
 addonsvorepository
 audioscrobbler
-export
 fingerprinter
 gestures
 ncurses
