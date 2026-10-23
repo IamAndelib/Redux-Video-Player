@@ -47,6 +47,10 @@
 #include <sstream>
 #include <initializer_list>
 
+#ifndef _WIN32
+# include <dlfcn.h>
+#endif
+
 class Logger : public medialibrary::ILogger
 {
 public:
@@ -2648,6 +2652,20 @@ static int Control( vlc_medialibrary_module_t* module, int query, va_list args )
     return ml->Control( query, args );
 }
 
+/* libmedialibrary keeps our Logger in a static that it only destroys at exit,
+ * and its GNU unique symbols keep the library loaded after this plugin is
+ * unloaded, so the Logger's destructor would run in unmapped code. Keep this
+ * plugin loaded for the rest of the process. */
+static void PinPlugin()
+{
+#ifdef RTLD_NODELETE
+    Dl_info info;
+    if ( dladdr( reinterpret_cast<void*>( &PinPlugin ), &info ) != 0 &&
+         info.dli_fname != nullptr )
+        dlopen( info.dli_fname, RTLD_NOW | RTLD_NOLOAD | RTLD_NODELETE );
+#endif
+}
+
 static int Open( vlc_object_t* obj )
 {
     auto* p_ml = reinterpret_cast<vlc_medialibrary_module_t*>( obj );
@@ -2663,6 +2681,7 @@ static int Open( vlc_object_t* obj )
         msg_Err( obj, "Failed to instantiate/initialize medialibrary: %s", ex.what() );
         return VLC_EGENERIC;
     }
+    PinPlugin();
     p_ml->pf_control = Control;
     p_ml->pf_get = Get;
     p_ml->pf_list = List;

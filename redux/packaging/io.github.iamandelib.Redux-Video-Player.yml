@@ -1,0 +1,184 @@
+# Redux Video Player Flatpak (M0.7, D13, D15). Build with redux/tools/flatpak.sh.
+# Borrowed with credit (redux/CREDITS.md): module set and plugin-cache step from Flathub's org.videolan.VLC
+# (branch mv/test-alpha) and VLC MR !10454; FFmpeg, libplacebo and libass blocks from Flathub's io.mpv.Mpv;
+# permissions modelled on Flathub's org.kde.haruna. Versions match what the dev build already links and tests.
+app-id: io.github.iamandelib.Redux-Video-Player
+runtime: org.kde.Platform
+runtime-version: '6.11'
+sdk: org.kde.Sdk
+command: vlc
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --filesystem=xdg-run/pipewire-0:ro
+  # Play local files anywhere (home, other drives); the media library and subtitle autoload need real paths.
+  - --filesystem=host:ro
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --own-name=org.mpris.MediaPlayer2.vlc
+  # A second instance registers org.mpris.MediaPlayer2.vlc.instance<pid> (modules/control/dbus/dbus.c).
+  - --own-name=org.mpris.MediaPlayer2.vlc.*
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /lib/cmake
+  - /share/man
+  - /share/doc
+  - '*.la'
+  - '*.a'
+
+modules:
+  # FFmpeg with every decoder; no encoders, muxers, programs or network (D15). From io.mpv.Mpv, trimmed.
+  - name: ffmpeg
+    config-opts:
+      - --disable-debug
+      - --disable-doc
+      - --disable-static
+      - --enable-shared
+      - --disable-programs
+      - --disable-encoders
+      - --disable-muxers
+      - --disable-network
+      - --disable-avdevice
+      - --enable-libdav1d
+      - --enable-libdrm
+      - --enable-vaapi
+      - --enable-vulkan
+    sources:
+      - type: git
+        url: https://github.com/FFmpeg/FFmpeg.git
+        tag: n9.0.1
+        commit: bf1b838f2ab88b4f8fd83443325c782ea0e0f7fa
+
+  # GPU video output with HDR tone-mapping (D15). From io.mpv.Mpv; shaderc comes from the SDK.
+  - name: libplacebo
+    buildsystem: meson
+    config-opts:
+      - -Dvulkan=enabled
+      - -Dshaderc=enabled
+      - -Dglslang=disabled
+      - -Ddemos=false
+      - -Dtests=false
+    sources:
+      - type: git
+        url: https://github.com/haasn/libplacebo.git
+        tag: v7.360.1
+        commit: cee9b076f2c63104ccfd497fa79c39a867293ec4
+
+  # ASS/SSA subtitles. From io.mpv.Mpv.
+  - name: libass
+    config-opts:
+      - --disable-static
+    sources:
+      - type: git
+        url: https://github.com/libass/libass.git
+        tag: 0.17.5
+        commit: 4a05d8127f525943ebf45fdc6497c9e665947f0d
+
+  # MPEG-TS demuxing.
+  - name: libdvbpsi
+    config-opts:
+      - --disable-static
+    sources:
+      - type: archive
+        url: https://download.videolan.org/pub/libdvbpsi/1.3.3/libdvbpsi-1.3.3.tar.bz2
+        sha256: 02b5998bcf289cdfbd8757bedd5987e681309b0a25b3ffe6cebae599f7a00112
+
+  # ARIB (Japanese broadcast) subtitles in TS files: added because the FATE ARIB sample failed without it (M0.7).
+  - name: aribb24
+    config-opts:
+      - --disable-static
+    sources:
+      - type: archive
+        url: https://github.com/nkoriyama/aribb24/archive/refs/tags/v1.0.3.tar.gz
+        sha256: f61560738926e57f9173510389634d8c06cabedfa857db4b28fb7704707ff128
+
+  # Header-only UTF-8 library libebml needs (otherwise it downloads it during the build).
+  - name: utfcpp
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DUTF8_TESTS=OFF
+      - -DUTF8_SAMPLES=OFF
+    sources:
+      - type: archive
+        url: https://github.com/nemtrif/utfcpp/archive/refs/tags/v4.2.1.tar.gz
+        sha256: 6d6a5493a111884cc085ee31babfe6d9960c8fb08fc80a64852eaeea8323dbc1
+
+  # Matroska (MKV/WebM) demuxing.
+  - name: libebml
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DBUILD_SHARED_LIBS=ON
+    sources:
+      - type: archive
+        url: https://dl.matroska.org/downloads/libebml/libebml-1.4.7.tar.xz
+        sha256: 5b08214f929ee54c6187c370f84235fc9d0f2a2258c4d320d68eae6e2bdfd3f7
+
+  - name: libmatroska
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DBUILD_SHARED_LIBS=ON
+    sources:
+      - type: archive
+        url: https://dl.matroska.org/downloads/libmatroska/libmatroska-1.7.2.tar.xz
+        sha256: f3e4d406daf7f1399962c43940e4a87de089474d5bcfbf2e6ca516e98bb87cfc
+
+  # The media library VLC master builds against (0.14 is API-incompatible, D5).
+  - name: medialibrary
+    buildsystem: meson
+    config-opts:
+      - -Dlibvlc=disabled
+      - -Dtests=disabled
+    sources:
+      - type: archive
+        url: https://code.videolan.org/videolan/medialibrary/-/archive/0.13.2/medialibrary-0.13.2.tar.bz2
+        sha256: acda95dae8f357cf1ea6c71ac3979235555dae5fef5d33d218d14d1e5d729682
+
+  # Build-only: VLC master needs meson >= 1.10, the KDE 6.11 SDK has 1.9.2. Same version as the dev container;
+  # run from its source tree and removed from the final app.
+  - name: meson
+    buildsystem: simple
+    cleanup:
+      - '*'
+    build-commands:
+      - cp -a . /app/meson-build
+    sources:
+      - type: archive
+        url: https://github.com/mesonbuild/meson/releases/download/1.12.1/meson-1.12.1.tar.gz
+        sha256: ab0a6ca09f8ef70c564c8241fb5a23957886a0b53fb58412b5e07eaf07dba743
+
+  # VLC itself, from this checkout, with redux/cut-modules.txt applied (D20).
+  - name: vlc
+    buildsystem: simple
+    build-options:
+      env:
+        MESON: /app/meson-build/meson.py
+        # Qt lives in /usr/include in the KDE SDK; pkg-config drops that "system" dir, the compiler doesn't
+        # need it but moc does (Qt headers include <QtQml/...>), or it fails with "Undefined interface".
+        PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: '1'
+    build-commands:
+      - redux/packaging/build-vlc.sh
+    post-install:
+      - install -Dm644 redux/packaging/${FLATPAK_ID}.desktop -t /app/share/applications
+      - install -Dm644 redux/packaging/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 redux/packaging/icon.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - rm -rf /app/meson-build
+    sources:
+      - type: dir
+        path: ../..
+        skip:
+          - build
+          - .git
+          - .flatpak-builder
+          - redux/design/source
+
+  # The plugin cache, in its own module: flatpak-builder strips the vlc module's plugins after its post-install, and
+  # the cache records each plugin's size, so it must be generated after that. OSTree resets file times, so every
+  # plugin gets a fixed time first (VLC MR !10454's approach; no source patch needed).
+  - name: vlc-plugin-cache
+    buildsystem: simple
+    build-commands:
+      - TZ=UTC find /app/lib/vlc/plugins -exec touch -t 197001010000 {} +
+      - /app/libexec/vlc/vlc-cache-gen /app/lib/vlc/plugins

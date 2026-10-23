@@ -191,3 +191,69 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   MPRIS. A seek in between still resumes from the seek position. VLC's 20 player tests pass. Upstreamable.
 - **Alternatives:** handling it in Qt only (Space, media keys and MPRIS would bypass it); stopping instead of pausing
   at the end (loses the last frame on screen).
+
+### D22 · 2026-10-23 · Flatpak builds on the host with Flathub's Builder app
+- **Decision:** the Flatpak is built on the host with Flathub's `org.flatpak.Builder` app and the KDE 6.11
+  runtime/SDK (Qt 6.11.2, the same Qt as the dev container), all installed per user from Flathub
+  (`flatpak --user`, removable with `flatpak uninstall`). `redux/tools/flatpak.sh` wraps build, run, lint and the
+  codec matrix inside the sandbox. This is the one exception to the "never install anything on the host" rule,
+  approved by the maintainer.
+- **Why:** running the app needs the runtime on the host anyway; the Builder app is how Flathub itself builds and
+  lints apps; building inside the Podman container would need a privileged container for nested sandboxing.
+- **Alternatives:** flatpak-builder inside the dev container.
+
+### D23 · 2026-10-23 · Milestones are verified by a QA suite and an agent loop (amends D18)
+- **Decision:** the maintainer's QA plan is adopted as [`redux/QA.md`](../QA.md). Track Q (Q0.1–Q0.7) runs after
+  M0.7 and before M0.8 and builds it: test cases traced to the brief, scope and acceptance criteria; layers L1–L9
+  (build hygiene, codec matrix, player core, components, end-to-end flows, visual fidelity, UX heuristics, sandbox,
+  agent review); one entry point `redux/tools/qa.sh`; an agent loop that tests, triages, fixes and re-tests; CI.
+  From M0.8 on, a milestone is done when the QA suite is green and its report is attached to the PR. The D18
+  hand-over checklist shrinks to an optional 2–3 item real-desktop spot check (audio, GPU, feel); the maintainer
+  evaluates the complete prototype with a guided script. M0.3 merges into Q0.4, and M10.2 (CI) moves into Q0.7.
+- **Why:** the maintainer wants to step back from testing every milestone by hand; automated checks catch
+  regressions every time, and tests derived from the docs make coverage measurable.
+- **Alternatives:** keep full manual checklists (slow, misses regressions); openQA itself (heavy; region RMSE with
+  masks covers the same need).
+
+### D24 · 2026-10-23 · Upstream fixes for building without stream outputs
+- **Decision:** the dev build and the Flatpak use `-Dstream_outputs=false -Dvideolan_manager=false` (VLM is cut,
+  D14). Building that way exposed upstream bugs, fixed in files outside `modules/gui/qt/` and `redux/`:
+  - `modules/codec/jpeg.c`: the quality option was declared only with the stream-output encoder, but the always-built
+    image encoder (snapshots, thumbnails) reads it, so it hit `vlc_assert_unreachable` (undefined behaviour in
+    release builds). The option now sits with the image encoder.
+  - `src/preparser/internal.c`: the WebP, RGBA and ARGB thumbnail formats need image encoders that only exist with
+    stream outputs; they are offered only then (PNG and JPEG are unaffected).
+  - `test/src/meson.build`, `test/modules/meson.build`: tests that need stream outputs (`player_attachments`,
+    `mux_webvtt`) are disabled without them; `media_source` depends on a services discovery plugin (`podcast`), so
+    the D20 cut guard skips it.
+  - `modules/misc/medialibrary/medialibrary.cpp` (found by the same test run, not caused by stream outputs): the app
+    crashed on every quit. libmedialibrary keeps the plugin's `Logger` in a static destroyed at exit, and its 170 GNU
+    unique symbols stop glibc from unloading it with the plugin, so the destructor ran in unmapped code. The plugin
+    now marks itself `RTLD_NODELETE` when it opens (G24).
+  All are upstreamable and wait on the `up/no-sout-fixes` branch.
+- **Why:** KISS: VLC's own option is the simplest way to drop every encoder, muxer and stream output (D15); fixing the
+  bugs it exposes beats keeping code we don't ship.
+- **Alternatives:** keep stream outputs on and cut each plugin by name (larger build, the bugs stay hidden).
+
+### D25 · 2026-10-23 · Working with collaborators: GitHub issues are the work queue
+- **Decision:** a collaborator works like the maintainer's agent sessions: pick an open milestone issue, assign
+  yourself (that is the claim), work on its `m/<ID>-<slug>` branch, open a draft PR early, and hand over for the
+  maintainer's review; the maintainer merges. One milestone per person at a time, and two people never work on the
+  same milestone or on milestones that edit the same files. `STATUS.md` stays the progress record; the issue
+  assignee says who. Feedback and bugs are filed as issues (or comments on the milestone issue), not kept in chat.
+  The front door is [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md).
+- **Why:** the maintainer added a collaborator; work tracked only in files or conversations can't be shared.
+- **Alternatives:** a GitHub Project board (needs extra token scopes and duplicates `STATUS.md`).
+
+### D26 · 2026-10-23 · Autonomous milestones; the maintainer evaluates the finished project (amends D18, D23)
+- **Decision:** the maintainer delegates the per-milestone review. Claude runs the milestones back to back: research,
+  plan, implement, then a rigorous QC pass before every merge (build, VLC's test suite, the codec matrix in the dev
+  build and, when packaging or the core changed, the Flatpak; the QA suite as Track Q builds it; an independent
+  review agent on the diff; fixes and a re-run until green). Claude opens the PR, records the QC results in it and the
+  milestone file, squash-merges it and starts the next milestone. Instead of a per-milestone hand-over checklist, each
+  milestone adds its hand checks to [`redux/EVALUATION.md`](../EVALUATION.md), the guided script for the maintainer's
+  full quality check of the complete project. A gap that needs the maintainer's decision is filed (`needs-user`) and
+  work moves on to a milestone it doesn't block. Track Q order changes so CI comes early: Q0.1 → Q0.7 → Q0.2 → … → Q0.6.
+- **Why:** the maintainer asked to evaluate the finished project once instead of every milestone, with rigorous QC
+  between milestones.
+- **Alternatives:** keep per-milestone sign-off (D18; the maintainer becomes the bottleneck).

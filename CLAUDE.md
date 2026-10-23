@@ -8,12 +8,14 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 
 ## Start of every session
 1. Read `redux/milestones/STATUS.md`. Its "Next up" line and the `wip` rows tell you where we are.
-2. Read the active milestone file `redux/milestones/M<ID>-*.md`, especially its status log. If none exists yet, look up
-   the milestone in `redux/milestones/ROADMAP.md`.
-3. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
-   `git remote add upstream https://code.videolan.org/videolan/vlc.git`). Work only on the milestone's branch
-   `m/M<ID>-<slug>` (D8).
-4. Don't start a new milestone until the maintainer has said the previous one is good.
+2. Find your milestone: the open issue assigned to you (`gh issue list --assignee @me`); otherwise the "Next up" one.
+   Never work on a milestone assigned to someone else (D25; a collaborator works alongside the maintainer).
+3. Read its file `redux/milestones/<ID>-*.md` (`M…` or `Q…`), especially the status log. If none exists yet, look
+   up the milestone in `redux/milestones/ROADMAP.md`.
+4. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
+   `git remote add upstream https://code.videolan.org/videolan/vlc.git`; if it stalls, G23, use the GitHub mirror
+   `https://github.com/videolan/vlc.git`). Work only on the milestone's branch `m/<ID>-<slug>` (D8).
+5. Milestones run back to back (D26): when one is merged, claim the next by assigning yourself its issue and start.
 
 ## Philosophy
 - **Slow and steady:** one milestone at a time, reviewed and merged before the next.
@@ -32,20 +34,29 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
   - Tokenize hard-coded values only in files you already touch.
 - **Verify, don't assume:** nothing is "done" without the milestone's verification output.
 
-## Milestone ritual (D18)
-Research → plan → implement in small commits → verify → **hand over**: rebuild, make sure "Redux Video Player (dev)"
-opens from the app menu (`redux/dev.sh app`), open the PR and give the maintainer the test checklist (below) → the maintainer tests
-the app and gives feedback → fix and hand over again → on "good": squash-merge, update `STATUS.md` and the
-milestone's status log, then start the next milestone. Ask the maintainer during a milestone only when a gap needs
-their decision. Ending mid-milestone always logs "stopped at / next step". Details: `redux/milestones/ROADMAP.md`.
+## Working together (D25)
+- GitHub issues are the work queue; the assignee is who works on it. One milestone per person at a time, and never
+  two open milestones that edit the same files. Human contributors start at `.github/CONTRIBUTING.md`.
+- Open a draft PR early (`Closes #<issue>`); feedback and bugs live in issues and PRs, not only in chat.
+- Questions for the maintainer: comment on the issue with the `needs-user` label.
 
-**Every hand-over includes a test checklist** (copied into the milestone file's manual checklist):
-1. Numbered items, each with **open** (where in the app), **do** (the action) and **expect** (what should happen).
-2. Cover every user-visible change of the milestone, plus a quick regression check of what it touched.
-3. Then "known not working yet" (out of scope or later milestones), so nothing is reported twice.
-4. End with how to report: the item number and what you saw (a screenshot helps).
-5. Anything the maintainer does by hand uses test media at least 30 s long (e.g. `build/media/`), never the 2 s
-   matrix clips: a check must not be over before it can be done.
+## Milestone ritual (D18, amended by D23 and D26)
+Research → plan → implement in small commits → **QC** → PR → squash-merge → update `STATUS.md` and the milestone's
+status log → start the next milestone (D26: the maintainer evaluates the complete project at the end, not each
+milestone). **QC before every merge:** the build; VLC's test suite (`meson test -C build/meson`); the codec matrix;
+the Flatpak build and `flatpak.sh matrix` when packaging or `src/`/`modules/` outside the Qt UI changed; the QA suite
+(`redux/tools/qa.sh`) as Track Q builds it; an independent review agent on the diff; fix and re-run until green, and
+record the results in the PR and the milestone file. Keep "Redux Video Player (dev)" working (`redux/dev.sh app`).
+A gap that needs the maintainer's decision is filed with `needs-user`; move on to a milestone it doesn't block. Ending
+mid-milestone always logs "stopped at / next step" and is pushed, so anyone can resume. Details:
+`redux/milestones/ROADMAP.md`; QA: `redux/QA.md` (D23).
+
+**Every milestone adds its hand checks to `redux/EVALUATION.md`** (the maintainer's final evaluation script), in
+this format:
+1. One section per milestone; items with an ID (`M2.1-3`), **open** (where in the app), **do** (the action) and
+   **expect** (what should happen).
+2. Only what a person must judge at a real desktop (sound, GPU, feel, looks); the QA suite covers the rest.
+3. Hand checks use media at least 30 s long (e.g. `build/media/`), never the 2 s matrix clips.
 
 ## Commands (all builds and tools run in the Podman dev container)
 | What | Command |
@@ -55,6 +66,7 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 | Rebuild only the Qt UI (~3 s) | `redux/dev.sh run redux/tools/build.sh qt` |
 | Open the app on the host (persistent profile, your files read-only) | `redux/dev.sh app [file…]`, or "Redux Video Player (dev)" in the app menu |
 | Add or remove the app-menu entry (host) | `redux/tools/launcher.sh install` / `uninstall` |
+| Flatpak: build and install, run, lint, codec matrix in the sandbox (host) | `redux/tools/flatpak.sh build` / `run` / `lint` / `matrix` |
 | Run the player with a throwaway profile | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
@@ -77,5 +89,5 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 - Hitting an unknown means adding it to `redux/milestones/GAPS.md`. If it blocks the milestone, stop and ask the maintainer.
 - Never rewrite history (no rebase, amend or force-push on shared branches). Upstream syncs are merges.
 - Keep `redux/design/source/` (Figma exports, `.fig`) out of git.
-- Commit and PR titles: `M<ID>: <summary>`. Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
+- Commit and PR titles: `<ID>: <summary>` (`M2.1: …`, `Q0.1: …`). Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
 - Don't put model identifiers in commits, PRs or code.

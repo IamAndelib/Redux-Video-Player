@@ -728,14 +728,17 @@ CheckThumbnailerFormat(enum vlc_thumbnailer_format format,
             .format = VLC_THUMBNAILER_FORMAT_PNG, .fourcc = VLC_CODEC_PNG,
             .module = "png", .ext = "png",
         },
+#ifdef ENABLE_SOUT /* the vpx image encoder is only built with stream outputs */
         {
             .format = VLC_THUMBNAILER_FORMAT_WEBP, .fourcc = VLC_CODEC_WEBP,
             .module = "vpx", .ext = "webp",
         },
+#endif
         {
             .format = VLC_THUMBNAILER_FORMAT_JPEG, .fourcc = VLC_CODEC_JPEG,
             .module = "jpeg", .ext = "jpg",
         },
+#ifdef ENABLE_SOUT /* so are the avcodec image encoders */
         {
             .format = VLC_THUMBNAILER_FORMAT_RGBA, .fourcc = VLC_CODEC_RGBA,
             .module = "avcodec", .ext = "rgba",
@@ -744,6 +747,7 @@ CheckThumbnailerFormat(enum vlc_thumbnailer_format format,
             .format = VLC_THUMBNAILER_FORMAT_ARGB, .fourcc = VLC_CODEC_ARGB,
             .module = "avcodec", .ext = "argb",
         },
+#endif
     };
 
     for (size_t i = 0; i < ARRAY_SIZE(formats); ++i)

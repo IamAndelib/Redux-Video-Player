@@ -12,10 +12,12 @@ Related files:
 - Open unknowns: [`GAPS.md`](GAPS.md)
 - Why we chose what we chose: [`DECISIONS.md`](DECISIONS.md)
 - Per-milestone working files: `M<ID>-<slug>.md`, created from [`TEMPLATE.md`](TEMPLATE.md) when the milestone starts
+- How milestones are tested: [`../QA.md`](../QA.md) (D23)
+- How collaborators pick up work: [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md) (D25)
 
 
 ## Working philosophy (applies to every milestone)
-1. **Slow and steady.** One milestone at a time. Each one is reviewed, merged and logged before the next starts.
+1. **Slow and steady.** One milestone at a time per person. Each one is reviewed, merged and logged before that person starts the next.
 2. **KISS.** Do the simplest thing that meets the acceptance criteria, with no speculative abstractions.
 3. **Don't reinvent the wheel; steal like an artist.** Before building or experimenting with anything, look for the best existing open-source implementation (upstream VLC and its MRs, other players, KDE/Qt components, established libraries and test suites) and adopt it with credit in `redux/CREDITS.md`. Write new code only when nothing fits.
 4. **Research first.** Every milestone begins with a time-boxed research step:
@@ -38,7 +40,8 @@ Related files:
    - build
    - tests
    - screenshot diff
-   - your manual check
+   - the QA suite and agent loop (`redux/tools/qa.sh`, from M0.8, D23)
+   - your manual check (a short spot check once QA is in place)
    - code review (`/code-review`, `qt-qml-review` / `qt-cpp-review`, `/simplify`)
 
 ## Process decisions (details in DECISIONS.md)
@@ -47,7 +50,12 @@ Related files:
 - **Upstream:** small, generally useful pieces are sent to VideoLAN as we go.
   - They are prepared on `up/<slug>` branches based on `upstream/master` in VLC commit style.
   - You submit them as MRs on code.videolan.org, and they're cherry-picked into `main`.
-- **Order:** scope foundations first (M0.5–M0.8: scope, lean build, Flatpak, trim), then player first: the redesigned player becomes usable, then the library, then settings and onboarding.
+- **Collaborators (D25):** GitHub issues are the work queue. Assigning yourself to a milestone issue claims it; one
+  milestone per person; the maintainer reviews and merges. See `CONTRIBUTING.md`.
+- **QA (D23):** milestones are verified by the QA suite and an agent loop (`redux/QA.md`); you evaluate the complete
+  prototype and do short spot checks.
+- **Order:** scope foundations first (M0.5–M0.7: scope, lean build, Flatpak), then the QA track (Q0.1–Q0.7), then
+  the UI trim (M0.8), then player first: the redesigned player becomes usable, then the library, then settings and onboarding.
 
 ## Milestone ritual
 1. **Kickoff.** Read `CLAUDE.md`, `STATUS.md` and the milestone file. Run `git fetch upstream`. Create `redux/milestones/M<ID>-<slug>.md` from the template.
@@ -61,10 +69,14 @@ Related files:
    decision (D18).
 4. **Implement** on the milestone branch in small commits, looping on the build.
 5. **Verify** with the milestone's commands. Paste the outputs and diff scores into the file, then run the review skills.
-6. **Hand over.** Rebuild, check that "Redux Video Player (dev)" opens from your app menu (`redux/dev.sh app`), open
-   the PR, and give you a clear, numbered test checklist: for each item, what to open, what to do and what you should see; then anything known not to work yet, and how to report a problem (the item number plus what you saw). The same list is the milestone file's manual checklist.
-7. **Your feedback.** You open the app and test; Claude fixes what you report and hands over again.
-8. **Merge.** When you say it's good: squash-merge, update the `STATUS.md` row, close the issue, write a dated
+   From M0.8 on, run `redux/tools/qa.sh` and the agent loop until green (D23) and attach the QA report to the PR.
+6. **QC.** The build, VLC's test suite, the codec matrix (and the Flatpak when packaging or the core changed), the QA
+   suite as Track Q builds it, and an independent review agent on the diff; fix and re-run until green. The PR and
+   the milestone file record the results.
+7. **QC and merge (D26).** Claude runs the QC (CLAUDE.md § Milestone ritual), fixes and re-runs until green, adds the
+   hand checks to `redux/EVALUATION.md` for your final evaluation, and squash-merges; you evaluate the complete
+   project at the end.
+8. **Merge.** After the QC is green: squash-merge, update the `STATUS.md` row, close the issue, write a dated
    status-log entry. Ending mid-milestone always records "stopped at / next step".
 
 **Definition of Done, for every milestone:**
@@ -75,6 +87,7 @@ Related files:
 - Touched screens keep the spacing-token gaps: nothing sits flush against its neighbour (principle 9).
 - `STATUS.md` and the log are updated.
 - The PR includes before/after crops.
+- From M0.8: the QA suite is green and its report is attached to the PR (D23).
 
 **Verification shorthands:**
 - **B** = `redux/dev.sh run redux/tools/build.sh qt`
@@ -87,7 +100,7 @@ Related files:
 
 The RMSE (difference score) is a regression signal per screen region, calibrated in M0.3. Your eyes on the side-by-side are the final judge.
 
-## Roadmap: 52 milestones (48 active, 3 cut, 1 future), 11 tracks, 4 release gates
+## Roadmap: 59 milestones (53 active, 2 merged into Track Q, 3 cut, 1 future), 12 tracks, 4 release gates
 Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with a spike session). Ranges such as S–M round up for the GitHub `size:` label.
 
 ### Track A: Foundations
@@ -95,12 +108,23 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 |---|---|---|---|---|
 | **M0.1** | Tracking scaffolding: `redux/milestones/{ROADMAP,STATUS,TEMPLATE,GAPS,DECISIONS}.md`, root `CLAUDE.md` (ritual, commands, rules), `main` as default branch, labels (`track:*`, `size:*`, `gap`, `upstreamable`, `needs-user`; later `future` and `cut`, D14), GitHub milestones R0–R3, one issue per milestone | S | `gh` CLI (the GitHub MCP is down) | A fresh session can name the next milestone from `CLAUDE.md` + `STATUS.md` alone; `gh issue list` shows every ID |
 | **M0.2** | Complete the design source: the Figma export is done (G1 resolved: `file.json`, 103 frames, 206 icons); add offline `tokens-from-figma.py` (light palette, text styles, radii, spacing), commit `frames.tsv` and `icons.tsv` | S | `redux/design/source/file.json` (G1 resolved) | Light and dark token sets have the same keys; ≥95 frame PNGs; typography tokens present |
-| **M0.3** | Harness v2: per-region crops in `shots.tsv`/`compare.sh` (bottom bar, top bar, sidebar, grid); `player-controls` scene; isolated run profile for `build.sh run` (never touches system VLC config); test clip with chapters and 2 audio/2 subtitle tracks; baseline score per region (the `music` scene and music fixtures were already dropped, D14) | S–M | ffmpeg, existing harness | Report shows region rows; baselines in `STATUS.md`; `vlcrc` exists only in the redux profile |
+| **M0.3** | **Merged into Q0.4 (D23).** Harness v2: per-region crops in `shots.tsv`/`compare.sh` (bottom bar, top bar, sidebar, grid); `player-controls` scene; isolated run profile for `build.sh run` (never touches system VLC config); test clip with chapters and 2 audio/2 subtitle tracks; baseline score per region (the `music` scene and music fixtures were already dropped, D14) | S–M | ffmpeg, existing harness | Report shows region rows; baselines in `STATUS.md`; `vlcrc` exists only in the redux profile |
 | **M0.4** | Video design brief: cleaned `transcript.md`; `brief.md` with every decision's reason, milestone, video time, frame and Figma node; 40–60 reference frames from `frame-picks.tsv` (frames stay out of git); gaps updated | S–M | `video-sheets.sh`, `video-frames.sh`, `check-brief.py`; 4 parallel review agents | `check-brief.py` passes; every sheet reviewed; GAPS updated |
 | **M0.5** | Scope foundation: `redux/SCOPE.md` (keep / cut / future), D13–D16, roadmap, brief and GitHub issues follow it | S | Feature inventory of `modules/gui/qt`, module inventory, community research | Every cut item maps to an M0.6 module switch or an M0.8 UI removal; issues match `STATUS.md` |
 | **M0.6** | Lean build and codec/format matrix: `redux/cut-modules.txt` (190 plugins not built, D20) through the `redux_cut_modules` meson option; `make-matrix.sh` synthesizes containers × codecs × subtitle formats and archives; `fetch-samples.sh` adds real FFmpeg FATE samples for what can't be synthesized (VC-1, PGS, VobSub, DVB/ARIB subtitles, TrueHD Atmos, DTS-HD MA, Dolby Vision, HDR10+, MXF, RealMedia, WTV); `play-matrix.sh` plays them all headless | M | VLC's module `enabled` flag, ffmpeg, FFmpeg FATE suite, `-I dummy --play-and-exit`, `-vv` log | Every matrix file opens and finds a decoder per stream; no cut plugin is built; the app still plays your own files |
-| **M0.7** | Flatpak skeleton: `redux/packaging/` manifest on the KDE runtime (Qt ≥ 6.8) with bundled FFmpeg, dav1d, libplacebo (Vulkan), libass and medialibrary 0.13.2; `--socket=wayland` + `fallback-x11`, `--socket=pulseaudio`, `--device=dri`, `--share=network` only for M5.7's consented subtitle search; the codec matrix runs inside the Flatpak | M | Flathub `org.videolan.VLC` manifest as reference (it pins FFmpeg 4.4 and VLC 3, so versions change) | `flatpak-builder` builds; matrix passes inside the sandbox; VA-API decodes on your GPU |
+| **M0.7** | Flatpak skeleton: `redux/packaging/` manifest on KDE 6.11 (Qt 6.11.2) bundling FFmpeg n9.0.1 (decoders only), libplacebo v7.360.1, libass 0.17.5, libdvbpsi, aribb24, libebml/libmatroska (+ utfcpp), medialibrary 0.13.2 and a build-only meson 1.12.1; `build-vlc.sh` applies `cut-modules.txt`; `--socket=wayland` + `fallback-x11`, `pulseaudio`, `--device=dri`, `host:ro`; `redux/tools/flatpak.sh` (build, run, lint, matrix) | M | Flathub `org.videolan.VLC` (mv/test-alpha), VLC MR !10454, `io.mpv.Mpv`, `org.kde.haruna`; D22 | `flatpak.sh build` installs; matrix 79/79 in the sandbox; VA-API and libplacebo HDR in use; lint findings explained |
 | **M0.8** | Feature trim in the UI: remove the entry points of every cut feature (navigation Music/Browse/Discover; menus for disc, network, capture, convert, stream, renderer, VLM, EPG, visualizations, wallpaper, 3D, extensions, skins; toolbar controls record, renderer, teletext, DVD, program, reverse) at one model or menu place each; the full list is in `redux/design/screen-map.md` § Feature trim; Media information stays reachable | M | `navigationmodel.cpp`, `menus/menus.cpp`, `control_list_model.hpp`, `PlayerControlbarControls.qml`, `dialogs_provider.cpp` | No cut feature is reachable from any menu, toolbar or shortcut; Qt tests pass |
+
+### Track Q: Quality assurance (D23, [`redux/QA.md`](../QA.md))
+| ID | Milestone | Size | Key reuse / files | Accept |
+|---|---|---|---|---|
+| **Q0.1** | QA foundations: `redux/qa/cases/*.yaml` case format (ID, layer, steps, expected, source: brief entry / scope item / acceptance, Figma node, frame, milestone); coverage report; L1 hygiene (build, QML warning/error scan, crash detection including quit, cut-plugin check); grep token lint (hex colours, `radius:` numbers outside `style/`); `redux/tools/qa.sh` runs the layers that exist and writes `build/qa/report.md`; fix G24 and G25 | M | VLC tests, `play-matrix.sh`, `check-brief.py` | `qa.sh` runs L1–L3 green with a report; coverage lists every brief entry |
+| **Q0.2** | Headless desktop: the image gains `kwin-wayland`, `at-spi2-core`, `dbus`, `kde-spectacle`; `redux/tools/kwin-session.sh` starts `dbus-run-session kwin_wayland --virtual --no-lockscreen --width=1920 --height=1080` (`LIBGL_ALWAYS_SOFTWARE=1`); screenshots through KWin ScreenShot2; fixed fonts, theme and window size; Xvfb fallback kept | M | KWin's virtual backend, KDE's own CI setup | The app opens, plays and quits cleanly in the session; a screenshot shows the video under llvmpipe |
+| **Q0.3** | End-to-end driver: `selenium-webdriver-at-spi` built from a pinned commit (plus `python3-pyatspi`, Appium-Python-Client, selenium); meson `test()` entries like KDE's plasma-pa; `Accessible.name` on the core controls; first flows: open file, play, end of video stays, restart from 0, subtitles on/off, queue advance; non-blocking until stable | M | KDE `selenium-webdriver-at-spi`, plasma-pa tests | The flows pass three runs in a row |
+| **Q0.4** | Visual fidelity v2 (absorbs M0.3): per-region crops with exclude masks (clock, video) and thresholds in `shots.tsv`/`compare.sh`; isolated run profile; test clip with chapters and 2 audio/2 subtitle tracks; region baselines; KWin shots for chrome and shadow scenes; WCAG contrast on every `ColorContext` set × state × Day/Night | M | Existing harness, openQA's needle idea | Report shows region rows with baselines in `STATUS.md`; contrast report lists every pair |
+| **Q0.5** | Component tests: `qml_test.cpp` registers `VLC.Style` and a stub `MainCtx`; Day/Night theme-matrix TestCases with grabs compared against baselines; ready for M1.5's widgets | M | Qt Quick Test, VLC's `test/modules/gui/qt` | A sample widget passes in both themes and all states |
+| **Q0.6** | Agent QA loop: agent roles and rubrics (UI/visual vs Figma and brief, UX/accessibility, playback/formats, regressions); findings format (severity, evidence, suspected file); generate → run → triage → fix → re-run with a round cap; unresolved items to `GAPS.md`; per-PR QA report | M | Review agents, `qa.sh` | A dry run on a seeded bug finds, fixes and re-tests it |
+| **Q0.7** | CI (pulls M10.2 forward): GitHub Actions container job (build, `meson test`, `qa.sh` L1–L7, artifacts) and Flatpak job (`flatpak-github-actions` on `ghcr.io/flathub-infra/flatpak-github-actions:kde-6.11`, then the matrix via `VLC_CMD`) | M | `flatpak-github-actions`, M0.6 matrix, M0.7 manifest | PRs show green checks plus the QA report artifact |
 
 ### Track B: Design system
 | ID | Milestone | Size | Key reuse / files | Accept |
@@ -189,8 +213,8 @@ Sizes: S ≈ 1 focused session, M ≈ 2–3, L ≈ 4 or more (each L starts with
 | ID | Milestone | Size | Key reuse / files | Accept |
 |---|---|---|---|---|
 | **M10.1** | Identity: app ID, icon, About credits, licences, designer contact (name decided: Redux Video Player, D16) | S | D16, G21 | App ID confirmed; credits shown |
-| **M10.2** | CI: GitHub Actions builds the image and VLC, runs tests, the codec matrix and the screenshot diff, builds the Flatpak, uploads the report | M | Existing tools, M0.6 matrix, M0.7 manifest | PRs show green checks plus a report artifact |
-| **M10.3** | Flathub submission, tagged release, CONTRIBUTING (Flatpak only, D13) | L | M0.7 manifest | Installs from Flathub (or the repo's own Flatpak remote) and plays the matrix on your machine and a second distro |
+| **M10.2** | **Moved into Q0.7 (D23).** CI: GitHub Actions builds the image and VLC, runs tests, the codec matrix and the screenshot diff, builds the Flatpak, uploads the report | M | Existing tools, M0.6 matrix, M0.7 manifest | PRs show green checks plus a report artifact |
+| **M10.3** | Flathub submission, tagged release, install docs (Flatpak only, D13) | L | M0.7 manifest | Installs from Flathub (or the repo's own Flatpak remote) and plays the matrix on your machine and a second distro |
 
 **Gate R3 "1.0 public".**
 
@@ -205,23 +229,26 @@ Pins, subtitle timeline, OpenSubtitles and presets moved into milestones (M3.1, 
 tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windows, macOS, AppImage (D13).
 
 **Execution order:**
-1. M0.5 → M0.6 → M0.7 → M0.8 (scope, lean build, Flatpak, trim)
-2. M1.1 → M0.2 → M0.3
-3. M1.2 → M1.5
-4. M2.1 → M2.3 → **R0**
-5. M2.4 → M2.7, then M3.1 → M3.6 → **R1**
-6. M4 → M5 (M5.1–M5.9) → M7 → **R2**
-7. M8 → M9 → M10 → **R3**
+1. M0.5 → M0.6 → M0.7 (scope, lean build, Flatpak)
+2. Q0.1 → Q0.7 (CI) → Q0.2 → Q0.6 (QA, D23, D26), then M0.8 (trim), the first milestone verified by QA
+3. M1.1 → M0.2
+4. M1.2 → M1.5
+5. M2.1 → M2.3 → **R0**
+6. M2.4 → M2.7, then M3.1 → M3.6 → **R1**
+7. M4 → M5 (M5.1–M5.9) → M7 → **R2**
+8. M8 → M9 → M10 → **R3**
 
 ## Risks and mitigations
 | Risk | Mitigation |
 |---|---|
 | Upstream changes cause merge conflicts | Monthly syncs on `sync/<date>-<sha>` branches; new files over deep edits; weekly `git log` watch |
 | VLC 4 master bugs unrelated to our work | Pin green commits; reproduce on stock VLC at the pin first |
-| Qt version skew (6.11 here, 6.8 in contribs and Flatpak) | Use no QML API newer than 6.8; CI builds against the Flatpak runtime |
+| Qt version skew (6.11 in the dev container and the Flatpak's KDE 6.11 runtime; 6.8 in VLC's contribs) | Dev and Flatpak share Qt 6.11.2; keep QML compatible with 6.8 so upstream merges stay easy; rebuild the Flatpak when the KDE runtime updates Qt (private headers, D22) |
 | Misleading diff scores | Region crops, video area masked; your eyes are final |
 | Scope creep (~100 frames) | Strict out-of-scope per milestone; backlog; gates |
 | Context loss between sessions | `CLAUDE.md` + `STATUS.md` + "next step" log entries |
+| Two people editing the same files | One milestone per person, claimed by issue assignment; parallel milestones must not touch the same files (D25) |
+| Headless Wayland/KWin in a container is fiddly | Xvfb fallback; your desktop for chrome and shadows; L5/L7 start non-blocking (D23) |
 | Clash with an installed system VLC config | Isolated profile (M0.3); Flatpak from M0.7 |
 | Wayland limits (always-on-top, title bars differ) | In-window floating card; window chrome is ours on every desktop (M2.3, D19); test both title-bar modes |
 | Subtitle timeline or library scans cause UI stalls | Worker threads, cancellation, memory caps, QML profiler |

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Placeholder app icon (M0.7); the real one comes in M10.1. Not VLC's cone (D16). -->
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="#1b1b1b"/>
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="none" stroke="#d37918" stroke-width="4"/>
+  <path d="M50 38 L94 64 L50 90 Z" fill="#d37918" stroke="#d37918" stroke-width="6" stroke-linejoin="round"/>
+</svg>

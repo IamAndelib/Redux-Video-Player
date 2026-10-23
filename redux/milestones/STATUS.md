@@ -1,21 +1,28 @@
 # Status
 
 One row per milestone. Update the row (and the milestone file's status log) whenever its state changes.
-Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap); `cut` and `future` (out of scope or parked under D14, see `redux/SCOPE.md`). Scores are the region
+Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap); `merged` (folded into another milestone); `cut` and `future` (out of scope or parked under D14, see `redux/SCOPE.md`). Milestones run back to back with QC before each merge; the maintainer evaluates the finished project with [`redux/EVALUATION.md`](../EVALUATION.md) (D26). Who works on a milestone is its GitHub issue's assignee (D25); how to pick one up: [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md). Scores are the region
 RMSE from `compare.sh` (baseline set in M0.3).
 
-**Next up: M0.7** (Flatpak skeleton, in progress on `m/M0.7-flatpak`), then M0.8 (UI trim) before the design work resumes at M1.1. Scope: [`redux/SCOPE.md`](../SCOPE.md).
+**Next up: Q0.1** (QA foundations). Then the rest of Track Q (QA, D23) in the order Q0.1 → Q0.7 (CI) → Q0.2 → … → Q0.6 (D26), then M0.8 (UI trim), the first milestone verified by QA, before the design work resumes at M1.1. Open for collaborators now: the gap issues ([#63](https://github.com/IamAndelib/Redux-Video-Player/issues/63)–[#66](https://github.com/IamAndelib/Redux-Video-Player/issues/66)). Scope: [`redux/SCOPE.md`](../SCOPE.md).
 
 | ID | Milestone | Track | Size | Status | Issue / PR | Region score | Updated |
 |---|---|---|---|---|---|---|---|
 | P0 | Phase 0: dev container, VLC import, build, media, harness, transcript | A | — | done | — | player 0.168 (whole frame) | 2026-10-13 |
 | M0.1 | Tracking scaffolding | A | S | done | [#1](https://github.com/IamAndelib/Redux-Video-Player/issues/1) | | 2026-10-13 |
 | M0.2 | Complete the design source | A | S | todo | [#2](https://github.com/IamAndelib/Redux-Video-Player/issues/2) | |  |
-| M0.3 | Harness v2 and isolated run profile | A | S–M | todo | [#3](https://github.com/IamAndelib/Redux-Video-Player/issues/3) | |  |
+| M0.3 | Harness v2 and isolated run profile | A | S–M | merged into Q0.4 (D23) | [#3](https://github.com/IamAndelib/Redux-Video-Player/issues/3) | | 2026-10-23 |
 | M0.4 | Video design brief (cleaned transcript, brief, frames) | A | S–M | done | [#52](https://github.com/IamAndelib/Redux-Video-Player/issues/52) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
 | M0.5 | Scope foundation (SCOPE.md, D13–D16, roadmap, issues) | A | S | done | [#44](https://github.com/IamAndelib/Redux-Video-Player/issues/44) / [PR #53](https://github.com/IamAndelib/Redux-Video-Player/pull/53) | | 2026-10-21 |
 | M0.6 | Lean build profile and codec/format matrix | A | M | done | [#45](https://github.com/IamAndelib/Redux-Video-Player/issues/45) / [PR #55](https://github.com/IamAndelib/Redux-Video-Player/pull/55) | | 2026-10-23 |
-| M0.7 | Flatpak skeleton | A | M | wip | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) | | 2026-10-23 |
+| M0.7 | Flatpak skeleton | A | M | done | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) / [PR #67](https://github.com/IamAndelib/Redux-Video-Player/pull/67) | | 2026-10-23 |
+| Q0.1 | QA foundations | Q | M | todo | [#56](https://github.com/IamAndelib/Redux-Video-Player/issues/56) | |  |
+| Q0.2 | Headless desktop | Q | M | todo | [#57](https://github.com/IamAndelib/Redux-Video-Player/issues/57) | |  |
+| Q0.3 | End-to-end driver | Q | M | todo | [#58](https://github.com/IamAndelib/Redux-Video-Player/issues/58) | |  |
+| Q0.4 | Visual fidelity v2 (absorbs M0.3) | Q | M | todo | [#59](https://github.com/IamAndelib/Redux-Video-Player/issues/59) | |  |
+| Q0.5 | Component tests | Q | M | todo | [#60](https://github.com/IamAndelib/Redux-Video-Player/issues/60) | |  |
+| Q0.6 | Agent QA loop | Q | M | todo | [#61](https://github.com/IamAndelib/Redux-Video-Player/issues/61) | |  |
+| Q0.7 | CI (pulls M10.2 forward) | Q | M | todo | [#62](https://github.com/IamAndelib/Redux-Video-Player/issues/62) | |  |
 | M0.8 | Feature trim in the UI | A | M | todo | [#47](https://github.com/IamAndelib/Redux-Video-Player/issues/47) | |  |
 | M1.1 | Night palette from Figma tokens | B | S | todo | [#4](https://github.com/IamAndelib/Redux-Video-Player/issues/4) | |  |
 | M1.2 | Typography and shape tokens | B | M | todo | [#5](https://github.com/IamAndelib/Redux-Video-Player/issues/5) | |  |
@@ -62,6 +69,6 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M9.1 | QML onboarding (3 steps) | J | M–L | todo | [#39](https://github.com/IamAndelib/Redux-Video-Player/issues/39) | |  |
 | M9.2 | Light theme, HiDPI and accessibility polish | J | M–L | todo | [#40](https://github.com/IamAndelib/Redux-Video-Player/issues/40) | |  |
 | M10.1 | Identity: app ID, icon, credits (name decided, D16) | K | S | todo | [#41](https://github.com/IamAndelib/Redux-Video-Player/issues/41) | |  |
-| M10.2 | CI | K | M | todo | [#42](https://github.com/IamAndelib/Redux-Video-Player/issues/42) | |  |
+| M10.2 | CI | K | M | merged into Q0.7 (D23) | [#42](https://github.com/IamAndelib/Redux-Video-Player/issues/42) | | 2026-10-23 |
 | M10.3 | Flathub submission and launch | K | L | todo | [#43](https://github.com/IamAndelib/Redux-Video-Player/issues/43) | |  |
 | **R3** | **Gate R3** | | | todo | | | |

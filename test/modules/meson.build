@@ -256,5 +256,7 @@ vlc_tests += {
     'sources' : files('mux/webvtt.c'),
     'suite' : ['modules', 'test_modules'],
     'link_with' : [libvlc, libvlccore],
-    'module_depends' : vlc_plugins_targets.keys()
+    'module_depends' : vlc_plugins_targets.keys(),
+    # Muxers are only built with stream outputs
+    'enabled' : get_option('stream_outputs'),
 }
