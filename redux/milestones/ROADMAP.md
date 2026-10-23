@@ -70,11 +70,13 @@ Related files:
 4. **Implement** on the milestone branch in small commits, looping on the build.
 5. **Verify** with the milestone's commands. Paste the outputs and diff scores into the file, then run the review skills.
    From M0.8 on, run `redux/tools/qa.sh` and the agent loop until green (D23) and attach the QA report to the PR.
-6. **Hand over.** Rebuild, check that "Redux Video Player (dev)" opens from your app menu (`redux/dev.sh app`), open
-   the PR, and give you a clear, numbered test checklist: for each item, what to open, what to do and what you should see; then anything known not to work yet, and how to report a problem (the item number plus what you saw). The same list is the milestone file's manual checklist. Once Q0.6 is done, this list shrinks to an optional
-   2–3 item real-desktop spot check (D23).
-7. **Your feedback.** You open the app and test; Claude fixes what you report and hands over again.
-8. **Merge.** When you say it's good: squash-merge, update the `STATUS.md` row, close the issue, write a dated
+6. **QC.** The build, VLC's test suite, the codec matrix (and the Flatpak when packaging or the core changed), the QA
+   suite as Track Q builds it, and an independent review agent on the diff; fix and re-run until green. The PR and
+   the milestone file record the results.
+7. **QC and merge (D26).** Claude runs the QC (CLAUDE.md § Milestone ritual), fixes and re-runs until green, adds the
+   hand checks to `redux/EVALUATION.md` for your final evaluation, and squash-merges; you evaluate the complete
+   project at the end.
+8. **Merge.** After the QC is green: squash-merge, update the `STATUS.md` row, close the issue, write a dated
    status-log entry. Ending mid-milestone always records "stopped at / next step".
 
 **Definition of Done, for every milestone:**
@@ -228,7 +230,7 @@ tab's HDR option plus libplacebo tone-mapping in M0.7. Not planned at all: Windo
 
 **Execution order:**
 1. M0.5 → M0.6 → M0.7 (scope, lean build, Flatpak)
-2. Q0.1 → Q0.7 (QA, D23), then M0.8 (trim), the first milestone verified by QA
+2. Q0.1 → Q0.7 (CI) → Q0.2 → Q0.6 (QA, D23, D26), then M0.8 (trim), the first milestone verified by QA
 3. M1.1 → M0.2
 4. M1.2 → M1.5
 5. M2.1 → M2.3 → **R0**

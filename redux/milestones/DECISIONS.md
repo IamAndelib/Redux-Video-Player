@@ -240,3 +240,16 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   The front door is [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md).
 - **Why:** the maintainer added a collaborator; work tracked only in files or conversations can't be shared.
 - **Alternatives:** a GitHub Project board (needs extra token scopes and duplicates `STATUS.md`).
+
+### D26 · 2026-10-23 · Autonomous milestones; the maintainer evaluates the finished project (amends D18, D23)
+- **Decision:** the maintainer delegates the per-milestone review. Claude runs the milestones back to back: research,
+  plan, implement, then a rigorous QC pass before every merge (build, VLC's test suite, the codec matrix in the dev
+  build and, when packaging or the core changed, the Flatpak; the QA suite as Track Q builds it; an independent
+  review agent on the diff; fixes and a re-run until green). Claude opens the PR, records the QC results in it and the
+  milestone file, squash-merges it and starts the next milestone. Instead of a per-milestone hand-over checklist, each
+  milestone adds its hand checks to [`redux/EVALUATION.md`](../EVALUATION.md), the guided script for the maintainer's
+  full quality check of the complete project. A gap that needs the maintainer's decision is filed (`needs-user`) and
+  work moves on to a milestone it doesn't block. Track Q order changes so CI comes early: Q0.1 → Q0.7 → Q0.2 → … → Q0.6.
+- **Why:** the maintainer asked to evaluate the finished project once instead of every milestone, with rigorous QC
+  between milestones.
+- **Alternatives:** keep per-milestone sign-off (D18; the maintainer becomes the bottleneck).

@@ -52,11 +52,12 @@ redux/dev.sh run redux/tools/make-media.sh  # test media in build/media/
 6. Never rewrite shared history: no rebase, amend or force-push on pushed branches. Bring in `main` with a merge.
 
 ## 6. Hand over
-1. Fill in the milestone file's Verification table with real command output, and its test checklist (numbered:
-   where to open, what to do, what to expect; test media at least 30 s long).
+1. Fill in the milestone file's Verification table with real command output, and add the checks only a person can
+   judge (sound, GPU, feel, looks) to [`redux/EVALUATION.md`](../redux/EVALUATION.md).
 2. Mark the PR ready for review. From M0.8 on, attach the QA report (`redux/tools/qa.sh`, see
    [`redux/QA.md`](../redux/QA.md)).
-3. The maintainer tests and reviews, and squash-merges when it's good. Don't merge your own PR.
+3. The maintainer, or the maintainer's Claude session after its QC pass (D26), reviews and squash-merges. Don't
+   merge your own PR.
 4. If you stop mid-milestone, add a dated "stopped at / next step" line to the milestone file's status log and push,
    so anyone can pick it up.
 

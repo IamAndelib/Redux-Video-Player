@@ -15,8 +15,7 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 4. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
    `git remote add upstream https://code.videolan.org/videolan/vlc.git`; if it stalls, G23, use the GitHub mirror
    `https://github.com/videolan/vlc.git`). Work only on the milestone's branch `m/<ID>-<slug>` (D8).
-5. Don't start a new milestone until the maintainer has said your previous one is good. Claim the new one by
-   assigning yourself its issue.
+5. Milestones run back to back (D26): when one is merged, claim the next by assigning yourself its issue and start.
 
 ## Philosophy
 - **Slow and steady:** one milestone at a time, reviewed and merged before the next.
@@ -41,23 +40,23 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 - Open a draft PR early (`Closes #<issue>`); feedback and bugs live in issues and PRs, not only in chat.
 - Questions for the maintainer: comment on the issue with the `needs-user` label.
 
-## Milestone ritual (D18, amended by D23)
-Research → plan → implement in small commits → verify → **hand over**: rebuild, make sure "Redux Video Player (dev)"
-opens from the app menu (`redux/dev.sh app`), open the PR and give the maintainer the test checklist (below) → the maintainer tests
-the app and gives feedback → fix and hand over again → on "good": squash-merge, update `STATUS.md` and the
-milestone's status log, then start the next milestone. Ask the maintainer during a milestone only when a gap needs
-their decision. Ending mid-milestone always logs "stopped at / next step" (and is pushed, so anyone can resume).
-Details: `redux/milestones/ROADMAP.md`. **QA (D23, `redux/QA.md`):** from M0.8 on, verify with `redux/tools/qa.sh`
-and the agent loop until green and attach the QA report to the PR; once Q0.6 is done, the checklist below shrinks to
-an optional 2–3 item real-desktop spot check.
+## Milestone ritual (D18, amended by D23 and D26)
+Research → plan → implement in small commits → **QC** → PR → squash-merge → update `STATUS.md` and the milestone's
+status log → start the next milestone (D26: the maintainer evaluates the complete project at the end, not each
+milestone). **QC before every merge:** the build; VLC's test suite (`meson test -C build/meson`); the codec matrix;
+the Flatpak build and `flatpak.sh matrix` when packaging or `src/`/`modules/` outside the Qt UI changed; the QA suite
+(`redux/tools/qa.sh`) as Track Q builds it; an independent review agent on the diff; fix and re-run until green, and
+record the results in the PR and the milestone file. Keep "Redux Video Player (dev)" working (`redux/dev.sh app`).
+A gap that needs the maintainer's decision is filed with `needs-user`; move on to a milestone it doesn't block. Ending
+mid-milestone always logs "stopped at / next step" and is pushed, so anyone can resume. Details:
+`redux/milestones/ROADMAP.md`; QA: `redux/QA.md` (D23).
 
-**Every hand-over includes a test checklist** (copied into the milestone file's manual checklist):
-1. Numbered items, each with **open** (where in the app), **do** (the action) and **expect** (what should happen).
-2. Cover every user-visible change of the milestone, plus a quick regression check of what it touched.
-3. Then "known not working yet" (out of scope or later milestones), so nothing is reported twice.
-4. End with how to report: the item number and what you saw (a screenshot helps).
-5. Anything the maintainer does by hand uses test media at least 30 s long (e.g. `build/media/`), never the 2 s
-   matrix clips: a check must not be over before it can be done.
+**Every milestone adds its hand checks to `redux/EVALUATION.md`** (the maintainer's final evaluation script), in
+this format:
+1. One section per milestone; items with an ID (`M2.1-3`), **open** (where in the app), **do** (the action) and
+   **expect** (what should happen).
+2. Only what a person must judge at a real desktop (sound, GPU, feel, looks); the QA suite covers the rest.
+3. Hand checks use media at least 30 s long (e.g. `build/media/`), never the 2 s matrix clips.
 
 ## Commands (all builds and tools run in the Podman dev container)
 | What | Command |

@@ -1,7 +1,8 @@
 # Redux QA plan
 
-Adopted by the maintainer on 2026-10-23 (D23, amends D18). Track Q (Q0.1–Q0.7 in
-[`milestones/ROADMAP.md`](milestones/ROADMAP.md)) builds it after M0.7 and before M0.8.
+Adopted by the maintainer on 2026-10-23 (D23, amends D18; D26). Track Q (Q0.1–Q0.7 in
+[`milestones/ROADMAP.md`](milestones/ROADMAP.md)) builds it after M0.7 and before M0.8, in the order
+Q0.1 → Q0.7 (CI) → Q0.2 → Q0.3 → Q0.4 → Q0.5 → Q0.6.
 
 ## Goal
 Every milestone is checked automatically for function, UI/UX against the design, and the sandbox, by agents that
@@ -55,7 +56,8 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
 
 ## Definition of Done (from M0.8)
 The milestone's cases are written alongside its code, and the QA suite is green with its report attached to the PR.
-Until Q0.6 is done, hand-overs keep the full D18 checklist.
+Since D26, Claude runs the QC and merges; hand checks go into [`EVALUATION.md`](EVALUATION.md) for the maintainer's
+final evaluation of the complete project.
 
 ## Risks
 - **Headless Wayland plus KWin in a container is fiddly.** The fallback is Xvfb for most checks and the maintainer's
