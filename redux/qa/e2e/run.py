@@ -2,11 +2,12 @@
 
   python -I redux/qa/e2e/run.py <results.tsv> [test ...]
 
-Each line is "l5.<module>.<test>\t<pass|fail|skip>\t<detail>" (redux/QA.md). Called by redux/qa/e2e.sh inside the
+Each line is "l5.<module>.<Class>.<test>\t<pass|fail|skip>\t<detail>" (redux/QA.md). Called by redux/qa/e2e.sh inside the
 KDE session, with the WebDriver server already listening.
 """
 
 import os
+import re
 import sys
 import unittest
 
@@ -24,14 +25,19 @@ def screenshot(test):
             pass
 
 
+def check_id(test):
+    """`l5.<module>.<Class>.<test>`; an error in setUpClass or tearDownClass is `l5.<module>.<Class>.setUpClass`."""
+    class_error = re.fullmatch(r"(\w+) \((.+)\)", test.id())   # unittest's id for a class-level error
+    return "l5." + (f"{class_error[2]}.{class_error[1]}" if class_error else test.id())
+
+
 class ResultFile(unittest.TextTestResult):
-    lines = []
+    path = None   # results file; each row is written as it's recorded, so a session killed by its timeout keeps them
 
     def _record(self, test, status, detail=""):
-        module, _, name = test.id().rpartition(".")
-        module = module.split(".")[0]
         detail = " ".join(detail.split())[:180]
-        self.lines.append(f"l5.{module}.{name}\t{status}\t{detail}")
+        with open(self.path, "a") as out:
+            out.write(f"{check_id(test)}\t{status}\t{detail}\n")
 
     def addSuccess(self, test):
         super().addSuccess(test)
@@ -53,13 +59,12 @@ class ResultFile(unittest.TextTestResult):
 
 
 def main():
-    results_path, names = sys.argv[1], sys.argv[2:]
+    ResultFile.path, names = sys.argv[1], sys.argv[2:]
+    open(ResultFile.path, "w").close()
     loader = unittest.TestLoader()
     suite = loader.loadTestsFromNames(names) if names else loader.discover(HERE, pattern="test_*.py")
     runner = unittest.TextTestRunner(resultclass=ResultFile, verbosity=2, stream=sys.stdout)
     runner.run(suite)
-    with open(results_path, "w") as out:
-        out.write("\n".join(ResultFile.lines) + ("\n" if ResultFile.lines else ""))
 
 
 if __name__ == "__main__":

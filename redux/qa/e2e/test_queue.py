@@ -11,7 +11,7 @@ from base import PlayerTest
 class QueueAdvances(PlayerTest):
     media = ["Videos/Shows/The Wand/S01/The_Wand_S01E01.mp4",   # 12 s each
              "Videos/Shows/The Wand/S01/The_Wand_S01E02.mp4"]
-    extra_args = ["--start-time=9"]   # the last 3 s of each, to keep the test short
+    extra_args = ["--start-time=6"]   # the last 6 s of each: short, with room for a slow runner
 
     def test_1_queue_holds_both(self):
         self.wait_for("the first video playing", lambda: self.title() == "The Wand S01E01")
@@ -20,4 +20,5 @@ class QueueAdvances(PlayerTest):
 
     def test_2_second_starts_when_first_ends(self):
         self.wait_for("the second video", lambda: self.title() == "The Wand S01E02", timeout=30)
-        self.wait_for("PlaybackStatus Playing", lambda: self.mpris("PlaybackStatus") == "Playing")
+        # Playing, or already paused at its end (D21): either way it started after the first.
+        self.assertIn(self.mpris("PlaybackStatus"), ("Playing", "Paused"))

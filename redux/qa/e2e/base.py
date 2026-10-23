@@ -21,6 +21,7 @@ import unittest
 from appium import webdriver
 from appium.options.common.base import AppiumOptions
 from appium.webdriver.common.appiumby import AppiumBy
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -59,7 +60,9 @@ class PlayerTest(unittest.TestCase):
         # Wait until it has left the session bus: D-Bus frees the MPRIS name asynchronously, and a player that starts
         # while it is still taken registers as org.mpris.MediaPlayer2.vlc.instance<pid>, which mpris() doesn't read.
         deadline = time.monotonic() + 10
-        while time.monotonic() < deadline and cls.mpris("PlaybackStatus") is not None:
+        while cls.mpris("PlaybackStatus") is not None:
+            if time.monotonic() > deadline:
+                raise RuntimeError("the player still holds org.mpris.MediaPlayer2.vlc 10 s after quitting")
             time.sleep(0.2)
 
     # --- what the player does (MPRIS) --------------------------------------------------------------------------
@@ -106,8 +109,12 @@ class PlayerTest(unittest.TestCase):
         deadline = time.monotonic() + timeout
         last = None
         while time.monotonic() < deadline:
-            last = condition()
-            if last:
-                return last
+            try:
+                last = condition()
+            except WebDriverException as error:   # e.g. an element rebuilt between finding and reading it: retry
+                last = error
+            else:
+                if last:
+                    return last
             time.sleep(interval)
         self.fail(f"timed out after {timeout} s waiting for {what} (last: {last!r})")

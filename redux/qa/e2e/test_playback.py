@@ -21,9 +21,9 @@ class OpenAndPlay(PlayerTest):
 
 class EndAndRestart(PlayerTest):
     media = ["Videos/Shows/The Wand/S01/The_Wand_S01E06.mp4"]   # 12 s
-    # Only the last 3 s, to keep the test short. VLC then treats the 3 s as the whole media: its time and MPRIS
-    # Position run from 0 and mpris:length is 3 s.
-    extra_args = ["--start-time=9"]
+    # Only the last 6 s, to keep the test short. VLC then treats the 6 s as the whole media: its time and MPRIS
+    # Position run from 0 and mpris:length is 6 s.
+    extra_args = ["--start-time=6"]
 
     def test_1_end_stays_paused_on_last_frame(self):
         # D21: the last video ends paused on its last frame, not stopped.
@@ -42,5 +42,6 @@ class EndAndRestart(PlayerTest):
         self.reveal_controls()
         self.press("Play/Pause")
         self.wait_for("PlaybackStatus Playing", lambda: self.mpris("PlaybackStatus") == "Playing")
-        position = self.mpris("Position")
-        self.assertLess(position, SEC, f"restarted at {position / SEC:.1f} s, not from the beginning")
+        # Within the first half, not continuing from the end (tolerates a slow runner between the two reads).
+        position, length = self.mpris("Position"), self.length()
+        self.assertLess(position, length // 2, f"restarted at {position / SEC:.1f} s, not from the beginning")

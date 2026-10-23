@@ -346,5 +346,5 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - dogtail or raw pyatspi: no WebDriver protocol, no input synthesis on Wayland.
   - Squish: proprietary.
   - Qt Quick Test: in-process components only (that's L4, Q0.5), not the real app.
-- **Edits outside `modules/gui/qt/` and `redux/`:** `.devcontainer/` (the driver layer and the lock file) and
-  `.github/workflows/ci.yml` (the L5 step).
+- **Edits outside `modules/gui/qt/` and `redux/`:** `.devcontainer/` (the driver layer and the lock file),
+  `.github/workflows/ci.yml` (the L5 step) and `CLAUDE.md` (the command row).

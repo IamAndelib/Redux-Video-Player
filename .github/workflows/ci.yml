@@ -89,6 +89,7 @@ jobs:
         run: redux/tools/fetch-samples.sh
 
       - name: Build
+        id: build
         run: |
           mkdir -p "$REDUX_CCACHE_DIR"
           redux/dev.sh run redux/tools/build.sh
@@ -99,7 +100,7 @@ jobs:
 
       # Q0.3: non-blocking until it has run green and stable (redux/QA.md), with its own report.
       - name: End-to-end flows (L5, non-blocking)
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         continue-on-error: true
         run: redux/dev.sh run env QA_OUT=build/qa-e2e redux/tools/qa.sh L5
 

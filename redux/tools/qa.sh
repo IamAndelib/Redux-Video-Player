@@ -17,6 +17,9 @@ cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 builddir="${BUILD_DIR:-build/meson}"
 export QA_OUT="$(realpath -m "${QA_OUT:-build/qa}")"   # absolute: the player writes its logs there too
 export QA_RESULTS="$QA_OUT/results.tsv"
+# It's wiped below, so only a directory of its own under build/ (never build/ itself or the build tree).
+[[ "$QA_OUT" == "$PWD"/build/?* && "$QA_OUT" != "$PWD/build/meson"* ]] ||
+  { echo "QA_OUT must be a directory of its own under build/, not $QA_OUT" >&2; exit 2; }
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
 for layer in "${layers[@]}"; do

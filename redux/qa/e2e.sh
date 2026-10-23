@@ -4,7 +4,7 @@
 # (`qa.sh L5`) inside the dev container; appends one `l5.<test>` result per test to $QA_RESULTS and keeps the
 # driver and player logs in $QA_OUT/l5/.
 #
-#   redux/qa/e2e.sh [test ...]     default: every test in redux/qa/e2e/test_*.py (names as `test_playback.PlaybackTest`)
+#   redux/qa/e2e.sh [test ...]     default: every test in redux/qa/e2e/test_*.py (names as `test_playback.EndAndRestart`)
 set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
@@ -15,8 +15,14 @@ mkdir -p "$out"
 if [[ "${1:-}" != --in-session ]]; then
   [[ -d build/media/Videos ]] || redux/tools/make-media.sh >/dev/null
   rm -f "$out/results.tsv"
-  redux/tools/kwin-session.sh "$0" --in-session "$@" > "$out/session.log" 2>&1
+  # Each app launch takes a while, and a failing test waits out its timeouts: more time than kwin-session's default.
+  KWIN_SESSION_TIMEOUT="${KWIN_SESSION_TIMEOUT:-900}" redux/tools/kwin-session.sh "$0" --in-session "$@" \
+    > "$out/session.log" 2>&1
+  status=$?
   if [[ -s "$out/results.tsv" ]]; then
+    # 125: the session ended without the runner's status (its timeout killed it, or KWin died). Rows so far are kept.
+    [[ $status -eq 125 ]] &&
+      printf '%s\t%s\t%s\n' l5.run fail "the session ended early (exit $status); see $out/session.log" >> "$out/results.tsv"
     cat "$out/results.tsv" >> "$QA_RESULTS"
     while IFS=$'\t' read -r check status detail; do echo "  $status  $check${detail:+  ($detail)}"; done < "$out/results.tsv"
   else
@@ -36,9 +42,14 @@ driver_dir=/usr/local/share/selenium-webdriver-at-spi
   > "$out/driver.log" 2>&1 &
 driver=$!
 trap 'kill "$driver" 2>/dev/null || true' EXIT
+ready=
 for _ in $(seq 100); do
-  curl -fs http://127.0.0.1:4723/status >/dev/null 2>&1 && break
+  curl -fs http://127.0.0.1:4723/status >/dev/null 2>&1 && { ready=1; break; }
   sleep 0.1
 done
+if [[ -z "$ready" ]]; then
+  printf '%s\t%s\t%s\n' l5.driver fail "the WebDriver server didn't start in 10 s; see $out/driver.log" > "$out/results.tsv"
+  exit 1
+fi
 
 /opt/e2e/bin/python -I redux/qa/e2e/run.py "$out/results.tsv" "$@"
