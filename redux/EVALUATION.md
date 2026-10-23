@@ -16,4 +16,4 @@ says so, the dev build ("Redux Video Player (dev)"). Use your own videos of at l
   styled subtitles; at the end the last frame stays; Play restarts from 0:00.
 - **M0.7-5 · Open:** the Flatpak while a video plays · **Do:** media keys or the KDE media applet · **Expect:**
   play/pause works; the applet shows the title.
-- **M0.7-6 · Open:** the Flatpak · **Do:** quit with Ctrl+Q · **Expect:** it closes cleanly, no crash dialog (G24).
+- **M0.7-6 · Open:** the Flatpak · **Do:** quit with Ctrl+Q · **Expect:** it closes cleanly, no crash dialog (G24, fixed in M0.7: it crashed on every quit before).
