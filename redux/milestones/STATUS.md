@@ -4,7 +4,7 @@ One row per milestone. Update the row (and the milestone file's status log) when
 Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap); `merged` (folded into another milestone); `cut` and `future` (out of scope or parked under D14, see `redux/SCOPE.md`). Milestones run back to back with QC before each merge; the maintainer evaluates the finished project with [`redux/EVALUATION.md`](../EVALUATION.md) (D26). Who works on a milestone is its GitHub issue's assignee (D25); how to pick one up: [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md). Scores are the region
 RMSE from `compare.sh` (baseline set in M0.3).
 
-**Next up: Q0.2** (headless desktop). Q0.7 (CI) merged in [PR #71](https://github.com/IamAndelib/Redux-Video-Player/pull/71): every PR now runs the QA suite, and code changes also build the Flatpak and play the matrix in it. Then the rest of Track Q (QA, D23) in the order Q0.1 → Q0.7 (CI) → Q0.2 → … → Q0.6 (D26), then M0.8 (UI trim), the first milestone verified by QA, before the design work resumes at M1.1. Open for collaborators now: the gap issues ([#63](https://github.com/IamAndelib/Redux-Video-Player/issues/63)–[#66](https://github.com/IamAndelib/Redux-Video-Player/issues/66)). Scope: [`redux/SCOPE.md`](../SCOPE.md).
+**Next up: Q0.3** (end-to-end driver). Q0.2 merged in [PR #74](https://github.com/IamAndelib/Redux-Video-Player/pull/74): the app runs in a headless KDE session (`redux/tools/kwin-session.sh`), with screenshots where a render node exists (G27). Then the rest of Track Q (QA, D23) in the order Q0.1 → Q0.7 (CI) → Q0.2 → … → Q0.6 (D26), then M0.8 (UI trim), the first milestone verified by QA, before the design work resumes at M1.1. Open for collaborators now: the gap issues ([#63](https://github.com/IamAndelib/Redux-Video-Player/issues/63)–[#66](https://github.com/IamAndelib/Redux-Video-Player/issues/66)). Scope: [`redux/SCOPE.md`](../SCOPE.md).
 
 | ID | Milestone | Track | Size | Status | Issue / PR | Region score | Updated |
 |---|---|---|---|---|---|---|---|
@@ -17,7 +17,7 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M0.6 | Lean build profile and codec/format matrix | A | M | done | [#45](https://github.com/IamAndelib/Redux-Video-Player/issues/45) / [PR #55](https://github.com/IamAndelib/Redux-Video-Player/pull/55) | | 2026-10-23 |
 | M0.7 | Flatpak skeleton | A | M | done | [#46](https://github.com/IamAndelib/Redux-Video-Player/issues/46) / [PR #67](https://github.com/IamAndelib/Redux-Video-Player/pull/67) | | 2026-10-23 |
 | Q0.1 | QA foundations | Q | M | done | [#56](https://github.com/IamAndelib/Redux-Video-Player/issues/56) / [PR #70](https://github.com/IamAndelib/Redux-Video-Player/pull/70) | | 2026-10-23 |
-| Q0.2 | Headless desktop | Q | M | wip | [#57](https://github.com/IamAndelib/Redux-Video-Player/issues/57) | | 2026-10-24 |
+| Q0.2 | Headless desktop | Q | M | done | [#57](https://github.com/IamAndelib/Redux-Video-Player/issues/57) / [PR #74](https://github.com/IamAndelib/Redux-Video-Player/pull/74) | | 2026-10-24 |
 | Q0.3 | End-to-end driver | Q | M | todo | [#58](https://github.com/IamAndelib/Redux-Video-Player/issues/58) | |  |
 | Q0.4 | Visual fidelity v2 (absorbs M0.3) | Q | M | todo | [#59](https://github.com/IamAndelib/Redux-Video-Player/issues/59) | |  |
 | Q0.5 | Component tests | Q | M | todo | [#60](https://github.com/IamAndelib/Redux-Video-Player/issues/60) | |  |
