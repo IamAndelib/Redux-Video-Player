@@ -46,7 +46,8 @@ with open(sys.argv[2], "a") as out:
         test = json.loads(line)
         result = status.get(test["result"], "fail")
         detail = "" if result != "fail" else f"{test['result']} after {test['duration']:.1f} s; see build/qa/meson-test.log"
-        out.write(f"l3.{test['name']}\t{result}\t{detail}\n")
+        name = test["name"].rsplit(":", 1)[-1]   # "src+test_src+test - VLC:test_src_player_eof" -> the test name
+        out.write(f"l3.{name}\t{result}\t{detail}\n")
 EOF
   grep -E "^(Ok|Fail|Skipped|Timeout):" "$QA_OUT/meson-test.log" | tr -s ' ' | paste -sd' ' | sed 's/^/  /'
 fi

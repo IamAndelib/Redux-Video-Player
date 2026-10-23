@@ -99,6 +99,9 @@ def case_status(case, results):
         return "hand check", f"redux/EVALUATION.md {check[7:]}"
     matched = {k: v for k, v in results.items() if fnmatch.fnmatchcase(k, check)}
     if not matched:
+        # The case's layer ran but nothing matches its check: a dead reference, which must not pass silently.
+        if any(k.startswith(case["layer"].lower() + ".") for k in results):
+            return "fail", f"no check matches {check}"
         return "not run", check
     statuses = [s for s, _ in matched.values()]
     if "fail" in statuses:
@@ -134,6 +137,8 @@ def main():
     statuses = {c["id"]: case_status(c, results)[0] for c in cases}
 
     failed = {k: v for k, v in results.items() if v[0] == "fail"}
+    failed.update({f"case {c['id']}": ("fail", case_status(c, results)[1]) for c in cases
+                   if statuses[c["id"]] == "fail" and case_status(c, results)[1].startswith("no check matches")})
     lines = ["# QA report", ""]
     lines += [f"**{'FAIL' if failed or errors else 'PASS'}**: {len(results)} checks run, "
               f"{sum(1 for v in results.values() if v[0] == 'pass')} passed, {len(failed)} failed, "
