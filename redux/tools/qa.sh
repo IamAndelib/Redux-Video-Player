@@ -5,6 +5,8 @@
 #   redux/dev.sh run redux/tools/qa.sh            the blocking layers: L1 hygiene, L2 codec matrix, L3 VLC's tests
 #   redux/dev.sh run redux/tools/qa.sh L1 L3      only these layers
 #   redux/dev.sh run redux/tools/qa.sh L5         end-to-end flows (Q0.3); opt-in and non-blocking until stable
+#   redux/dev.sh run redux/tools/qa.sh L6         screens by region against Figma and baselines (Q0.4); opt-in, needs
+#                                                 a DRM render node (not on GitHub's runners, G27)
 #
 # QA_OUT (default build/qa) is where results go, so a separate L5 run can keep its own report.
 #
@@ -23,7 +25,7 @@ export QA_RESULTS="$QA_OUT/results.tsv"
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
 for layer in "${layers[@]}"; do
-  [[ "$layer" =~ ^L[1235]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5)" >&2; exit 2; }
+  [[ "$layer" =~ ^L[12356]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5 L6)" >&2; exit 2; }
 done
 rm -rf "$QA_OUT" && mkdir -p "$QA_OUT"
 : > "$QA_RESULTS"
@@ -87,6 +89,18 @@ fi
 if wants L5; then
   echo "== L5 end-to-end flows (AT-SPI driver in the KDE session)"
   redux/qa/e2e.sh
+fi
+
+if wants L6; then
+  echo "== L6 screens by region (KDE session; Figma and baselines)"
+  if ! compgen -G '/dev/dri/renderD*' >/dev/null; then
+    result l6 skip "no DRM render node, so KWin can't take screenshots (G27)"
+  elif redux/tools/shoot.sh > "$QA_OUT/shoot.log" 2>&1; then
+    python3 -I redux/qa/visual/compare.py > "$QA_OUT/compare.log" 2>&1   # its results go to $QA_RESULTS
+    grep -E '^  (pass|fail|skip)  ' "$QA_OUT/compare.log"
+  else
+    result l6.shoot fail "a scene failed; see $QA_OUT/shoot.log"
+  fi
 fi
 
 echo "== report"

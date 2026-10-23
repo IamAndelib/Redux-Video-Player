@@ -1,0 +1,7 @@
+{
+  "what": "Onboarding, welcome step (VLC's first-run wizard until M9.1 replaces it)",
+  "figma": "1899:3055",
+  "area": [
+    {"name": "dialog", "xpos": 403, "ypos": 148, "width": 1114, "height": 783}
+  ]
+}

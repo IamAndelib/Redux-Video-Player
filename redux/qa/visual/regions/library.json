@@ -1,0 +1,13 @@
+{
+  "what": "A season folder in list view, with the miniplayer",
+  "figma": "970:3308",
+  "area": [
+    {"name": "title-bar", "xpos": 0, "ypos": 0, "width": 1920, "height": 40},
+    {"name": "sidebar", "xpos": 0, "ypos": 40, "width": 210, "height": 1040},
+    {"name": "header", "xpos": 210, "ypos": 40, "width": 1710, "height": 75},
+    {"name": "content", "xpos": 210, "ypos": 115, "width": 1710, "height": 600},
+    {"name": "miniplayer", "xpos": 1520, "ypos": 735, "width": 400, "height": 345},
+    {"name": "bottom", "xpos": 0, "ypos": 1000, "width": 1920, "height": 80},
+    {"type": "exclude", "name": "miniplayer time (#78)", "xpos": 80, "ypos": 1040, "width": 400, "height": 35}
+  ]
+}

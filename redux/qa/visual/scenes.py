@@ -1,6 +1,6 @@
 """Screenshot scenes (QA layer L6, Q0.4): each class drives the real app in the headless KDE session the way a user does,
 through AT-SPI (the Q0.3 driver, redux/qa/e2e/base.py), and saves the screen as build/shots/<scene>.png with KWin's
-screenshot interface. Run by redux/tools/shoot.sh; the scenes match the Figma frames in redux/tools/shots.tsv.
+screenshot interface. Run by redux/tools/shoot.sh; the scenes match the Figma frames named in redux/qa/visual/regions/<scene>.json.
 
 The app uses its own title bar (`--no-qt-titlebar`, as the design does) and is maximised with that title bar's
 button, so a shot is the whole 1920×1080 window like a Figma frame. THEME (night, day, system) picks the colour scheme.
@@ -28,7 +28,8 @@ class Scene(PlayerTest):
     out = os.path.join(SHOTS, "session")
     profile = "shots"   # shared: the library scenes need the media library the first-run scene indexed
     keep_profile = True
-    extra_args = ["--no-qt-titlebar"]
+    # The design's own title bar; no video-title overlay (it fades out at an unpredictable moment).
+    extra_args = ["--no-qt-titlebar", "--no-video-title-show"]
 
     @classmethod
     def prepare_profile(cls, profile):
@@ -87,13 +88,13 @@ class FirstRun(Scene):
 
 
 class Library(Scene):
-    """Figma 970:3308: a season folder in list view, with the miniplayer while an episode plays."""
+    """Figma 970:3308: a season folder in list view, with the miniplayer (paused, so its time is the same every run)."""
     media = [EPISODE]
-    extra_args = Scene.extra_args + ["--start-time=40"]
+    extra_args = Scene.extra_args + ["--start-time=40", "--start-paused"]
 
     def test_scene(self):
         self.maximize()
-        self.wait_for("playback", lambda: self.mpris("PlaybackStatus") == "Playing")
+        self.wait_for("the video to be paused", lambda: self.mpris("PlaybackStatus") == "Paused")
         self.reveal_controls()
         self.press("Back")
         self.press("Browse")

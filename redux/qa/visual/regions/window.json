@@ -1,0 +1,7 @@
+{
+  "what": "The window as it opens, not maximised: VLC's own title bar and its shadow",
+  "figma": null,
+  "area": [
+    {"name": "window", "xpos": 120, "ypos": 50, "width": 720, "height": 560}
+  ]
+}
