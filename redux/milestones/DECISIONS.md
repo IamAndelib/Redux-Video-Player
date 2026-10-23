@@ -366,3 +366,26 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   output can't take GPU frames and silently decodes in software, so only a real OpenGL output proves the path.
 - **Alternatives:** fluster (frame-checksum conformance; VLC's OpenGL output can't dump frames); a libvlc harness for
   exact frame counts (not the real app; the CLI and Lua interfaces that expose them are cut, D20).
+
+### D33 · 2026-10-24 · Visual fidelity v2: scenes in the KDE session, regions with masks, contrast from the live palette
+- **Decision (Q0.4):**
+  - **Scenes:** `shoot.sh` runs each scene (`redux/qa/visual/scenes.py`) in its own D30 KDE session, driven through
+    AT-SPI (D31) like a user, and captured with KWin. Xvfb and xdotool are gone from the screenshot path. The app uses
+    its own title bar (`--no-qt-titlebar`, as the design does), maximised with its own button; no video-title overlay
+    and no resizing to the video (both land at unpredictable moments). KWin's desktop is black without a wallpaper,
+    so the window scene shows the title bar and frame but not the shadow.
+  - **Regions:** `redux/qa/visual/regions/<scene>.json` in the shape of openQA's needles (match and exclude areas;
+    replaces `shots.tsv`). `compare.py` scores each region by DSSIM (ImageMagick 7 with a read mask): to the Figma
+    frame as progress (never a failure), and to committed baseline crops (`redux/qa/visual/baselines/`, 432 KB) as a
+    regression check (default threshold 0.0002; two runs give 0).
+  - **Contrast:** the app writes its palette when `REDUX_PALETTE_DUMP` is set (new `style/palettedump.cpp`, a one-line
+    hook in `systempalette.cpp`, and `Q_ENUM` for `ColorState`, `ColorSection`, `ColorName`), and `contrast.py` checks
+    every pair against WCAG 2.x.
+  - **QA layers:** `qa.sh L6` and `L7` are opt-in. L6 needs a render node, so it runs locally, not on GitHub's runners
+    (G27); the Figma frames are local-only anyway.
+- **Why:** M0.3's whole-frame RMSE mixed every region into one number and broke on anything that changes between runs.
+  The Figma frames' screens need navigation (a folder in list view, the miniplayer) that only the AT-SPI driver does
+  reliably. A palette dump uses `getColor()`'s real fallbacks, where a QtTest would need most of the module.
+- **Alternatives:** Playwright, odiff, pixelmatch, BackstopJS, reg-suit (new dependencies for what ImageMagick does);
+  Qt's lancelot (GPL-3/commercial, client-server); a QtTest for the palette (needs `MainCtx`); parsing the C++ source.
+- **Edits outside `modules/gui/qt/` and `redux/`:** `PLAN.md` and `CLAUDE.md` (commands).

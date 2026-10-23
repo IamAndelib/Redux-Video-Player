@@ -2,7 +2,8 @@
 
 One row per milestone. Update the row (and the milestone file's status log) whenever its state changes.
 Statuses: `todo` → `research` → `wip` → `review` → `done`; `blocked` (name the gap); `merged` (folded into another milestone); `cut` and `future` (out of scope or parked under D14, see `redux/SCOPE.md`). Milestones run back to back with QC before each merge; the maintainer evaluates the finished project with [`redux/EVALUATION.md`](../EVALUATION.md) (D26). Who works on a milestone is its GitHub issue's assignee (D25); how to pick one up: [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md). Scores are the region
-RMSE from `compare.sh` (baseline set in M0.3).
+DSSIM per region to the Figma frame from `compare.sh` (0 is identical; baselines below, set in Q0.4). A milestone that
+changes a screen updates its row here and in the table below.
 
 **Next up: Q0.4** (visual fidelity v2). Q0.8 merged in [PR #77](https://github.com/IamAndelib/Redux-Video-Player/pull/77): on a machine with a GPU, `qa.sh` L2 proves VA-API decoding per codec (`l2.hw`, D32). Q0.3 merged in [PR #75](https://github.com/IamAndelib/Redux-Video-Player/pull/75): end-to-end flows drive the real app through AT-SPI (`redux/tools/qa.sh L5`, non-blocking until stable, D31). Then the rest of Track Q (QA, D23) in the order Q0.1 → Q0.7 (CI) → Q0.2 → … → Q0.6 (D26), then M0.8 (UI trim), the first milestone verified by QA, before the design work resumes at M1.1. Open for collaborators now: the gap issues ([#63](https://github.com/IamAndelib/Redux-Video-Player/issues/63)–[#66](https://github.com/IamAndelib/Redux-Video-Player/issues/66)). Scope: [`redux/SCOPE.md`](../SCOPE.md).
 
@@ -73,3 +74,22 @@ RMSE from `compare.sh` (baseline set in M0.3).
 | M10.2 | CI | K | M | merged into Q0.7 (D23) | [#42](https://github.com/IamAndelib/Redux-Video-Player/issues/42) | | 2026-10-23 |
 | M10.3 | Flathub submission and launch | K | L | todo | [#43](https://github.com/IamAndelib/Redux-Video-Player/issues/43) | |  |
 | **R3** | **Gate R3** | | | todo | | | |
+
+## Visual baselines (Q0.4)
+DSSIM per region to the Figma frame (stock VLC 4 UI, 2026-10-24, `redux/dev.sh run redux/tools/qa.sh L6`; lower is
+closer). Regressions are checked against the committed crops in `redux/qa/visual/baselines/`.
+
+| Scene (Figma) | Region | Baseline |
+|---|---|---|
+| library (`970:3308`) | title-bar | 0.4950 |
+| | sidebar | 0.3336 |
+| | header | 0.1868 |
+| | content | 0.2135 |
+| | miniplayer | 0.1308 |
+| | bottom | 0.0905 |
+| player (`187:328`) | title-bar | 0.1580 |
+| | side-panel | 0.1568 |
+| | controls | 0.3007 |
+| first-run (`1899:3055`) | dialog | 0.4795 |
+
+Contrast (`qa.sh L7`, WCAG 2.x, 217 pairs per scheme): Night 48 pairs below the minimum, Day 144 (stock palette; M1.1).

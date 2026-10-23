@@ -81,11 +81,12 @@ this format:
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
 | Codec/format matrix (generate, fetch real samples, play all) | `redux/dev.sh run redux/tools/make-matrix.sh`, `redux/tools/fetch-samples.sh`, `redux/dev.sh run redux/tools/play-matrix.sh` |
-| Screenshots (1920×1080, Night) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light) |
+| Screenshots (1920×1080, Night, in the KDE session; needs a render node) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light; scenes in `redux/qa/visual/scenes.py`) |
 | Headless KDE session / screenshot in it | `redux/dev.sh run redux/tools/kwin-session.sh <cmd…>` / `python3 -I redux/tools/kwin-shot.py <out.png>` (D30) |
 | End-to-end flows (L5; one class: `redux/dev.sh run redux/qa/e2e.sh test_playback.EndAndRestart`) | `redux/dev.sh run redux/tools/qa.sh L5` (D31) |
 | Run as a CI runner would (no GPU) | `REDUX_NO_GPU=1 redux/dev.sh run …` |
-| Diff vs Figma | `redux/dev.sh run redux/tools/compare.sh`, then open `build/shots/report.html` |
+| Diff vs Figma and baselines, by region | `redux/dev.sh run redux/tools/compare.sh [--update]`, then open `build/shots/report.html`; both steps: `qa.sh L6` (D33) |
+| WCAG contrast report | `redux/dev.sh run redux/tools/qa.sh L7` → `build/qa/contrast.md` (D33) |
 | Shell in the container | `redux/dev.sh shell` |
 | Rebuild the dev image | `redux/dev.sh image` |
 | Figma export (host) | `python3 -I redux/tools/figma-export.py` (token in `~/.config/vlc-redux/figma-token`) |

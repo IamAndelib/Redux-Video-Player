@@ -7,6 +7,7 @@
 #   redux/dev.sh run redux/tools/qa.sh L5         end-to-end flows (Q0.3); opt-in and non-blocking until stable
 #   redux/dev.sh run redux/tools/qa.sh L6         screens by region against Figma and baselines (Q0.4); opt-in, needs
 #                                                 a DRM render node (not on GitHub's runners, G27)
+#   redux/dev.sh run redux/tools/qa.sh L7         WCAG contrast report on the palette (Q0.4); opt-in
 #
 # QA_OUT (default build/qa) is where results go, so a separate L5 run can keep its own report.
 #
@@ -25,7 +26,7 @@ export QA_RESULTS="$QA_OUT/results.tsv"
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
 for layer in "${layers[@]}"; do
-  [[ "$layer" =~ ^L[12356]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5 L6)" >&2; exit 2; }
+  [[ "$layer" =~ ^L[123567]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5 L6 L7)" >&2; exit 2; }
 done
 rm -rf "$QA_OUT" && mkdir -p "$QA_OUT"
 : > "$QA_RESULTS"
@@ -101,6 +102,11 @@ if wants L6; then
   else
     result l6.shoot fail "a scene failed; see $QA_OUT/shoot.log"
   fi
+fi
+
+if wants L7; then
+  echo "== L7 contrast (WCAG, every ColorContext pair in Night and Day)"
+  redux/qa/contrast.sh
 fi
 
 echo "== report"

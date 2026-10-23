@@ -1,0 +1,46 @@
+# L6 screens by region (redux/qa/visual/, redux/tools/shoot.sh + compare.sh) and L7 contrast (redux/qa/contrast.sh).
+# Format: redux/QA.md § Test case format.
+- id: L6-library-regions
+  title: The library screen matches its baseline region by region
+  layer: L6
+  milestone: Q0.4
+  sources: [dod:spacing, dod:crops, accept:Q0.4]
+  steps: [Open Browse › Videos › Shows › The Wand › S01 in list view with a paused episode (the library scene)]
+  expected: >-
+    every region (title bar, sidebar, header, content, miniplayer, bottom) is within its threshold of the committed
+    baseline; its distance to Figma 970:3308 is reported as progress.
+  check: l6.library.*
+
+- id: L6-player-regions
+  title: The player screen matches its baseline region by region
+  layer: L6
+  milestone: Q0.4
+  sources: [dod:spacing, dod:crops, accept:Q0.4]
+  expected: title bar, side panel and controls are within their thresholds; distance to Figma 187:328 reported.
+  check: l6.player.*
+
+- id: L6-first-run-regions
+  title: The first-run screen matches its baseline
+  layer: L6
+  milestone: Q0.4
+  sources: [dod:crops, accept:Q0.4]
+  expected: the welcome dialog is within its threshold; distance to Figma 1899:3055 reported.
+  check: l6.first-run.*
+
+- id: L6-window-chrome
+  title: The window's own title bar and shadow match their baseline
+  layer: L6
+  milestone: Q0.4
+  sources: [dod:crops, accept:Q0.4]
+  expected: the window as it opens (not maximised), with VLC's title bar and shadow, is within its threshold.
+  check: l6.window.*
+
+- id: L7-contrast
+  title: Every colour pair meets WCAG contrast in Night and Day
+  layer: L7
+  milestone: Q0.4
+  sources: [dod:keyboard, accept:Q0.4]
+  expected: >-
+    text 4.5:1 and focus ring, borders and indicators 3:1 on their backgrounds, in every active state of every
+    ColorContext set (disabled exempt). Expected to fail until M1.1 sets the new palette; the report lists every pair.
+  check: l7.contrast

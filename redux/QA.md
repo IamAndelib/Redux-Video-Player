@@ -59,7 +59,7 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
 Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
-`l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l5.<module>.<Class>.<test>` (Q0.3), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
+`l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l5.<module>.<Class>.<test>` (Q0.3), `l6.<scene>.<region>`, `l7.contrast` (Q0.4), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 **Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
@@ -72,6 +72,17 @@ codec (`redux/qa/hw-clips.tsv`) in the KDE session with the GPU's OpenGL (`REDUX
 per clip whether the GPU or software should decode it; VLC's log and the kernel's per-process GPU engine time
 (`/proc/<pid>/fdinfo`) prove which one did. `l2.hw.cpu` reports the CPU time with and without the GPU. Without a
 render node, e.g. on GitHub's runners, it's one `l2.hw` skip (G27).
+
+**Screens by region (Q0.4, D33):** `redux/dev.sh run redux/tools/qa.sh L6` (opt-in; needs a render node, G27)
+runs `shoot.sh` (scenes in `redux/qa/visual/scenes.py`, driven through AT-SPI in the KDE session) and `compare.sh`.
+Each scene's regions are in `redux/qa/visual/regions/<scene>.json` (openQA needle shape: match and exclude areas).
+Per region it reports the DSSIM to the Figma frame (progress, never a failure) and fails on a regression against the
+committed crop in `redux/qa/visual/baselines/`. After an intended change, `compare.sh --update` rewrites the crops,
+the PR shows them, and `STATUS.md`'s baselines table gets the new Figma scores.
+
+**Contrast (Q0.4, D33):** `qa.sh L7` dumps the Night and Day palettes (`REDUX_PALETTE_DUMP`,
+`style/palettedump.cpp`) and writes `contrast.md`: every `ColorContext` pair per state against WCAG 2.x (text 4.5:1;
+focus ring, borders, indicators 3:1; disabled exempt). Expected to fail until M1.1's palette.
 
 **End-to-end flows (Q0.3, D31):** `redux/dev.sh run redux/tools/qa.sh L5` (opt-in, non-blocking) runs
 `redux/qa/e2e/test_*.py` in that session: each test class launches the player through KDE's AT-SPI WebDriver with a

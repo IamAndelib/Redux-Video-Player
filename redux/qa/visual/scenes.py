@@ -117,12 +117,14 @@ class Player(Scene):
 
 
 class Window(Scene):
-    """The window as it opens, not maximised: VLC's own title bar and its shadow (no Figma frame)."""
+    """The window as it opens, not maximised: VLC's own title bar and its shadow (no Figma frame). The window keeps
+    its opening size: resizing it to the video lands at an unpredictable moment."""
     media = [EPISODE]
-    extra_args = Scene.extra_args + ["--start-time=40", "--start-paused"]
+    extra_args = Scene.extra_args + ["--start-time=40", "--start-paused", "--no-qt-video-autoresize"]
 
     def test_scene(self):
         self.wait_for("the video to be paused", lambda: self.mpris("PlaybackStatus") == "Paused")
+        self.reveal_controls()   # the title bar hides with the player controls
         self.shoot("window")
 
 

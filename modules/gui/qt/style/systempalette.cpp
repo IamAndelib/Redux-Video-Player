@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 #include "systempalette.hpp"
+#include "palettedump.hpp"
 #include <QGuiApplication>
 #include <QPalette>
 #include <QSettings>
@@ -399,6 +400,7 @@ void SystemPalette::updatePalette()
     default:
         break;
     }
+    dumpPaletteIfRequested(*this, m_source);
 
     if (m_palettePriv)
     {
