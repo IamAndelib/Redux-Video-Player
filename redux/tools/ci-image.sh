@@ -20,17 +20,19 @@ push=false
 tag="$(git ls-files -s .devcontainer | sha256sum | cut -c1-16)"
 remote="$registry:$tag"
 
-if podman pull --quiet "$remote" >/dev/null 2>&1; then
+if podman pull --quiet "$remote" >/dev/null; then   # its error, if any, stays visible
   echo "pulled $remote" >&2
   podman tag "$remote" "$local_image"
 else
-  echo "no $remote yet; building it" >&2
+  echo "couldn't pull $remote (not published yet, or the error above); building it" >&2
   redux/dev.sh image
   if $push; then
     podman tag "$local_image" "$remote"
     podman tag "$local_image" "$registry:latest"
-    podman push "$remote"
-    podman push "$registry:latest"
+    # A failed push only costs the next run a rebuild, so it warns instead of failing the job.
+    if ! { podman push "$remote" && podman push "$registry:latest"; }; then
+      echo "::warning::couldn't push $remote; the next run builds the image again"
+    fi
   fi
 fi
 

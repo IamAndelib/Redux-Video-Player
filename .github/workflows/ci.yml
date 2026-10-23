@@ -19,17 +19,44 @@ permissions:
   contents: read
 
 jobs:
+  # Publishes the dev image when main gets a new .devcontainer/. The only job with write access to packages, and it
+  # never runs pull-request code (Q0.7 review F1).
+  image:
+    name: Publish the dev image
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Log in to GHCR
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+        run: podman login ghcr.io -u "$ACTOR" --password-stdin <<< "$TOKEN"
+
+      - name: Pull, or build and push
+        run: redux/tools/ci-image.sh --push
+
   qa:
     name: QA suite (L1–L3)
+    needs: image
+    # Pull requests skip `image`; run anyway, but not after it failed or the run was cancelled.
+    if: ${{ !cancelled() && (needs.image.result == 'success' || needs.image.result == 'skipped') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     permissions:
       contents: read
-      packages: write   # push a newly built dev image to GHCR (main only)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2   # the parent commit is the token lint's base (QA_BASE below)
+          persist-credentials: false   # pull-request scripts never see a token
 
       - name: Runner
         run: |
@@ -39,16 +66,9 @@ jobs:
           # redux/dev.sh mounts this folder as the container's ccache; actions/cache saves it between runs.
           echo "REDUX_CCACHE_DIR=$RUNNER_TEMP/ccache" >> "$GITHUB_ENV"
 
-      - name: Log in to GHCR
-        if: github.event_name == 'push'
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTOR: ${{ github.actor }}
-        run: podman login ghcr.io -u "$ACTOR" --password-stdin <<< "$TOKEN"
-
       - name: Dev image (pull, or build on a miss)
         id: image
-        run: redux/tools/ci-image.sh ${{ github.event_name == 'push' && '--push' || '' }}
+        run: redux/tools/ci-image.sh
 
       - name: Restore ccache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -92,6 +112,11 @@ jobs:
             build/matrix/report.tsv
             build/matrix/logs/
           if-no-files-found: warn
+
+      - name: Trim ccache
+        if: always() && github.event_name == 'push'
+        # The image allows 20 GB, so a saved cache would only grow; a full build needs ~250 MB (review F3).
+        run: redux/dev.sh run env CCACHE_MAXSIZE=1G ccache --cleanup
 
       - name: Save ccache
         if: always() && github.event_name == 'push'

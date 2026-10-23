@@ -15,6 +15,12 @@ on:
       - 'src/**'
       - '**/meson.build'
       - 'meson_options.txt'
+      - 'config.h.meson'
+      - 'buildsystem/**'
+      - 'po/**'
+      - '.devcontainer/**'
+      - 'redux/dev.sh'
+      - 'redux/tools/ci-image.sh'
       - 'redux/packaging/**'
       - 'redux/cut-modules.txt'
       - 'redux/tools/flatpak.sh'
@@ -35,6 +41,12 @@ on:
       - 'src/**'
       - '**/meson.build'
       - 'meson_options.txt'
+      - 'config.h.meson'
+      - 'buildsystem/**'
+      - 'po/**'
+      - '.devcontainer/**'
+      - 'redux/dev.sh'
+      - 'redux/tools/ci-image.sh'
       - 'redux/packaging/**'
       - 'redux/cut-modules.txt'
       - 'redux/tools/flatpak.sh'
@@ -66,6 +78,8 @@ jobs:
       options: --privileged
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Lint the manifest (advisory)
         continue-on-error: true
@@ -105,6 +119,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install Flatpak and ffprobe
         run: |
