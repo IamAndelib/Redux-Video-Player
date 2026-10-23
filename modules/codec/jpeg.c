@@ -113,8 +113,6 @@ vlc_module_begin()
     set_description(N_("JPEG video encoder"))
     set_capability("video encoder", 1000)
     set_callback(OpenEncoder)
-    add_integer_with_range(ENC_CFG_PREFIX "quality", 95, 0, 100,
-                           ENC_QUALITY_TEXT, ENC_QUALITY_LONGTEXT)
 #endif
     /* image encoder submodule */
     add_submodule()
@@ -123,6 +121,8 @@ vlc_module_begin()
     set_description(N_("JPEG image encoder"))
     set_capability("image encoder", 1000)
     set_callback(OpenEncoder)
+    add_integer_with_range(ENC_CFG_PREFIX "quality", 95, 0, 100,
+                           ENC_QUALITY_TEXT, ENC_QUALITY_LONGTEXT)
 vlc_module_end()
 
 
