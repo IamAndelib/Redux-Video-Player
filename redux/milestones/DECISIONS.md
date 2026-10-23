@@ -185,7 +185,7 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Decision:** when `play-and-pause` has paused a video on its last frame (M0.6 turns it on for the last item in the
   queue), playing again starts it from the beginning. A flag `paused_at_eof` on the player input is set at that
   pause, cleared by any seek, and `vlc_player_SetPause(false)` resets the position when it is set. 14 lines in
-  `src/player/{player.h,input.c,player.c}`.
+  `src/player/{player.h,input.c,player.c}`; `test/src/player/eof.c` tests it (Q0.1).
 - **Why:** maintainer feedback; it is what other players (MPC-HC, IINA, web players) do. Doing it in the player core,
   not the Qt button, covers every way of pressing play: the button, Space (VLC's hotkeys module), media keys and
   MPRIS. A seek in between still resumes from the seek position. VLC's 20 player tests pass. Upstreamable.
@@ -257,3 +257,21 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Why:** the maintainer asked to evaluate the finished project once instead of every milestone, with rigorous QC
   between milestones.
 - **Alternatives:** keep per-milestone sign-off (D18; the maintainer becomes the bottleneck).
+
+### D27 · 2026-10-24 · Keep the playlist `export` plugin (amends D20)
+- **Decision:** `export` comes off `redux/cut-modules.txt`. 189 plugins are cut, 233 built.
+- **Why:** Q0.1's startup hygiene check found "Could not export playlist" at every quit. The Qt UI's
+  `ModelRecoveryAgent` saves the queue as M3U8 through this plugin so it can be restored after a crash; with it cut,
+  queue recovery silently failed. Crash recovery of the queue is part of the kept queue feature (SCOPE K25).
+- **Alternatives:** keep it cut and remove the recovery agent (loses a safety net to save a 30 KB plugin).
+
+### D28 · 2026-10-24 · Disciplined work: task IDs, priorities and agent roles
+- **Decision:** work is broken down Track → Milestone (`Q0.1`) → Task (`Q0.1-T3`, a table in the milestone file:
+  ID, task, priority, status, commit) → commits whose message names the task (`Q0.1: T3 add the D21 player test`).
+  Findings, bugs and gaps carry a priority P0–P3 with fixed meanings (P0/P1 block a merge) and the GitHub label
+  `priority:P<n>`. One lead (the main session or a contributor) plans, decides, runs QC and merges; specialist agents
+  (researcher, reviewer, QA triager) get one bounded job with a brief from [`redux/agents/`](../agents/README.md) and
+  report numbered findings (`F1`…) the lead answers one by one (fixed, filed or rejected).
+- **Why:** the maintainer asked for an organised, disciplined workflow with agents, hierarchies, priorities, clear
+  instructions and IDs, so the code stays readable and maintainable and work is traceable.
+- **Alternatives:** a full project-management tool or board (heavy; duplicates STATUS.md and issues).

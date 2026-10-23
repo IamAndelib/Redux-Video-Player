@@ -1,0 +1,32 @@
+# L8 sandbox and the maintainer's hand checks for the Flatpak (redux/EVALUATION.md § M0.7).
+- id: L8-flatpak-matrix
+  title: The codec matrix passes inside the Flatpak
+  layer: L8
+  milestone: M0.7
+  sources: [scope:K40, decision:D22, accept:M0.7]
+  expected: redux/tools/flatpak.sh matrix reports 79 passed, 0 failed (host only; CI from Q0.7).
+  check: l8.flatpak-matrix
+
+- id: M0.7-2
+  title: Open your own videos from home and another drive
+  layer: L8
+  milestone: M0.7
+  sources: [scope:K38, accept:M0.7]
+  expected: plays with sound; the file dialog can browse everywhere.
+  check: manual:M0.7-2
+
+- id: M0.7-3
+  title: 4K or HEVC 10-bit plays smoothly (hardware decoding in the sandbox)
+  layer: L8
+  milestone: M0.7
+  sources: [scope:K21, accept:M0.7]
+  expected: smooth playback.
+  check: manual:M0.7-3
+
+- id: M0.7-5
+  title: Media keys and the desktop media applet control the Flatpak
+  layer: L8
+  milestone: M0.7
+  sources: [scope:K37]
+  expected: play/pause works; the applet shows the title.
+  check: manual:M0.7-5

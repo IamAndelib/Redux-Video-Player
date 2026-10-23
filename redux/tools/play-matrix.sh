@@ -74,20 +74,22 @@ for f in "$dir"/*; do
   check "$name" "$want" "$f"
 done
 
-# Real-world samples (kind from samples.tsv).
-if [[ -d "$dir/real" ]]; then
-  while IFS=$'\t' read -r path kind _; do
-    [[ -z "$path" || "$path" == \#* ]] && continue
-    f="$dir/real/${path//\//--}"
-    [[ -f "$f" ]] || continue
-    case "$kind" in
-      media) check "real/${path}" "$(streams "$f")" "$f" ;;
-      sub) check "real/${path}" "video audio subtitle" "$dir/h264-aac.mp4" --sub-file="$f" ;;
-    esac
-  done < redux/tools/samples.tsv
-fi
+# Real-world samples (kind from samples.tsv). A missing sample fails: a matrix that silently shrinks proves less.
+while IFS=$'\t' read -r path kind _; do
+  [[ -z "$path" || "$path" == \#* ]] && continue
+  f="$dir/real/${path//\//--}"
+  if [[ ! -f "$f" ]]; then
+    printf '%s\t-\t-\t-\t-\t%s\n' "real/${path}" "FAIL: sample missing (run redux/tools/fetch-samples.sh)" >> "$report"
+    fail=$((fail + 1))
+    continue
+  fi
+  case "$kind" in
+    media) check "real/${path}" "$(streams "$f")" "$f" ;;
+    sub) check "real/${path}" "video audio subtitle" "$dir/h264-aac.mp4" --sub-file="$f" ;;
+  esac
+done < redux/tools/samples.tsv
 
 column -t -s $'\t' "$report"
 echo
 echo "$pass passed, $fail failed (report: $report)"
-[[ $fail -eq 0 ]]
+[[ $fail -eq 0 && $pass -gt 0 ]]

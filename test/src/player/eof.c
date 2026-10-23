@@ -40,6 +40,57 @@ test_play_pause(struct ctx *ctx)
     test_end(ctx);
 }
 
+/* Smallest position reported since report index `from` */
+static vlc_tick_t
+min_time_since(struct ctx *ctx, size_t from)
+{
+    vec_on_position_changed *vec = &ctx->report.on_position_changed;
+    vlc_tick_t min = VLC_TICK_MAX;
+    for (size_t i = from; i < vec->size; ++i)
+        if (vec->data[i].time < min)
+            min = vec->data[i].time;
+    return min;
+}
+
+static void
+test_play_after_eof(struct ctx *ctx)
+{
+    test_log("play_after_eof\n");
+
+    /* Redux Video Player (D21): resuming a media that play-and-pause paused at
+     * EOF restarts it, unless the user seeked in between. */
+    vlc_player_t *player = ctx->player;
+    vlc_player_SetPlayAndPause(player, true);
+
+    const vlc_tick_t length = VLC_TICK_FROM_SEC(1);
+    struct media_params params = DEFAULT_MEDIA_PARAMS(length);
+    player_set_next_mock_media(ctx, "media1", &params);
+    player_start(ctx);
+
+    wait_state(ctx, VLC_PLAYER_STATE_PLAYING);
+    wait_state(ctx, VLC_PLAYER_STATE_PAUSED);
+
+    /* Resuming at EOF plays again from the beginning */
+    size_t from = ctx->report.on_position_changed.size;
+    vlc_player_Resume(player);
+    wait_state(ctx, VLC_PLAYER_STATE_PLAYING);
+    wait_state(ctx, VLC_PLAYER_STATE_PAUSED);
+    assert(min_time_since(ctx, from) < length / 2);
+
+    /* A seek after EOF wins: playback resumes from the seek position */
+    from = ctx->report.on_position_changed.size;
+    vlc_player_SetTime(player, length * 3 / 4);
+    vlc_player_Resume(player);
+    wait_state(ctx, VLC_PLAYER_STATE_PLAYING);
+    wait_state(ctx, VLC_PLAYER_STATE_PAUSED);
+    assert(min_time_since(ctx, from) >= length / 2);
+
+    test_prestop(ctx);
+    vlc_player_Stop(player);
+
+    test_end(ctx);
+}
+
 static void
 test_repeat(struct ctx *ctx)
 {
@@ -94,6 +145,7 @@ main(void)
     struct ctx ctx;
     ctx_init(&ctx, 0);
     test_play_pause(&ctx);
+    test_play_after_eof(&ctx);
     test_repeat(&ctx);
     test_audio_end(&ctx, 2.f);
     test_audio_end(&ctx, 4.f);

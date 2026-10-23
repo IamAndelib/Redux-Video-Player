@@ -1,0 +1,59 @@
+# L1 build and hygiene (redux/qa/l1-hygiene.sh, redux/qa/token-lint.sh). Format: redux/QA.md § Test case format.
+- id: L1-env-integrity
+  title: The dev image's packaged files match their checksums
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:build-and-tests]
+  expected: dpkg --verify reports no checksum mismatch, so a failure elsewhere is a code bug, not a faulty environment (G26).
+  check: l1.env-integrity
+
+- id: L1-build
+  title: VLC builds without errors
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:build-and-tests]
+  expected: meson compiles every target of the dev build.
+  check: l1.build
+
+- id: L1-cut-plugins
+  title: No cut plugin is built
+  layer: L1
+  milestone: Q0.1
+  sources: [decision:D20, scope:X1, scope:X2, scope:X3, scope:X4, scope:X5, scope:X6, scope:X7, scope:X8,
+            scope:X9, scope:X10, scope:X11, scope:X12, scope:X13, scope:X14]
+  expected: none of the plugins in redux/cut-modules.txt exists in the build.
+  check: l1.cut-plugins
+
+- id: L1-startup-night
+  title: The app starts and plays in Night without QML warnings, then quits cleanly
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:qml-clean, brief:B2]
+  steps: [Fresh profile in Night, open the 60 s subtitle demo, play 8 s, end the session (SIGTERM)]
+  expected: the window appears; no QML warning or error and no VLC error outside log-allowlist.txt; exit 0.
+  check: l1.startup.night
+
+- id: L1-startup-day
+  title: The app starts and plays in Day without QML warnings, then quits cleanly
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:qml-clean, scope:K29]
+  steps: [Fresh profile in Day, open the 60 s subtitle demo, play 8 s, end the session (SIGTERM)]
+  expected: the window appears; no QML warning or error and no VLC error outside log-allowlist.txt; exit 0.
+  check: l1.startup.day
+
+- id: L1-quit
+  title: Quitting with the media library loaded doesn't crash
+  layer: L1
+  milestone: Q0.1
+  sources: [decision:D24, scope:K22]
+  expected: play-and-exit with the media library loaded exits 0 (it segfaulted on every quit before M0.7, G24).
+  check: l1.quit
+
+- id: L1-token-lint
+  title: New QML uses tokens, not hard-coded colours or radii
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:tokens, brief:B2, brief:B3]
+  expected: no QML line added since the branch left main hard-codes a hex colour or a radius number.
+  check: l1.token-lint
