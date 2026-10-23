@@ -1,7 +1,8 @@
 # Clips for the hardware playback check (Q0.8, redux/qa/l2-hw.sh): 8 s of 1080p30 FFmpeg test pattern each, in
-# build/hw-clips/<name>.mkv. Columns: name, the VA-API decode profile the GPU needs (vainfo), FFmpeg encoder options.
+# build/hw-clips/ (one file per clip and options). Columns: name, the VA-API decode profile the GPU needs (vainfo),
+# FFmpeg encoder options.
 # Without the profile the clip is expected to fall back to software decoding.
-h264-8bit	VAProfileH264High	-c:v libx264 -preset ultrafast -pix_fmt yuv420p
+h264-8bit	VAProfileH264High	-c:v libx264 -preset superfast -profile:v high -pix_fmt yuv420p
 h264-10bit	VAProfileH264High10	-c:v libx264 -preset ultrafast -pix_fmt yuv420p10le
 hevc-8bit	VAProfileHEVCMain	-c:v libx265 -preset ultrafast -pix_fmt yuv420p
 hevc-10bit	VAProfileHEVCMain10	-c:v libx265 -preset ultrafast -pix_fmt yuv420p10le

@@ -6,7 +6,8 @@
 #   redux/dev.sh run redux/tools/kwin-session.sh <command> [args...]
 #
 # Inside the session, `python3 -I redux/tools/kwin-shot.py <out.png>` takes a screenshot of the whole desktop.
-# Rendering is software everywhere (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one.
+# Rendering is software by default (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one;
+# REDUX_SESSION_GPU=1 keeps the GPU's OpenGL (Q0.8's hardware playback check, D32).
 # KWin composites with OpenGL, which its screenshots need; that takes a DRM render node: the GPU on a desktop, or the
 # kernel's virtual `vgem` device (as in KDE's CI). Without one, as on GitHub's runners (G27), KWin falls back to
 # QPainter: apps still run, but screenshots fail. KWIN_SESSION_TIMEOUT (default 300 s) bounds the whole session. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).

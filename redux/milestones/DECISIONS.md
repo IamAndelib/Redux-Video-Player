@@ -355,8 +355,9 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   software stays the default) and `--vout=gl`.
   - **Expectation from the GPU:** `vainfo`'s decode profiles say per clip whether the GPU or software should decode.
   - **Evidence:** VLC's log (`vaapi generic: Using …` and the `glinterop_vaapi` interop) plus the kernel's GPU video
-    engine time for the player's process (`/proc/<pid>/fdinfo`: `drm-engine-dec` on amdgpu, `drm-engine-video` on
-    i915), so a log line alone can't pass a clip that the GPU never decoded. Dropped pictures (`picture is too late to
+    engine time for the player's process (`/proc/<pid>/fdinfo`: `drm-engine-dec`/`enc` on amdgpu, `drm-engine-video`
+    on i915), so where the driver reports engine time a log line alone can't pass a clip the GPU never decoded.
+    With several GPUs, a profile only some of them list may go either way. Dropped pictures (`picture is too late to
     be displayed`) and log problems fail any clip; a fallback's own VA-API probe error is allowed.
   - **CPU:** `l2.hw.cpu` reports the HEVC 10-bit clip's CPU time with and without the GPU, without gating on it.
   - **Skipped** without a render node or VA-API decoder (GitHub's runners, G27); it runs on the maintainer's and
