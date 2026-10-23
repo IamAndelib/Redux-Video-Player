@@ -92,6 +92,9 @@ this format:
 
 ## Rules
 - Never install anything on the host; add it to `.devcontainer/Containerfile` and record why in `DECISIONS.md`.
+- Testing on the maintainer's desktop is allowed (maintainer, 2026-10-24): `redux/dev.sh app` and the Flatpak
+  (`redux/tools/flatpak.sh run`) for what headless runs can't judge (GPU decoding, sound, looks). Say so before a
+  window opens; automated checks stay headless. The build can't run natively on the host (Debian sid libraries).
 - Build only what `redux/SCOPE.md` keeps. Bringing back a cut or future feature needs a `DECISIONS.md` entry first.
 - Edits outside `modules/gui/qt/` and `redux/` need a `redux/milestones/DECISIONS.md` entry.
 - New QML or C++ files must be listed in both `modules/gui/qt/meson.build` and `modules/gui/qt/Makefile.am`.
