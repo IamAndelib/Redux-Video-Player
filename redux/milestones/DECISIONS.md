@@ -323,3 +323,28 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - Weston: not the target desktop.
   - Spectacle for screenshots: heavy, and the same KWin interface underneath.
   - QPainter compositing: no screenshots.
+
+### D31 · 2026-10-24 · End-to-end flows: KDE's AT-SPI WebDriver, MPRIS as the playback oracle
+- **Decision:** QA layer L5 (`qa.sh L5`, `redux/qa/e2e/`) drives the real player through AT-SPI with KDE's
+  [selenium-webdriver-at-spi](https://invent.kde.org/sdk/selenium-webdriver-at-spi) inside the D30 session (Q0.3).
+  - **The driver:** built into the dev image from a pinned commit (`cb67767e`, tarball checked by SHA-256); it has no
+    releases and no Debian package. Its own launcher `run.rb` is skipped: `kwin-session.sh` already does its job.
+  - **The client:** selenium 4.29.0 and Appium-Python-Client 4.5.1 in `/opt/e2e`, a venv installed with
+    `--require-hashes` from `.devcontainer/e2e-requirements.lock` (Debian's selenium is too old for the Appium client).
+  - **Two oracles:** what the player does comes from MPRIS (`--control=dbus`, exact, independent of the UI); what the
+    user sees and can reach comes from AT-SPI, by accessible name, so a test survives the redesign moving a control.
+  - **Input like a user:** clicks and keys go through KWin's fake-input protocol. Hidden controls aren't reachable, so
+    tests reveal them with a key press (pointer moves revealed them only once per session).
+  - **`kwin-session.sh`:** windows open at the origin (a KWin rule) without Qt's fallback title bar
+    (`QT_WAYLAND_DISABLE_WINDOWDECORATION=1`). On Wayland, AT-SPI positions are window-relative, so otherwise injected
+    clicks landed beside their target.
+  - **Non-blocking** in `qa.sh` (opt-in layer) and in CI (`continue-on-error`, its own report in `build/qa-e2e/`) until
+    it has run green and stable (QA.md).
+- **Why:** QA.md adopted this driver (D23); KDE tests Plasma and its apps the same way (plasma-pa's tests are the
+  pattern). MPRIS gives exact positions and states that would otherwise mean reading labels or pixels.
+- **Alternatives:**
+  - dogtail or raw pyatspi: no WebDriver protocol, no input synthesis on Wayland.
+  - Squish: proprietary.
+  - Qt Quick Test: in-process components only (that's L4, Q0.5), not the real app.
+- **Edits outside `modules/gui/qt/` and `redux/`:** `.devcontainer/` (the driver layer and the lock file),
+  `.github/workflows/ci.yml` (the L5 step) and `CLAUDE.md` (the command row).

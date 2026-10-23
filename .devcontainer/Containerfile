@@ -94,6 +94,29 @@ RUN apt-get update && apt-get install -y \
  && { getcap /usr/bin/kwin_wayland | grep -q . && setcap -r /usr/bin/kwin_wayland || true; } \
  && rm -rf /var/lib/apt/lists/*
 
+# End-to-end UI tests (Q0.3, D31): KDE's selenium-webdriver-at-spi, a WebDriver server over AT-SPI, at a pinned commit
+# (it has no releases) from its GitHub mirror, checksum-verified. Its helpers inject keyboard and mouse input through
+# KWin's fake-input protocol, which plain AT-SPI can't do on Wayland. The tests' Python client (selenium, Appium) is a
+# hash-locked venv in /opt/e2e: Debian's python3-selenium is older than the server needs.
+ARG SWAS_COMMIT=cb67767e0206f495f24ca98214912692982bd23c
+ARG SWAS_SHA256=bb3454b38f33752076b917311b3c18ef00cee5f187e11f20f36c4718f782cf54
+COPY e2e-requirements.lock /tmp/e2e-requirements.lock
+RUN apt-get update && apt-get install -y \
+      extra-cmake-modules libkf6windowsystem-dev libkf6coreaddons-dev kwayland-dev libkpipewire-dev \
+      plasma-wayland-protocols libwayland-dev libxkbcommon-dev qt6-wayland-dev \
+      python3-flask python3-pyatspi python3-lxml python3-numpy gir1.2-gtk-3.0 \
+ && cd /tmp \
+ && curl -fsSLo swas.tar.gz "https://github.com/KDE/selenium-webdriver-at-spi/archive/${SWAS_COMMIT}.tar.gz" \
+ && echo "${SWAS_SHA256}  swas.tar.gz" | sha256sum -c - \
+ && tar xf swas.tar.gz \
+ && cmake -S "selenium-webdriver-at-spi-${SWAS_COMMIT}" -B swas-build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTING=OFF \
+ && cmake --build swas-build && cmake --install swas-build \
+ && python3 -m venv /opt/e2e \
+ && /opt/e2e/bin/pip install --no-cache-dir --require-hashes -r /tmp/e2e-requirements.lock \
+ && rm -rf /tmp/swas.tar.gz /tmp/swas-build "/tmp/selenium-webdriver-at-spi-${SWAS_COMMIT}" /tmp/e2e-requirements.lock \
+           /var/lib/apt/lists/*
+
 ENV LANG=C.UTF-8 \
     CCACHE_DIR=/ccache \
     CCACHE_MAXSIZE=20G \

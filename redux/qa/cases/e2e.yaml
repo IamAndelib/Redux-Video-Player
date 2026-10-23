@@ -1,0 +1,51 @@
+# L5 end-to-end flows (redux/qa/e2e/test_*.py, run by `qa.sh L5`; non-blocking until stable, redux/QA.md).
+# Format: redux/QA.md § Test case format.
+- id: L5-open-and-play
+  title: A file opened from the command line plays and its time advances
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K1, accept:Q0.3]
+  expected: MPRIS reports Playing and the position moves forward.
+  check: l5.test_playback.OpenAndPlay.test_plays_and_time_advances
+
+- id: L5-title-and-duration
+  title: The player shows the video's title and duration
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K1, accept:Q0.3]
+  expected: the title reaches MPRIS and the duration label shows 01:30 for a 90 s video.
+  check: l5.test_playback.OpenAndPlay.test_shows_title_and_duration
+
+- id: L5-end-stays-paused
+  title: The last video ends paused on its last frame
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K6, decision:D21, accept:Q0.3]
+  expected: at the end MPRIS reports Paused at the media's length, and the time labels show the end.
+  check: l5.test_playback.EndAndRestart.test_1_end_stays_paused_on_last_frame
+
+- id: L5-restart-after-end
+  title: Pressing Play on a finished video starts it from the beginning
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K7, decision:D21, accept:Q0.3]
+  steps: [reveal the controls with a key press, press Play/Pause]
+  expected: playback restarts within the first second.
+  check: l5.test_playback.EndAndRestart.test_2_play_again_restarts_from_the_beginning
+
+- id: L5-subtitles-on-off
+  title: The user turns subtitles off and on in the tracks menu
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K14, accept:Q0.3]
+  steps: [open Languages and tracks, click the subtitle track, click it again]
+  expected: the file's subtitle track starts selected, a click deselects it, a second click selects it again.
+  check: l5.test_subtitles.SubtitlesOnOff.*
+
+- id: L5-queue-advances
+  title: With two videos queued, the second plays when the first ends
+  layer: L5
+  milestone: Q0.3
+  sources: [scope:K6, accept:Q0.3]
+  expected: the queue lists 2 elements; after the first ends the second plays (a queue plays through, K6).
+  check: l5.test_queue.QueueAdvances.*
