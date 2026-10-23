@@ -348,3 +348,20 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - Qt Quick Test: in-process components only (that's L4, Q0.5), not the real app.
 - **Edits outside `modules/gui/qt/` and `redux/`:** `.devcontainer/` (the driver layer and the lock file),
   `.github/workflows/ci.yml` (the L5 step) and `CLAUDE.md` (the command row).
+
+### D32 · 2026-10-24 · Hardware playback check on the GPU (requested by the maintainer)
+- **Decision:** QA check `l2.hw` (`redux/qa/l2-hw.sh`, part of L2) plays one 8 s 1080p clip per codec
+  (`redux/qa/hw-clips.tsv`, made by FFmpeg) in the D30 KDE session with the GPU's OpenGL (`REDUX_SESSION_GPU=1`;
+  software stays the default) and `--vout=gl`.
+  - **Expectation from the GPU:** `vainfo`'s decode profiles say per clip whether the GPU or software should decode.
+  - **Evidence:** VLC's log (`vaapi generic: Using …` and the `glinterop_vaapi` interop) plus the kernel's GPU video
+    engine time for the player's process (`/proc/<pid>/fdinfo`: `drm-engine-dec` on amdgpu, `drm-engine-video` on
+    i915), so a log line alone can't pass a clip that the GPU never decoded. Dropped pictures (`picture is too late to
+    be displayed`) and log problems fail any clip; a fallback's own VA-API probe error is allowed.
+  - **CPU:** `l2.hw.cpu` reports the HEVC 10-bit clip's CPU time with and without the GPU, without gating on it.
+  - **Skipped** without a render node or VA-API decoder (GitHub's runners, G27); it runs on the maintainer's and
+    contributors' machines.
+- **Why:** the maintainer asked for it (2026-10-24); hardware decoding was one hand check in M0.7. A dummy video
+  output can't take GPU frames and silently decodes in software, so only a real OpenGL output proves the path.
+- **Alternatives:** fluster (frame-checksum conformance; VLC's OpenGL output can't dump frames); a libvlc harness for
+  exact frame counts (not the real app; the CLI and Lua interfaces that expose them are cut, D20).

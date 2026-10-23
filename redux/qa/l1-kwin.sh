@@ -47,7 +47,7 @@ source redux/qa/lib/log-problems.sh
 # Software only, the same on every machine: the shared-memory Wayland video output (VLC's OpenGL output refuses
 # llvmpipe, #72, and its GBM path can crash under software GL, #73; the Qt interface still renders with OpenGL) and
 # software decoding (with a GPU visible, VA-API frames can't take the OSD title blend in shared memory; CI has no
-# VA-API at all). Hardware decoding is a hand check on a real desktop (M0.7-3).
+# VA-API at all). Hardware decoding has its own check on the GPU, where there is one (l2.hw, Q0.8).
 if ! app_start "$log" -vv --no-qt-privacy-ask --vout=wl --no-hw-dec "$clip"; then
   app_stop >/dev/null 2>&1
   problems "$log" > "$out/kwin-app.problems"
