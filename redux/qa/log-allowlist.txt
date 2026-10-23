@@ -12,3 +12,7 @@ DRI3 error: Could not get DRI3 device
 # Stock VLC, harmless: at process exit a Qt-global object created on VLC's Qt thread is destroyed by the exit
 # handlers on the main thread (backtrace: QObjectPrivate::~QObjectPrivate from __run_exit_handlers). Issue #68
 QObject::~QObject: Timers cannot be stopped from another thread
+
+# Stock VLC, harmless race in the X11 compositor at startup: the window changes between naming its pixmap and creating
+# a picture from it; getPicture() retries on the next frame. Seen once in CI (Xvfb). Issue #80
+can't create name window picture
