@@ -55,7 +55,12 @@ class PlayerTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.quit()
+        cls.driver.quit()   # the driver kills the player
+        # Wait until it has left the session bus: D-Bus frees the MPRIS name asynchronously, and a player that starts
+        # while it is still taken registers as org.mpris.MediaPlayer2.vlc.instance<pid>, which mpris() doesn't read.
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline and cls.mpris(None, "PlaybackStatus") is not None:
+            time.sleep(0.2)
 
     # --- what the player does (MPRIS) --------------------------------------------------------------------------
     def mpris(self, prop):

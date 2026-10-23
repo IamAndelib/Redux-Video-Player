@@ -50,7 +50,23 @@ export XDG_RUNTIME_DIR="$session/runtime" XDG_CONFIG_HOME="$session/config" XDG_
 unset WAYLAND_DISPLAY DISPLAY
 export REDUX_SESSION_DIR="$session"
 
-export LIBGL_ALWAYS_SOFTWARE=1 KWIN_COMPOSE="${KWIN_COMPOSE:-O2}" QT_QPA_PLATFORM=wayland \
+# Every window at the top-left corner, without a title bar (KWin rule here, QT_WAYLAND_DISABLE_WINDOWDECORATION below:
+# the bar was Qt's own client-side fallback decoration). Wayland apps don't know where their window is, so AT-SPI reports
+# element positions relative to the window; with its content at (0, 0) those are screen positions, and injected
+# pointer input (Q0.3's driver) lands where it should.
+mkdir -p "$XDG_CONFIG_HOME"
+cat > "$XDG_CONFIG_HOME/kwinrulesrc" <<'RULES'
+[General]
+count=1
+rules=1
+
+[1]
+Description=QA session: windows at the origin
+position=0,0
+positionrule=2
+RULES
+
+export LIBGL_ALWAYS_SOFTWARE=1 KWIN_COMPOSE="${KWIN_COMPOSE:-O2}" QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 \
        KWIN_SCREENSHOT_NO_PERMISSION_CHECKS=1 KWIN_WAYLAND_NO_PERMISSION_CHECKS=1 \
        KWIN_XKB_DEFAULT_KEYMAP=true XKB_DEFAULT_LAYOUT=us
 
