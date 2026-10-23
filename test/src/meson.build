@@ -125,7 +125,9 @@ vlc_tests += {
         'player/attachments.c'),
     'suite' : ['src', 'test_src'],
     'link_with' : [libvlc, libvlccore],
-    'module_depends' : vlc_plugins_targets.keys()
+    'module_depends' : vlc_plugins_targets.keys(),
+    # The mock demux creates its attachments with an image encoder, only built with stream outputs
+    'enabled' : get_option('stream_outputs'),
 }
 
 vlc_tests += {
@@ -409,6 +411,8 @@ vlc_tests += {
     'sources' : files('media_source/media_source.c'),
     'suite' : ['src', 'test_src'],
     'link_with' : [libvlc, libvlccore],
+    # Lists the services discovery plugins, so it needs at least one; podcast is always built
+    'module_depends' : ['podcast'],
 }
 
 vlc_tests += {
