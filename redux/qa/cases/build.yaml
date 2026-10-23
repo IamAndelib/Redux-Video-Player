@@ -59,10 +59,19 @@
   check: l1.token-lint
 
 - id: L1-kwin-session
-  title: The app plays in a headless KDE (KWin Wayland) session and a screenshot shows the video
+  title: The app plays in a headless KDE (KWin Wayland) session and quits cleanly
   layer: L1
   milestone: Q0.2
   sources: [decision:D30, dod:build-and-tests]
-  steps: [Start redux/tools/kwin-session.sh, open the SMPTE-bars episode with --vout=wl --no-hw-dec, wait for the video output, take a ScreenShot2 screenshot, end the player (SIGTERM)]
-  expected: the video output starts; the screenshot shows the bars' yellow, cyan and magenta; no log problem outside the allowlists; exit 0.
+  steps: [Start redux/tools/kwin-session.sh, open the SMPTE-bars episode with --vout=wl --no-hw-dec, wait for the video output, end the player (SIGTERM)]
+  expected: the video output starts; no log problem outside the allowlists; exit 0.
   check: l1.kwin-session
+
+- id: L1-kwin-screenshot
+  title: A screenshot of the KWin session shows the playing video
+  layer: L1
+  milestone: Q0.2
+  sources: [decision:D30]
+  steps: [In the same session, take a ScreenShot2 screenshot while the bars play]
+  expected: the screenshot shows the bars' yellow, cyan and magenta. Skipped where there is no DRM device for OpenGL compositing (GitHub's runners, G27).
+  check: l1.kwin-screenshot

@@ -304,12 +304,12 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - **Session:** `dbus-run-session -- kwin_wayland --virtual --no-lockscreen --no-global-shortcuts --exit-with-session`.
     It has a private runtime dir and settings, an AT-SPI bus, and KWin's screenshot permission check disabled.
   - **Screenshots:** `redux/tools/kwin-shot.py` takes them through `org.kde.KWin.ScreenShot2`.
-  - **Rendering is software everywhere (`LIBGL_ALWAYS_SOFTWARE=1`).** KWin composites with OpenGL (`KWIN_COMPOSE=O2`) because its screenshots need it. OpenGL needs a DRM device: the GPU on a desktop, the kernel's virtual `vgem` device on CI runners (as KDE's CI does).
+  - **Rendering is software everywhere (`LIBGL_ALWAYS_SOFTWARE=1`).** KWin composites with OpenGL (`KWIN_COMPOSE=O2`) because its screenshots need it. OpenGL needs a DRM device: the GPU on a desktop, or the kernel's virtual `vgem` device (as in KDE's CI). GitHub's hosted runners have neither (their Azure kernel ships no `vgem`), so there the screenshot check `l1.kwin-screenshot` is skipped with that reason (G27).
   - **VLC in these checks:** `--vout=wl --no-hw-dec`.
   - **The image:** gains `kwin-wayland`, `at-spi2-core`, `dbus`, `python3-gi` and `libcap2-bin`, with `setcap -r` on `kwin_wayland`.
   - **`redux/dev.sh`:** gains `REDUX_NO_GPU=1` to reproduce a GPU-less runner.
   - **The Xvfb tools stay.**
-  - **QA check `l1.kwin-session`:** the app plays SMPTE bars, a screenshot shows them, and it quits cleanly.
+  - **QA checks:** `l1.kwin-session` (the app plays SMPTE bars and quits cleanly; runs everywhere) and `l1.kwin-screenshot` (a screenshot shows them; needs a DRM device).
 - **Why:**
   - Q0.3 drives the real UI through AT-SPI and Q0.4 compares screens, both in a real Wayland desktop session.
   - KDE runs its own UI tests this way.

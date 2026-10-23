@@ -43,7 +43,7 @@ def capture(out_png):
     except GLib.Error as error:
         if "Cancelled" in error.message:
             sys.exit("kwin-shot: KWin cancelled the screenshot: it needs OpenGL compositing, i.e. a DRM device "
-                     "(the GPU, or `sudo modprobe vgem` on a CI runner); see redux/tools/kwin-session.sh")
+                     "(the GPU, or the vgem module); GitHub's runners have neither (G27)")
         raise
     # Close every write end on our side: ours, and the duplicate the FD list keeps. Only then does the read end when
     # KWin closes its copy.

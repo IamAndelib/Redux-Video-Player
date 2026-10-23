@@ -64,7 +64,8 @@ are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 **Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
 KWin's virtual backend (software rendering, OpenGL compositing on the GPU or `vgem`); `redux/tools/kwin-shot.py
-<out.png>` takes a screenshot inside it. `REDUX_NO_GPU=1 redux/dev.sh …` reproduces a GPU-less CI runner.
+<out.png>` takes a screenshot inside it. Checks `l1.kwin-session` (runs everywhere) and `l1.kwin-screenshot`
+(skipped without a DRM device, e.g. on GitHub's runners, G27). `REDUX_NO_GPU=1 redux/dev.sh …` reproduces a GPU-less CI runner.
 
 ## The agent loop (per milestone)
 1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.

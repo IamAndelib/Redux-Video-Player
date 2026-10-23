@@ -7,9 +7,9 @@
 #
 # Inside the session, `python3 -I redux/tools/kwin-shot.py <out.png>` takes a screenshot of the whole desktop.
 # Rendering is software everywhere (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one.
-# KWin composites with OpenGL, which its screenshots need; that takes a DRM device: the GPU on a desktop, the
-# kernel's virtual `vgem` device on a CI runner (`sudo modprobe vgem`, as KDE's CI does). Without one KWin falls back
-# to QPainter and screenshots fail. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).
+# KWin composites with OpenGL, which its screenshots need; that takes a DRM device: the GPU on a desktop, or the
+# kernel's virtual `vgem` device (as in KDE's CI). Without one, as on GitHub's runners (G27), KWin falls back to
+# QPainter: apps still run, but screenshots fail. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).
 #
 # The session recipe follows KDE's own test runner, selenium-webdriver-at-spi's run.rb (ideas only; credited in
 # redux/CREDITS.md).
