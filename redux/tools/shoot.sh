@@ -29,44 +29,22 @@ case "${THEME:-night}" in system) scheme=0 ;; day) scheme=1 ;; night) scheme=2 ;
 mkdir -p "$out" "$profile/.config"
 printf 'XDG_VIDEOS_DIR="%s"\n' "$media/Videos" > "$profile/.config/user-dirs.dirs"
 
-# Headless X server; force Qt onto it even when the host Wayland socket is passed through.
-display=:99
-Xvfb "$display" -screen 0 "${W}x${H}x24" -nolisten tcp &
-xvfb_pid=$!
-trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
-export DISPLAY="$display" QT_QPA_PLATFORM=xcb HOME="$profile"
-unset WAYLAND_DISPLAY
-for _ in $(seq 50); do xdpyinfo >/dev/null 2>&1 && break; sleep 0.1; done
+source redux/tools/lib/app-session.sh
+export HOME="$profile"
+xvfb_start :99 "$W" "$H"
+trap 'app_stop || true; xvfb_stop' EXIT
 
-vlc_pid=""
-start_vlc() {
-  # Dummy audio output: Xvfb runs have no sound server, and VLC would show an error banner.
-  "$vlc" --no-qt-system-tray --no-qt-video-autoresize --aout=dummy "$@" >"$out/vlc.log" 2>&1 &
-  vlc_pid=$!
-  local wins=""
-  for _ in $(seq 100); do
-    wins="$(xdotool search --onlyvisible --pid "$vlc_pid" 2>/dev/null || true)"
-    [[ -n "$wins" ]] && break
-    sleep 0.2
-  done
-  [[ -n "$wins" ]] || { echo "VLC window did not appear; see $out/vlc.log" >&2; return 1; }
-}
+start_vlc() { app_start "$out/vlc.log" "$@"; }
+stop_vlc() { app_stop || true; }
 
 fill_screen() {
   # VLC maps several windows; there's no window manager, so size them all ourselves.
   # (xdotool --sync would wait forever for a window manager's reply.)
   local w
-  for w in $(xdotool search --onlyvisible --pid "$vlc_pid" 2>/dev/null || true); do
+  for w in $(xdotool search --onlyvisible --pid "$app_pid" 2>/dev/null || true); do
     xdotool windowmove "$w" 0 0 windowsize "$w" "$W" "$H" 2>/dev/null || true
   done
   sleep 1
-}
-
-stop_vlc() {
-  [[ -n "$vlc_pid" ]] || return 0
-  kill "$vlc_pid" 2>/dev/null || true
-  wait "$vlc_pid" 2>/dev/null || true
-  vlc_pid=""
 }
 
 shoot() { # shoot <scene> <settle-seconds>

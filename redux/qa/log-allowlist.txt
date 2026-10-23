@@ -1,0 +1,10 @@
+# VLC log errors that L1 (redux/qa/l1-hygiene.sh) allows. One extended regex per line, matched against
+# "[ptr] <module> <type> error: <message>" lines. Every entry says why it is not a defect. Keep this short:
+# a new entry needs a reason a reviewer can check.
+
+# The headless X server (Xvfb) has no GPU: hardware decoding and its OpenGL interop can't start, and VLC falls
+# back to software decoding, as it does on any machine without VA-API.
+libva error: vaGetDriverNames\(\) failed
+decoder device error: vaInitialize
+gl error: Could not create interop
+DRI3 error: Could not get DRI3 device
