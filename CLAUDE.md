@@ -82,6 +82,8 @@ this format:
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
 | Codec/format matrix (generate, fetch real samples, play all) | `redux/dev.sh run redux/tools/make-matrix.sh`, `redux/tools/fetch-samples.sh`, `redux/dev.sh run redux/tools/play-matrix.sh` |
 | Screenshots (1920×1080, Night) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light) |
+| Headless KDE session / screenshot in it | `redux/dev.sh run redux/tools/kwin-session.sh <cmd…>` / `python3 -I redux/tools/kwin-shot.py <out.png>` (D30) |
+| Run as a CI runner would (no GPU) | `REDUX_NO_GPU=1 redux/dev.sh run …` |
 | Diff vs Figma | `redux/dev.sh run redux/tools/compare.sh`, then open `build/shots/report.html` |
 | Shell in the container | `redux/dev.sh shell` |
 | Rebuild the dev image | `redux/dev.sh image` |

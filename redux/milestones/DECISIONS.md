@@ -298,3 +298,28 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - The archived `flathub-infra/flatpak-github-actions`.
   - Running the matrix as root in the builder image (VLC refuses).
   - Building the image on every run (slow; depends on code.videolan.org, G23).
+
+### D30 · 2026-10-24 · Headless KDE session for the QA suite: KWin's virtual backend, software rendering
+- **Decision:** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in a headless KDE session (Q0.2).
+  - **Session:** `dbus-run-session -- kwin_wayland --virtual --no-lockscreen --no-global-shortcuts --exit-with-session`.
+    It has a private runtime dir and settings, an AT-SPI bus, and KWin's screenshot permission check disabled.
+  - **Screenshots:** `redux/tools/kwin-shot.py` takes them through `org.kde.KWin.ScreenShot2`.
+  - **Rendering is software everywhere (`LIBGL_ALWAYS_SOFTWARE=1`).** KWin composites with OpenGL (`KWIN_COMPOSE=O2`) because its screenshots need it. OpenGL needs a DRM device: the GPU on a desktop, the kernel's virtual `vgem` device on CI runners (as KDE's CI does).
+  - **VLC in these checks:** `--vout=wl --no-hw-dec`.
+  - **The image:** gains `kwin-wayland`, `at-spi2-core`, `dbus`, `python3-gi` and `libcap2-bin`, with `setcap -r` on `kwin_wayland`.
+  - **`redux/dev.sh`:** gains `REDUX_NO_GPU=1` to reproduce a GPU-less runner.
+  - **The Xvfb tools stay.**
+  - **QA check `l1.kwin-session`:** the app plays SMPTE bars, a screenshot shows them, and it quits cleanly.
+- **Why:**
+  - Q0.3 drives the real UI through AT-SPI and Q0.4 compares screens, both in a real Wayland desktop session.
+  - KDE runs its own UI tests this way.
+  - Probes showed:
+    1. Debian's `cap_sys_nice` file capability makes rootless Podman refuse to run KWin at all.
+    2. With QPainter compositing, KWin cancels screenshots.
+    3. VLC's OpenGL output refuses llvmpipe (#72), and its GBM path crashes under software GL with a GPU visible (#73).
+    4. VA-API frames can't take the OSD title blend in shared memory.
+- **Alternatives:**
+  - Xvfb only: no Wayland, no AT-SPI desktop, no compositor.
+  - Weston: not the target desktop.
+  - Spectacle for screenshots: heavy, and the same KWin interface underneath.
+  - QPainter compositing: no screenshots.

@@ -58,9 +58,13 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   figma: 2151:9673                    # optional: the Figma node it comes from
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
-Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l2.matrix`,
+Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l2.matrix`,
 `l3.<meson test name>`, `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
+
+**Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
+KWin's virtual backend (software rendering, OpenGL compositing on the GPU or `vgem`); `redux/tools/kwin-shot.py
+<out.png>` takes a screenshot inside it. `REDUX_NO_GPU=1 redux/dev.sh …` reproduces a GPU-less CI runner.
 
 ## The agent loop (per milestone)
 1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.
