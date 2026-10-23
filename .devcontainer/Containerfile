@@ -85,6 +85,15 @@ RUN apt-get update && apt-get install -y \
       qt6-svg-plugins qt6-image-formats-plugins qt6-xdgdesktopportal-platformtheme \
  && rm -rf /var/lib/apt/lists/*
 
+# Headless KDE session for the QA suite (Q0.2, D30): KWin's virtual backend runs the app as a real Wayland client,
+# its ScreenShot2 interface takes screenshots (redux/tools/kwin-session.sh, kwin-shot.py), and AT-SPI lets Q0.3
+# drive the UI. Debian gives kwin_wayland the cap_sys_nice file capability; rootless Podman can't grant it, so the
+# kernel refuses to run the binary at all. Without it KWin just runs without real-time priority.
+RUN apt-get update && apt-get install -y \
+      kwin-wayland at-spi2-core dbus python3-gi libcap2-bin \
+ && { getcap /usr/bin/kwin_wayland | grep -q . && setcap -r /usr/bin/kwin_wayland || true; } \
+ && rm -rf /var/lib/apt/lists/*
+
 ENV LANG=C.UTF-8 \
     CCACHE_DIR=/ccache \
     CCACHE_MAXSIZE=20G \

@@ -1,9 +1,11 @@
-# Run the built player on a headless X server. Sourced by redux/tools/shoot.sh and redux/qa/l1-hygiene.sh.
-# Callers set `vlc` (the player binary) and HOME (a throwaway profile) first.
+# Run the built player headless: on Xvfb, or as a Wayland client inside redux/tools/kwin-session.sh. Sourced by
+# redux/tools/shoot.sh and redux/qa/l1-*.sh. Callers set `vlc` (the player binary) and HOME (a throwaway profile).
 #
 #   xvfb_start <display> <width> <height>   start Xvfb and point Qt at it
 #   xvfb_stop
-#   app_start <log> [vlc args...]            start the player; returns 1 if its window never appears
+#   app_start <log> [vlc args...]            start the player; returns 1 if its window never appears (on Wayland,
+#                                            where no client sees another's windows: until video output starts,
+#                                            so pass media and -vv)
 #   app_stop                                 SIGTERM (as when the session ends); returns the player's exit
 #                                            status, 124 if it had to be killed
 
@@ -32,7 +34,11 @@ app_start() {
   "$vlc" --no-qt-system-tray --no-qt-video-autoresize --aout=dummy "$@" >"$log" 2>&1 &
   app_pid=$!
   for _ in $(seq 100); do
-    xdotool search --onlyvisible --pid "$app_pid" >/dev/null 2>&1 && return 0
+    if [[ -n "${REDUX_SESSION_DIR:-}" ]]; then   # inside redux/tools/kwin-session.sh
+      grep -q 'using vout display module' "$log" 2>/dev/null && return 0
+    else
+      xdotool search --onlyvisible --pid "$app_pid" >/dev/null 2>&1 && return 0
+    fi
     kill -0 "$app_pid" 2>/dev/null || break
     sleep 0.2
   done

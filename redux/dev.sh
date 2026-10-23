@@ -12,7 +12,7 @@
 # can be run and heard from inside the container.
 #
 # REDUX_CCACHE_DIR=<host dir> keeps the compiler cache in that folder instead of the vlc-redux-ccache volume
-# (CI saves it between runs with actions/cache).
+# (CI saves it between runs with actions/cache). REDUX_NO_GPU=1 leaves the GPU out, as on a CI runner.
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -68,7 +68,7 @@ container_args() { # container_args [home-inside-container]
   [[ -S "$runtime/pulse/native" ]] && args+=(-v "$runtime/pulse/native:/tmp/runtime/pulse/native"
                                            -e PULSE_SERVER=unix:/tmp/runtime/pulse/native)
   # GPU (hardware decoding and Qt Quick rendering).
-  [[ -d /dev/dri ]] && args+=(--device /dev/dri --group-add keep-groups)
+  [[ -d /dev/dri && -z "${REDUX_NO_GPU:-}" ]] && args+=(--device /dev/dri --group-add keep-groups)
   return 0
 }
 

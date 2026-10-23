@@ -82,6 +82,8 @@ this format:
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
 | Codec/format matrix (generate, fetch real samples, play all) | `redux/dev.sh run redux/tools/make-matrix.sh`, `redux/tools/fetch-samples.sh`, `redux/dev.sh run redux/tools/play-matrix.sh` |
 | Screenshots (1920×1080, Night) | `redux/dev.sh run redux/tools/shoot.sh [scene…]` (`THEME=day` for light) |
+| Headless KDE session / screenshot in it | `redux/dev.sh run redux/tools/kwin-session.sh <cmd…>` / `python3 -I redux/tools/kwin-shot.py <out.png>` (D30) |
+| Run as a CI runner would (no GPU) | `REDUX_NO_GPU=1 redux/dev.sh run …` |
 | Diff vs Figma | `redux/dev.sh run redux/tools/compare.sh`, then open `build/shots/report.html` |
 | Shell in the container | `redux/dev.sh shell` |
 | Rebuild the dev image | `redux/dev.sh image` |
@@ -92,6 +94,9 @@ this format:
 
 ## Rules
 - Never install anything on the host; add it to `.devcontainer/Containerfile` and record why in `DECISIONS.md`.
+- Testing on the maintainer's desktop is allowed (maintainer, 2026-10-24): `redux/dev.sh app` and the Flatpak
+  (`redux/tools/flatpak.sh run`) for what headless runs can't judge (GPU decoding, sound, looks). Say so before a
+  window opens; automated checks stay headless. The build can't run natively on the host (Debian sid libraries).
 - Build only what `redux/SCOPE.md` keeps. Bringing back a cut or future feature needs a `DECISIONS.md` entry first.
 - Edits outside `modules/gui/qt/` and `redux/` need a `redux/milestones/DECISIONS.md` entry.
 - New QML or C++ files must be listed in both `modules/gui/qt/meson.build` and `modules/gui/qt/Makefile.am`.
