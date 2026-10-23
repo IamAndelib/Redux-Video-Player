@@ -109,17 +109,19 @@ def case_status(case, results):
         return "fail", ", ".join(failed[:3]) + (" …" if len(failed) > 3 else "")
     if all(s == "skip" for s in statuses):
         return "skip", check
-    return "pass", f"{len(matched)} check(s)" if len(matched) > 1 else check
+    skipped = statuses.count("skip")
+    return "pass", (f"{len(matched)} check(s)" if len(matched) > 1 else check) + (f", {skipped} skipped" if skipped else "")
 
 
 ICON = {"pass": "✅ pass", "fail": "❌ fail", "skip": "⏭ skip", "not run": "· not run", "hand check": "✋ hand check"}
 
 
-def coverage(lines, title, items, cases, statuses):
+def coverage(lines, title, kind, items, cases, statuses):
     cited = {}
     for case in cases:
         for source in case.get("sources") or []:
-            cited.setdefault(str(source).split(":", 1)[1], []).append(case["id"])
+            if str(source).startswith(kind + ":"):   # brief D3 is not decision D3
+                cited.setdefault(str(source).split(":", 1)[1], []).append(case["id"])
     covered = sum(1 for i in items if i in cited)
     lines += [f"### {title}: {covered} of {len(items)} covered", "",
               "| ID | Item | Planned in | Cases |", "|---|---|---|---|"]
@@ -133,6 +135,7 @@ def main():
     results_path, report_path = sys.argv[1:3]
     sources = {"brief": brief_items(), "scope": scope_items()}
     cases, errors = load_cases(sources)
+    cases = [c for c in cases if {"id", "layer", "check", "title"} <= c.keys()]   # invalid ones are reported, not run
     results = load_results(results_path)
     statuses = {c["id"]: case_status(c, results)[0] for c in cases}
 
@@ -160,8 +163,8 @@ def main():
         lines.append(f"| {case['id']} | {case['layer']} | {case['title']} | {ICON[status]} | {evidence} |")
     lines += ["", "## Coverage", "",
               "Which brief and scope items have cases. Items planned in later milestones get their cases then.", ""]
-    coverage(lines, "Design brief", sources["brief"], cases, statuses)
-    coverage(lines, "Scope", sources["scope"], cases, statuses)
+    coverage(lines, "Design brief", "brief", sources["brief"], cases, statuses)
+    coverage(lines, "Scope", "scope", sources["scope"], cases, statuses)
     lines += ["## All checks", "", "| Check | Result | Detail |", "|---|---|---|"]
     lines += [f"| `{k}` | {s} | {d} |" for k, (s, d) in sorted(results.items())]
 

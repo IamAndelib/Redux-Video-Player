@@ -1,4 +1,12 @@
 # L1 build and hygiene (redux/qa/l1-hygiene.sh, redux/qa/token-lint.sh). Format: redux/QA.md § Test case format.
+- id: L1-env-integrity
+  title: The dev image's packaged files match their checksums
+  layer: L1
+  milestone: Q0.1
+  sources: [dod:build-and-tests]
+  expected: dpkg --verify reports no checksum mismatch, so a failure elsewhere is a code bug, not a faulty environment (G26).
+  check: l1.env-integrity
+
 - id: L1-build
   title: VLC builds without errors
   layer: L1

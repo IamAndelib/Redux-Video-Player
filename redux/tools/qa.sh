@@ -15,6 +15,9 @@ builddir="${BUILD_DIR:-build/meson}"
 export QA_OUT="$PWD/build/qa" QA_RESULTS="$PWD/build/qa/results.tsv"
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
+for layer in "${layers[@]}"; do
+  [[ "$layer" =~ ^L[123]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3)" >&2; exit 2; }
+done
 rm -rf "$QA_OUT" && mkdir -p "$QA_OUT"
 : > "$QA_RESULTS"
 result() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$QA_RESULTS"; echo "  $2  $1${3:+  ($3)}"; }
@@ -25,7 +28,7 @@ wants() { [[ " ${layers[*]} " == *" $1 "* ]]; }
 if wants L1; then
   echo "== L1 build and hygiene"
   redux/qa/l1-hygiene.sh
-  if lint="$(redux/qa/token-lint.sh 2>&1)"; then
+  if lint="$(redux/qa/token-lint.sh 2>&1)"; then   # exit 1: violations, 2: it couldn't run
     result l1.token-lint pass "$(tail -1 <<< "$lint")"
   else
     printf '%s\n' "$lint" > "$QA_OUT/token-lint.txt"
@@ -36,9 +39,17 @@ fi
 if wants L3; then
   echo "== L3 VLC's test suite (meson test)"
   # Upstream's CI gives each test 60 s (extras/ci/gitlab-ci.yml); the 10 s default fails under parallel load (G25).
+  testlog="$builddir/meson-logs/testlog.json"
+  rm -f "$testlog"   # never report a previous run's results
   VLC_TEST_TIMEOUT="${VLC_TEST_TIMEOUT:-60}" meson test -C "$builddir" --num-processes "$(nproc)" \
     > "$QA_OUT/meson-test.log" 2>&1
-  python3 -I - "$builddir/meson-logs/testlog.json" "$QA_RESULTS" <<'EOF'
+  status=$?
+  if [[ $status -eq 125 || ! -s "$testlog" ]]; then   # 125: meson couldn't build the tests
+    result l3.run fail "meson test exited $status without results; see $QA_OUT/meson-test.log"
+  else
+    result l3.run pass "meson test exited $status"
+  fi
+  [[ -s "$testlog" ]] && python3 -I - "$testlog" "$QA_RESULTS" <<'EOF'
 import json, sys
 status = {"OK": "pass", "SKIP": "skip", "EXPECTEDFAIL": "pass"}
 with open(sys.argv[2], "a") as out:

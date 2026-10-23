@@ -15,6 +15,16 @@ mkdir -p "$out"
 
 result() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$QA_RESULTS"; echo "  $2  $1${3:+  ($3)}"; }
 
+# --- the dev image's files match their Debian checksums (G26) ---------------------------------------------------
+# A bit flipped in memory once corrupted a cached library and made the build crash; this tells such environment
+# faults apart from code bugs before anything else runs.
+bad="$(dpkg --verify 2>/dev/null | grep -E '^..5' | awk '{print $NF}')"
+if [[ -z "$bad" ]]; then
+  result l1.env-integrity pass "every packaged file matches its checksum"
+else
+  result l1.env-integrity fail "checksum mismatch (memory or disk fault, G26): $(head -3 <<< "$bad" | paste -sd' ')"
+fi
+
 # --- build -----------------------------------------------------------------------------------------------------
 if meson compile -C "$builddir" > "$out/build.log" 2>&1; then
   result l1.build pass "$(grep -c ': warning:' "$out/build.log") compiler warnings in what this run rebuilt"
@@ -35,11 +45,9 @@ fi
 
 # --- the Qt app starts clean and quits clean, in Night and Day -------------------------------------------------
 # Errors that only mean "no GPU in a headless X server" are allowed, each with its reason, in log-allowlist.txt.
-problems() { # problems <log>: QML warnings/errors and VLC errors that are not allowlisted
-  {
-    grep -E '\((qml|js)\)|qrc:/|\.qml:[0-9]+|TypeError|ReferenceError|Binding loop' "$1" | grep -E 'warning|error|Error|loop'
-    grep -E '^\[[0-9a-f]+\] .* error: ' "$1" | grep -vEf <(grep -v -e '^#' -e '^$' "$allow")
-  } | sed 's/^\[[0-9a-f]*\] //' | sort -u
+problems() { # problems <log>: every Qt warning or error (QML included) and every VLC error, minus the allowlist
+  grep -E '^\[[0-9a-f]+\] (\[qt\] )?qt [a-z]+ (warning|error): |^\[qt\] |^\[[0-9a-f]+\] .* error: ' "$1" |
+    grep -vEf <(grep -v -e '^#' -e '^$' "$allow") | sed 's/^\[[0-9a-f]*\] //' | sort -u
 }
 
 source redux/tools/lib/app-session.sh
@@ -73,7 +81,7 @@ for theme in night day; do
     result "l1.startup.$theme" fail "$(wc -l <<< "$found") log problem(s), first: $(head -1 <<< "$found" | cut -c1-140)"
     printf '%s\n' "$found" > "$out/startup-$theme.problems"
   else
-    result "l1.startup.$theme" pass "window shown, no QML warnings, quit with exit 0"
+    result "l1.startup.$theme" pass "window shown, no Qt/QML warnings or errors, quit with exit 0"
   fi
 done
 

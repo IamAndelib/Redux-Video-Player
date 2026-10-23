@@ -9,15 +9,20 @@
 set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
-base="${QA_BASE:-$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main)}"
+base="${QA_BASE:-$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null)}"
+[[ -n "$base" ]] || { echo "token-lint: no base to compare with (set QA_BASE, or fetch main)" >&2; exit 2; }
 
 hex='"#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3}([0-9A-Fa-f]{2})?)?"'   # "#rgb", "#rrggbb", "#aarrggbb"
 radius='radius[[:space:]]*:[[:space:]]*[0-9]'
 
-found="$(git diff -U0 "$base" -- 'modules/gui/qt/*.qml' ':(exclude)modules/gui/qt/style/*' |
-  awk '/^\+\+\+ b\// { file = substr($0, 7) } /^@@/ { split($3, a, ","); line = substr(a[1], 2) - 1 }
-       /^\+[^+]/ { line++; print file ":" line ": " substr($0, 2) } /^ / { line++ }' |
-  grep -E "$hex|$radius")"
+qml=('modules/gui/qt/*.qml' ':(exclude)modules/gui/qt/style/*')
+diff="$(git diff -U0 "$base" -- "${qml[@]}")" || { echo "token-lint: git diff against $base failed" >&2; exit 2; }
+# New files git doesn't track yet are all added lines.
+while IFS= read -r f; do
+  diff+=$'\n'"$(git diff -U0 --no-index /dev/null "$f")"
+done < <(git ls-files --others --exclude-standard -- "${qml[@]}")
+found="$(awk '/^\+\+\+ / { file = substr($0, 7); next } /^@@/ { split($3, a, ","); line = substr(a[1], 2) - 1; next }
+              /^\+/ { line++; print file ":" line ": " substr($0, 2) }' <<< "$diff" | grep -E "$hex|$radius")"
 
 if [[ -n "$found" ]]; then
   echo "Hard-coded colours or radii in added QML lines (use VLCStyle / ColorContext tokens):"
