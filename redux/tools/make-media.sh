@@ -53,6 +53,31 @@ ass="$out/Videos/Clips/.subtitles.ass"
   -metadata:s:s:0 language=eng -disposition:s:0 default "$out/Videos/Clips/subtitles-ass-demo.mkv"
 rm "$ass"
 
+# A one-minute clip with 3 chapters and two audio and two subtitle tracks (English and French, distinct tones and
+# lines), for the track, chapter and subtitle panels (Q0.4).
+tmp="$out/Videos/Clips/.tracks"
+mkdir -p "$tmp"
+printf ';FFMETADATA1\n' > "$tmp/chapters.txt"
+for i in 0 1 2; do
+  printf '[CHAPTER]\nTIMEBASE=1/1000\nSTART=%d\nEND=%d\ntitle=Chapter %d\n' $((i * 20000)) $((i * 20000 + 20000)) $((i + 1))
+done >> "$tmp/chapters.txt"
+for lang in en fr; do
+  for i in $(seq 0 9); do
+    printf '%d\n00:00:%02d,000 --> 00:00:%02d,500\n%s line %d\n\n' $((i + 1)) $((i * 6)) $((i * 6 + 4)) \
+      "$([[ $lang == en ]] && echo English || echo Français)" $((i + 1))
+  done > "$tmp/$lang.srt"
+done
+"${ff[@]}" -f lavfi -i "testsrc2=size=640x360:rate=25:duration=60" \
+  -f lavfi -i "sine=frequency=440:duration=60" -f lavfi -i "sine=frequency=880:duration=60" \
+  -i "$tmp/en.srt" -i "$tmp/fr.srt" -i "$tmp/chapters.txt" \
+  -map 0:v -map 1:a -map 2:a -map 3:s -map 4:s -map_chapters 5 \
+  -c:v libx264 -preset veryfast -crf 30 -pix_fmt yuv420p -c:a libopus -b:a 48k -c:s srt \
+  -metadata:s:a:0 language=eng -metadata:s:a:0 title="English (440 Hz)" \
+  -metadata:s:a:1 language=fra -metadata:s:a:1 title="Français (880 Hz)" \
+  -metadata:s:s:0 language=eng -metadata:s:s:1 language=fra \
+  -disposition:a:0 default -disposition:s:0 0 -disposition:s:1 0 "$out/Videos/Clips/tracks-demo.mkv"
+rm -r "$tmp"
+
 # A 4K HDR-tagged clip for the HDR options and video panels.
 "${ff[@]}" -f lavfi -i "testsrc2=size=3840x2160:rate=24:duration=8" \
   -c:v libx265 -preset ultrafast -x265-params log-level=error:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc \
