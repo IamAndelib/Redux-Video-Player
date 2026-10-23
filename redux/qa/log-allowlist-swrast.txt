@@ -1,0 +1,12 @@
+# VLC log errors that L1 (redux/qa/l1-hygiene.sh) allows ONLY when the same log shows a software rasterizer
+# (libplacebo: "OpenGL context is suspected to be a software rasterizer"), as on CI runners and other machines
+# without a GPU. Same format as log-allowlist.txt; on a machine with a GPU these lines stay defects.
+#
+# Why they are not defects there: VLC's OpenGL sampler (modules/video_output/opengl/sampler.c) creates its libplacebo
+# context without `allow_software`, and has no option for it, so libplacebo refuses Mesa's llvmpipe and the GL
+# video filters can't be built. Stock VLC behaves the same on any software-only machine (Q0.7, issue #72).
+glsampler_builtin gl error: OpenGL context is suspected to be a software rasterizer, but `allow_software` is false\.
+glsampler_builtin gl error: Failed initializing opengl context!
+gl error: Could not load OpenGL sampler module
+gl error: Could not create sampler for filter 'renderer'
+gl error: Could not create filters
