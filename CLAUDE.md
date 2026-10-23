@@ -8,12 +8,15 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 
 ## Start of every session
 1. Read `redux/milestones/STATUS.md`. Its "Next up" line and the `wip` rows tell you where we are.
-2. Read the active milestone file `redux/milestones/M<ID>-*.md`, especially its status log. If none exists yet, look up
-   the milestone in `redux/milestones/ROADMAP.md`.
-3. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
-   `git remote add upstream https://code.videolan.org/videolan/vlc.git`). Work only on the milestone's branch
-   `m/M<ID>-<slug>` (D8).
-4. Don't start a new milestone until the maintainer has said the previous one is good.
+2. Find your milestone: the open issue assigned to you (`gh issue list --assignee @me`); otherwise the "Next up" one.
+   Never work on a milestone assigned to someone else (D25; a collaborator works alongside the maintainer).
+3. Read its file `redux/milestones/<ID>-*.md` (`M…` or `Q…`), especially the status log. If none exists yet, look
+   up the milestone in `redux/milestones/ROADMAP.md`.
+4. `git status` and `git fetch upstream` (the `upstream` remote is VideoLAN's VLC; add it once with
+   `git remote add upstream https://code.videolan.org/videolan/vlc.git`; if it stalls, G23, use the GitHub mirror
+   `https://github.com/videolan/vlc.git`). Work only on the milestone's branch `m/<ID>-<slug>` (D8).
+5. Don't start a new milestone until the maintainer has said your previous one is good. Claim the new one by
+   assigning yourself its issue.
 
 ## Philosophy
 - **Slow and steady:** one milestone at a time, reviewed and merged before the next.
@@ -32,12 +35,21 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
   - Tokenize hard-coded values only in files you already touch.
 - **Verify, don't assume:** nothing is "done" without the milestone's verification output.
 
-## Milestone ritual (D18)
+## Working together (D25)
+- GitHub issues are the work queue; the assignee is who works on it. One milestone per person at a time, and never
+  two open milestones that edit the same files. Human contributors start at `.github/CONTRIBUTING.md`.
+- Open a draft PR early (`Closes #<issue>`); feedback and bugs live in issues and PRs, not only in chat.
+- Questions for the maintainer: comment on the issue with the `needs-user` label.
+
+## Milestone ritual (D18, amended by D23)
 Research → plan → implement in small commits → verify → **hand over**: rebuild, make sure "Redux Video Player (dev)"
 opens from the app menu (`redux/dev.sh app`), open the PR and give the maintainer the test checklist (below) → the maintainer tests
 the app and gives feedback → fix and hand over again → on "good": squash-merge, update `STATUS.md` and the
 milestone's status log, then start the next milestone. Ask the maintainer during a milestone only when a gap needs
-their decision. Ending mid-milestone always logs "stopped at / next step". Details: `redux/milestones/ROADMAP.md`.
+their decision. Ending mid-milestone always logs "stopped at / next step" (and is pushed, so anyone can resume).
+Details: `redux/milestones/ROADMAP.md`. **QA (D23, `redux/QA.md`):** from M0.8 on, verify with `redux/tools/qa.sh`
+and the agent loop until green and attach the QA report to the PR; once Q0.6 is done, the checklist below shrinks to
+an optional 2–3 item real-desktop spot check.
 
 **Every hand-over includes a test checklist** (copied into the milestone file's manual checklist):
 1. Numbered items, each with **open** (where in the app), **do** (the action) and **expect** (what should happen).
@@ -78,5 +90,5 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 - Hitting an unknown means adding it to `redux/milestones/GAPS.md`. If it blocks the milestone, stop and ask the maintainer.
 - Never rewrite history (no rebase, amend or force-push on shared branches). Upstream syncs are merges.
 - Keep `redux/design/source/` (Figma exports, `.fig`) out of git.
-- Commit and PR titles: `M<ID>: <summary>`. Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
+- Commit and PR titles: `<ID>: <summary>` (`M2.1: …`, `Q0.1: …`). Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
 - Don't put model identifiers in commits, PRs or code.

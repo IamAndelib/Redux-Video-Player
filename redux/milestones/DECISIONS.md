@@ -237,6 +237,6 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   maintainer's review; the maintainer merges. One milestone per person at a time, and two people never work on the
   same milestone or on milestones that edit the same files. `STATUS.md` stays the progress record; the issue
   assignee says who. Feedback and bugs are filed as issues (or comments on the milestone issue), not kept in chat.
-  The front door is [`CONTRIBUTING.md`](../../CONTRIBUTING.md).
+  The front door is [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md).
 - **Why:** the maintainer added a collaborator; work tracked only in files or conversations can't be shared.
 - **Alternatives:** a GitHub Project board (needs extra token scopes and duplicates `STATUS.md`).

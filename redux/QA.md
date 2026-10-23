@@ -1,0 +1,67 @@
+# Redux QA plan
+
+Adopted by the maintainer on 2026-10-23 (D23, amends D18). Track Q (Q0.1–Q0.7 in
+[`milestones/ROADMAP.md`](milestones/ROADMAP.md)) builds it after M0.7 and before M0.8.
+
+## Goal
+Every milestone is checked automatically for function, UI/UX against the design, and the sandbox, by agents that
+test, report, fix and re-test until green. The maintainer evaluates the complete prototype at the end, plus
+occasional spot checks of what only a real desktop shows: audio, GPU and feel.
+
+## Principles (same as the project's)
+- **Adopt existing tools, write none if one fits:** KDE's `selenium-webdriver-at-spi`, Qt Quick Test,
+  openQA-style screenshot needles, VLC's own tests and the FFmpeg FATE samples.
+- **Tests come from the docs:** every [`design/brief.md`](design/brief.md) decision, [`SCOPE.md`](SCOPE.md) item and
+  milestone acceptance criterion becomes a test case, so coverage is measurable.
+- **Deterministic first:** headless, fixed fonts, fixed window size, fixed test media. Flaky tests are fixed, never
+  skipped (G25 is the first one).
+
+## The layers
+| Layer | What it proves | Tool (adopted) | Built in |
+|---|---|---|---|
+| L1 Build and hygiene | builds; no QML warnings or errors; no crashes, including on quit; cut plugins absent | meson, log scanners | Q0.1 |
+| L2 Codecs and formats | every format in scope opens and decodes | `play-matrix.sh` (79 files), also inside the Flatpak (`flatpak.sh matrix`) | M0.6, M0.7 |
+| L3 Player core | playback rules (end of video, restart, resume, queue, A-B, frame step) | VLC's `test/src/player` plus new C tests for our changes (D21) | exists; grows per milestone |
+| L4 Components | each QML widget in every state and theme (hover, pressed, focus, disabled; Night, Day, System) | Qt Quick Test (`qml_test.cpp` with `VLC.Style` and a stub `MainCtx`) | Q0.5 |
+| L5 End-to-end flows | real user journeys in the real app: open, play, seek, tracks, subtitles, library, settings, Customize, onboarding | `selenium-webdriver-at-spi` driving the container build under a headless `kwin_wayland --virtual` session | Q0.2, Q0.3 |
+| L6 Visual fidelity | screens match Figma per region; spacing, colours, radii and fonts follow tokens | `shoot.sh` + `compare.sh` (region RMSE with masks), KWin ScreenShot2 for chrome and shadows, token linter | Q0.1 (lint), Q0.4 |
+| L7 UX heuristics | keyboard reachability, focus order, contrast (WCAG AA), hit-target sizes, no element touching another (principle 9), no dead entries for cut features | AT-SPI tree audit, contrast check on every `ColorContext` set × state × theme, layout-overlap check | Q0.3, Q0.4 |
+| L8 Sandbox | Flatpak permissions, portal file dialog, MPRIS, VA-API inside the sandbox | `flatpak.sh run` + log checks (the AT-SPI driver can't attach to a Flatpak) | Q0.7 |
+| L9 Agent review | an "expert QA" agent reads the screenshots against the brief and Figma frames and files findings | review agents with a fixed rubric | Q0.6 |
+
+L5 and L7 start non-blocking and become blocking once they have run green and stable.
+
+## Test case sources (traceability)
+- `redux/qa/cases/*.yaml`: one case per brief decision, scope item and acceptance criterion. Each has an ID, layer,
+  steps, expected result, its source (brief entry, scope item or acceptance criterion), the Figma node and video
+  frame it comes from, and its milestone.
+- A coverage report: per milestone, which brief entries have passing tests.
+- One entry point, `redux/tools/qa.sh`, runs every layer built so far and writes `build/qa/report.md`.
+
+## The agent loop (per milestone)
+1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.
+2. **Run:** the full suite in the container, then the Flatpak subset.
+3. **Triage:** expert agents for UI/visual, UX/accessibility, playback/formats and regressions read the results and
+   screenshots and file findings (severity, evidence, suspected file).
+4. **Fix:** a fix agent addresses the findings in the milestone branch.
+5. **Re-run** until green, with a cap on rounds; anything unresolved goes to `milestones/GAPS.md` and is flagged to
+   the maintainer.
+6. **Report:** a QA report per PR (pass/fail per layer, screenshots, visual diffs, coverage).
+
+## What stays with the maintainer
+- **Final prototype evaluation**, with a short guided script.
+- **Rare real-desktop spot checks**, e.g. "does it sound right on your headphones", "does the window look right under
+  KWin". These come as an optional 2–3 item list in the hand-over, not a full checklist.
+
+## Definition of Done (from M0.8)
+The milestone's cases are written alongside its code, and the QA suite is green with its report attached to the PR.
+Until Q0.6 is done, hand-overs keep the full D18 checklist.
+
+## Risks
+- **Headless Wayland plus KWin in a container is fiddly.** The fallback is Xvfb for most checks and the maintainer's
+  desktop for chrome and shadows. Grim doesn't work on KWin; screenshots use KWin's ScreenShot2 interface.
+- **AT-SPI needs good accessible names.** VLC 4 has many; adding missing ones is part of each UI milestone, and also
+  improves accessibility.
+- **Visual diffs against Figma are noisy.** Region crops, masked video areas and tolerance thresholds help; the agent
+  review handles judgement calls. openQA itself is not adopted: region RMSE with masks covers the need.
+- **`selenium-webdriver-at-spi` has no releases.** It is built from a pinned commit in the dev image.

@@ -13,6 +13,7 @@ A lean, Linux-only video player built on [VLC](https://www.videolan.org/vlc/) 4,
 > [`redux/milestones/STATUS.md`](../redux/milestones/STATUS.md).
 
 ## For contributors
+- **Start here:** [`CONTRIBUTING.md`](CONTRIBUTING.md): setup, finding and claiming work, hand-over
 - Session rules and commands: [`CLAUDE.md`](../CLAUDE.md)
 - Dev environment (Podman): [`redux/README.md`](../redux/README.md)
 - Roadmap: [`redux/milestones/ROADMAP.md`](../redux/milestones/ROADMAP.md)
