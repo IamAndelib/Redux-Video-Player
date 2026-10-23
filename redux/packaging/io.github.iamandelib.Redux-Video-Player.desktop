@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Redux Video Player
+GenericName=Video Player
+Comment=Play your videos, in any format
+Exec=vlc %U
+Icon=io.github.iamandelib.Redux-Video-Player
+Terminal=false
+Categories=AudioVideo;Video;Player;
+Keywords=video;movie;film;player;subtitles;mkv;mp4;
+MimeType=video/mp4;video/x-matroska;video/webm;video/quicktime;video/x-msvideo;video/mpeg;video/mp2t;video/x-ms-wmv;video/x-ms-asf;video/x-flv;video/ogg;video/3gpp;video/3gpp2;video/x-ogm+ogg;video/dv;video/x-m4v;video/vnd.rn-realvideo;video/x-theora+ogg;video/x-matroska-3d;application/x-matroska;application/mxf;audio/mpeg;audio/flac;audio/ogg;audio/x-wav;audio/mp4;audio/x-matroska;audio/opus;application/x-subrip;text/x-ssa;
+StartupWMClass=vlc

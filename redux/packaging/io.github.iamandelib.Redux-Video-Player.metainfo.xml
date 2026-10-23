@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.iamandelib.Redux-Video-Player</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+  <name>Redux Video Player</name>
+  <summary>Play your videos, in any format</summary>
+  <developer id="io.github.iamandelib">
+    <name>Andelib Taref</name>
+  </developer>
+  <description>
+    <p>
+      A simple video player for your own files, built on VLC 4. It plays practically every video, audio and subtitle
+      format without hunting for codecs, and keeps only the features people actually use.
+    </p>
+    <p>The interface follows Juxtopposed's redesign of VLC. Not affiliated with or endorsed by VideoLAN.</p>
+  </description>
+  <launchable type="desktop-id">io.github.iamandelib.Redux-Video-Player.desktop</launchable>
+  <url type="homepage">https://github.com/IamAndelib/Redux-Video-Player</url>
+  <url type="bugtracker">https://github.com/IamAndelib/Redux-Video-Player/issues</url>
+  <url type="vcs-browser">https://github.com/IamAndelib/Redux-Video-Player</url>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#f6c48a</color>
+    <color type="primary" scheme_preference="dark">#6b3d0b</color>
+  </branding>
+  <releases>
+    <release version="0.0.1" date="2026-10-23">
+      <description><p>First development build: VLC 4 with a lean plugin set and a full codec test.</p></description>
+    </release>
+  </releases>
+</component>

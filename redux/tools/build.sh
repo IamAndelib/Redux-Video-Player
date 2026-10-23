@@ -26,6 +26,8 @@ options() {
     -Dskins2=disabled
     -Dtests=enabled
     -Dredux_cut_modules="$cut"
+    -Dstream_outputs=false
+    -Dvideolan_manager=false
     ${MESON_OPTS:-}
   )
 }

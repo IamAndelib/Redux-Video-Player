@@ -38,6 +38,7 @@ redux/dev.sh run redux/tools/build.sh reconfigure # re-apply build options after
 redux/dev.sh run redux/tools/build.sh qt          # rebuild only the Qt interface plugin
 redux/dev.sh app [file...]                        # open the built player on your desktop (persistent profile in build/app-home)
 redux/tools/launcher.sh install                   # on the host: add "Redux Video Player (dev)" to the app menu
+redux/tools/flatpak.sh build                      # on the host: build and install the Flatpak (D22); also run, lint, matrix
 redux/dev.sh run redux/tools/build.sh run         # start the player with a throwaway profile
 redux/dev.sh run redux/tools/make-media.sh        # synthetic test media in build/media
 redux/dev.sh run redux/tools/make-matrix.sh       # codec/format matrix in build/matrix

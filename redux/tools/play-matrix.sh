@@ -3,6 +3,8 @@
 # kind of stream it contains (video, audio, subtitles). Exits non-zero if any file fails (M0.6).
 #
 #   redux/dev.sh run redux/tools/play-matrix.sh [matrix-dir]     (default: build/matrix)
+#   VLC_CMD="<command>" redux/tools/play-matrix.sh               (another player, e.g. the Flatpak:
+#                                                                  redux/tools/flatpak.sh matrix)
 #
 # Two sets are played:
 #   <matrix-dir>/*       synthetic files from redux/tools/make-matrix.sh (generated if missing)
@@ -15,13 +17,18 @@ set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 dir="${1:-build/matrix}"
-vlc="${BUILD_DIR:-build/meson}/bin/vlc-static"
-[[ -x "$vlc" ]] || { echo "no player at $vlc; run redux/tools/build.sh first" >&2; exit 1; }
+if [[ -n "${VLC_CMD:-}" ]]; then
+  read -ra vlccmd <<< "$VLC_CMD"
+else
+  vlc="${BUILD_DIR:-build/meson}/bin/vlc-static"
+  [[ -x "$vlc" ]] || { echo "no player at $vlc; run redux/tools/build.sh first" >&2; exit 1; }
+  vlccmd=("$vlc")
+fi
 [[ -f "$dir/h264-aac.mp4" ]] || redux/tools/make-matrix.sh "$dir" >/dev/null
 mkdir -p "$dir/logs"
 report="$dir/report.tsv"
 printf 'file\tdemux\tvideo\taudio\tsubtitles\tresult\n' > "$report"
-play=("$vlc" -I dummy -vv --aout=dummy --vout=dummy --no-media-library --play-and-exit --sub-track=0 --stop-time=5)
+play=("${vlccmd[@]}" -I dummy -vv --aout=dummy --vout=dummy --no-media-library --play-and-exit --sub-track=0 --stop-time=5)
 pass=0 fail=0
 
 pick() { grep -m1 -oE "using $1 module \"[^\"]+\"" "$2" | sed 's/.*"\(.*\)"/\1/'; }

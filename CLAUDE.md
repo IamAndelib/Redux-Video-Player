@@ -55,6 +55,7 @@ their decision. Ending mid-milestone always logs "stopped at / next step". Detai
 | Rebuild only the Qt UI (~3 s) | `redux/dev.sh run redux/tools/build.sh qt` |
 | Open the app on the host (persistent profile, your files read-only) | `redux/dev.sh app [file…]`, or "Redux Video Player (dev)" in the app menu |
 | Add or remove the app-menu entry (host) | `redux/tools/launcher.sh install` / `uninstall` |
+| Flatpak: build and install, run, lint, codec matrix in the sandbox (host) | `redux/tools/flatpak.sh build` / `run` / `lint` / `matrix` |
 | Run the player with a throwaway profile | `redux/dev.sh run redux/tools/build.sh run` |
 | Tests (Qt suite) | `redux/dev.sh run meson test -C build/meson --suite qt` |
 | Test media | `redux/dev.sh run redux/tools/make-media.sh` |
