@@ -81,6 +81,7 @@ if wants L2; then
   else
     result l2.matrix fail "${summary:-no summary} $(grep -m3 FAIL "$QA_OUT/matrix.log" | awk '{print $1}' | paste -sd' ')"
   fi
+  redux/qa/l2-hw.sh   # hardware playback on the GPU, where there is one (Q0.8)
 fi
 
 if wants L5; then

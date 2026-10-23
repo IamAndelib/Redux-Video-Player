@@ -6,7 +6,8 @@
 #   redux/dev.sh run redux/tools/kwin-session.sh <command> [args...]
 #
 # Inside the session, `python3 -I redux/tools/kwin-shot.py <out.png>` takes a screenshot of the whole desktop.
-# Rendering is software everywhere (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one.
+# Rendering is software by default (Mesa's llvmpipe), so a desktop with a GPU behaves like a CI runner without one;
+# REDUX_SESSION_GPU=1 keeps the GPU's OpenGL (Q0.8's hardware playback check, D32).
 # KWin composites with OpenGL, which its screenshots need; that takes a DRM render node: the GPU on a desktop, or the
 # kernel's virtual `vgem` device (as in KDE's CI). Without one, as on GitHub's runners (G27), KWin falls back to
 # QPainter: apps still run, but screenshots fail. KWIN_SESSION_TIMEOUT (default 300 s) bounds the whole session. KWIN_WIDTH/KWIN_HEIGHT set the screen size (default 1920x1080).
@@ -66,7 +67,10 @@ position=0,0
 positionrule=2
 RULES
 
-export LIBGL_ALWAYS_SOFTWARE=1 KWIN_COMPOSE="${KWIN_COMPOSE:-O2}" QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 \
+# Software OpenGL by default, the same on every machine (D30); REDUX_SESSION_GPU=1 keeps the GPU's OpenGL for checks that
+# need it (Q0.8's hardware playback check: VA-API frames go to OpenGL on the GPU).
+[[ -n "${REDUX_SESSION_GPU:-}" ]] || export LIBGL_ALWAYS_SOFTWARE=1
+export KWIN_COMPOSE="${KWIN_COMPOSE:-O2}" QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 \
        KWIN_SCREENSHOT_NO_PERMISSION_CHECKS=1 KWIN_WAYLAND_NO_PERMISSION_CHECKS=1 \
        KWIN_XKB_DEFAULT_KEYMAP=true XKB_DEFAULT_LAYOUT=us
 

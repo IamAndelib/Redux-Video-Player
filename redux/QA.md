@@ -59,13 +59,19 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
 Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
-`l3.<meson test name>`, `l5.<module>.<Class>.<test>` (Q0.3), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
+`l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l5.<module>.<Class>.<test>` (Q0.3), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 **Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
 KWin's virtual backend (software rendering, OpenGL compositing on the GPU or `vgem`); `redux/tools/kwin-shot.py
 <out.png>` takes a screenshot inside it. Checks `l1.kwin-session` (runs everywhere) and `l1.kwin-screenshot`
 (skipped without a DRM render node, e.g. on GitHub's runners, G27). `REDUX_NO_GPU=1 redux/dev.sh …` reproduces a GPU-less CI runner.
+
+**Hardware playback (Q0.8, D32):** part of L2 (`redux/qa/l2-hw.sh`). On a machine with a GPU it plays one clip per
+codec (`redux/qa/hw-clips.tsv`) in the KDE session with the GPU's OpenGL (`REDUX_SESSION_GPU=1`). `vainfo` decides
+per clip whether the GPU or software should decode it; VLC's log and the kernel's per-process GPU engine time
+(`/proc/<pid>/fdinfo`) prove which one did. `l2.hw.cpu` reports the CPU time with and without the GPU. Without a
+render node, e.g. on GitHub's runners, it's one `l2.hw` skip (G27).
 
 **End-to-end flows (Q0.3, D31):** `redux/dev.sh run redux/tools/qa.sh L5` (opt-in, non-blocking) runs
 `redux/qa/e2e/test_*.py` in that session: each test class launches the player through KDE's AT-SPI WebDriver with a

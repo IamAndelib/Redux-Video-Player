@@ -7,3 +7,14 @@
   steps: [Play each of the 51 synthetic files and 28 FATE samples headless for up to 5 s]
   expected: every file finds a demuxer and a decoder for each of its streams; no unsupported-codec error.
   check: l2.matrix
+
+- id: L2-hw-decode
+  title: The GPU decodes every codec it supports, and the rest fall back to software
+  layer: L2
+  milestone: Q0.8
+  sources: [scope:K40, decision:D15, decision:D32, accept:Q0.8]
+  steps: [Play one 8 s 1080p clip per codec (redux/qa/hw-clips.tsv) in the KDE session with the GPU's OpenGL]
+  expected: >-
+    where vainfo lists the clip's profile VLC decodes it with VA-API and the GPU's decode engine works; elsewhere it
+    falls back to software; no dropped picture, no log problem, clean exit. Skipped without a GPU (G27).
+  check: l2.hw*
