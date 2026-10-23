@@ -59,11 +59,12 @@ class PlayerTest(unittest.TestCase):
         # Wait until it has left the session bus: D-Bus frees the MPRIS name asynchronously, and a player that starts
         # while it is still taken registers as org.mpris.MediaPlayer2.vlc.instance<pid>, which mpris() doesn't read.
         deadline = time.monotonic() + 10
-        while time.monotonic() < deadline and cls.mpris(None, "PlaybackStatus") is not None:
+        while time.monotonic() < deadline and cls.mpris("PlaybackStatus") is not None:
             time.sleep(0.2)
 
     # --- what the player does (MPRIS) --------------------------------------------------------------------------
-    def mpris(self, prop):
+    @staticmethod
+    def mpris(prop):
         """The player's MPRIS property (PlaybackStatus, Position in µs, Metadata), or None if it isn't on the bus."""
         result = subprocess.run(["python3", "-I", MPRIS, prop], capture_output=True, text=True, timeout=10)
         return json.loads(result.stdout) if result.returncode == 0 else None

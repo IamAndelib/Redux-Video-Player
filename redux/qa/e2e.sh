@@ -13,6 +13,7 @@ out="$QA_OUT/l5"
 mkdir -p "$out"
 
 if [[ "${1:-}" != --in-session ]]; then
+  [[ -d build/media/Videos ]] || redux/tools/make-media.sh >/dev/null
   rm -f "$out/results.tsv"
   redux/tools/kwin-session.sh "$0" --in-session "$@" > "$out/session.log" 2>&1
   if [[ -s "$out/results.tsv" ]]; then

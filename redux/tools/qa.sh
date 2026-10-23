@@ -2,8 +2,11 @@
 # The QA suite (redux/QA.md): runs every layer built so far and writes build/qa/report.md. Run it inside the dev
 # container:
 #
-#   redux/dev.sh run redux/tools/qa.sh            all layers: L1 hygiene, L2 codec matrix, L3 VLC's tests
+#   redux/dev.sh run redux/tools/qa.sh            the blocking layers: L1 hygiene, L2 codec matrix, L3 VLC's tests
 #   redux/dev.sh run redux/tools/qa.sh L1 L3      only these layers
+#   redux/dev.sh run redux/tools/qa.sh L5         end-to-end flows (Q0.3); opt-in and non-blocking until stable
+#
+# QA_OUT (default build/qa) is where results go, so a separate L5 run can keep its own report.
 #
 # Exit status: 0 green, 1 a check failed, 2 a test case file is invalid. Results: build/qa/results.tsv
 # ("<check>\t<pass|fail|skip>\t<detail>"), logs under build/qa/. The Flatpak layer (L8) runs on the host with
@@ -12,11 +15,12 @@ set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 builddir="${BUILD_DIR:-build/meson}"
-export QA_OUT="$PWD/build/qa" QA_RESULTS="$PWD/build/qa/results.tsv"
+export QA_OUT="$(realpath -m "${QA_OUT:-build/qa}")"   # absolute: the player writes its logs there too
+export QA_RESULTS="$QA_OUT/results.tsv"
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
 for layer in "${layers[@]}"; do
-  [[ "$layer" =~ ^L[123]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3)" >&2; exit 2; }
+  [[ "$layer" =~ ^L[1235]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5)" >&2; exit 2; }
 done
 rm -rf "$QA_OUT" && mkdir -p "$QA_OUT"
 : > "$QA_RESULTS"
@@ -74,6 +78,11 @@ if wants L2; then
   else
     result l2.matrix fail "${summary:-no summary} $(grep -m3 FAIL "$QA_OUT/matrix.log" | awk '{print $1}' | paste -sd' ')"
   fi
+fi
+
+if wants L5; then
+  echo "== L5 end-to-end flows (AT-SPI driver in the KDE session)"
+  redux/qa/e2e.sh
 fi
 
 echo "== report"

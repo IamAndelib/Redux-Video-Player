@@ -97,10 +97,20 @@ jobs:
       - name: QA suite
         run: redux/dev.sh run env QA_BASE=HEAD~1 redux/tools/qa.sh
 
+      # Q0.3: non-blocking until it has run green and stable (redux/QA.md), with its own report.
+      - name: End-to-end flows (L5, non-blocking)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: redux/dev.sh run env QA_OUT=build/qa-e2e redux/tools/qa.sh L5
+
       - name: Report summary
         if: always()
         run: |
           if [[ -f build/qa/report.md ]]; then cat build/qa/report.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [[ -f build/qa-e2e/report.md ]]; then
+            { echo; echo "## End-to-end flows (L5, non-blocking)"; grep -E '^\*\*(PASS|FAIL)' build/qa-e2e/report.md
+              awk -F'\t' '$2 != "pass" { print "- " $2 " `" $1 "`: " $3 }' build/qa-e2e/results.tsv; } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload QA report
         if: always()
@@ -109,6 +119,7 @@ jobs:
           name: qa-report
           path: |
             build/qa/
+            build/qa-e2e/
             build/matrix/report.tsv
             build/matrix/logs/
           if-no-files-found: warn

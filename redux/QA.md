@@ -59,13 +59,19 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
 Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
-`l3.<meson test name>`, `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
+`l3.<meson test name>`, `l5.<module>.<test>` (Q0.3), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 **Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
 KWin's virtual backend (software rendering, OpenGL compositing on the GPU or `vgem`); `redux/tools/kwin-shot.py
 <out.png>` takes a screenshot inside it. Checks `l1.kwin-session` (runs everywhere) and `l1.kwin-screenshot`
 (skipped without a DRM render node, e.g. on GitHub's runners, G27). `REDUX_NO_GPU=1 redux/dev.sh …` reproduces a GPU-less CI runner.
+
+**End-to-end flows (Q0.3, D31):** `redux/dev.sh run redux/tools/qa.sh L5` (opt-in, non-blocking) runs
+`redux/qa/e2e/test_*.py` in that session: each test class launches the player through KDE's AT-SPI WebDriver with a
+throw-away profile. Assert on behaviour with `mpris()` and on what the user sees and reaches with `element()`/`press()`
+by accessible name; wait with `wait_for()`, never a fixed sleep. Hidden controls aren't reachable: call
+`reveal_controls()` first. A failing test leaves a screenshot and the player's log in `build/qa/l5/`.
 
 ## The agent loop (per milestone)
 1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.
