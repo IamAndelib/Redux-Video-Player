@@ -12,6 +12,15 @@
 ## Goal
 <one sentence: what the user can see or do afterwards>
 
+## Tasks (D28)
+<!-- The milestone's work breakdown. Commits name their task ("<ID>: T3 <summary>"). Priority P0–P3 as in
+     redux/agents/README.md; status todo → wip → done (or dropped, with the reason). -->
+| Task | What | Priority | Status | Commit |
+|---|---|---|---|---|
+| <ID>-T1 | Research (time-boxed; researcher agents per question) | P1 | todo | |
+| <ID>-T2 | | | todo | |
+| <ID>-Tn | QC: QA suite, review agent (`redux/agents/reviewer.md`), fixes | P1 | todo | |
+
 ## Research
 <!-- Time-boxed: S 15 min, M 30–45 min, L one spike session. At most ~15 lines. -->
 - Upstream since the pin: `git log --oneline $(cat redux/UPSTREAM_COMMIT)..upstream/master -- <paths>`
@@ -44,7 +53,7 @@
 | Tests | `redux/dev.sh run meson test -C build/meson --suite qt` | |
 | Screens | `redux/dev.sh run redux/tools/shoot.sh <scenes>` + `compare.sh` | |
 | QA suite (from M0.8, D23) | `redux/tools/qa.sh` → `build/qa/report.md` | |
-| Independent review (D26) | review agent on `git diff main...` | |
+| Independent review (D26) | `redux/agents/reviewer.md` on `git diff main...` | F1…: fixed / filed / rejected |
 | Review | `/code-review`, `qt-qml-review` / `qt-cpp-review`, `/simplify` | |
 
 ## Hand checks (added to redux/EVALUATION.md, D26)

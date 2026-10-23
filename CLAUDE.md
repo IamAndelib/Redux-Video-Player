@@ -34,6 +34,15 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
   - Tokenize hard-coded values only in files you already touch.
 - **Verify, don't assume:** nothing is "done" without the milestone's verification output.
 
+## Discipline (D28)
+- **IDs everywhere:** Track → Milestone (`Q0.1`) → Task (`Q0.1-T3`, the milestone file's task table) → commit
+  (`Q0.1: T3 <summary>`). Findings are `F1`…, gaps `G…`, decisions `D…`, brief items `C3`/`P9`, scope items `K7`/`X2`;
+  code comments cite the decision or gap they implement (`/* D21: … */`).
+- **Priorities:** P0 crash/data loss/broken build, P1 wrong in-scope behaviour or regression (both block a merge),
+  P2 robustness/maintainability, P3 polish (`redux/agents/README.md`; GitHub labels `priority:P0`–`P3`).
+- **Agents:** you are the lead: plan, decide, merge. Give each specialist agent one bounded job with its brief from
+  `redux/agents/` (researcher, reviewer, QA triager), run independent jobs in parallel, and answer every finding.
+
 ## Working together (D25)
 - GitHub issues are the work queue; the assignee is who works on it. One milestone per person at a time, and never
   two open milestones that edit the same files. Human contributors start at `.github/CONTRIBUTING.md`.
@@ -89,5 +98,5 @@ this format:
 - Hitting an unknown means adding it to `redux/milestones/GAPS.md`. If it blocks the milestone, stop and ask the maintainer.
 - Never rewrite history (no rebase, amend or force-push on shared branches). Upstream syncs are merges.
 - Keep `redux/design/source/` (Figma exports, `.fig`) out of git.
-- Commit and PR titles: `<ID>: <summary>` (`M2.1: …`, `Q0.1: …`). Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
+- Commit and PR titles: `<ID>: <summary>` (`M2.1: …`, `Q0.1: T3 …`). Upstreamable fixes go on `up/<slug>` branches in VLC commit style.
 - Don't put model identifiers in commits, PRs or code.

@@ -264,3 +264,14 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   `ModelRecoveryAgent` saves the queue as M3U8 through this plugin so it can be restored after a crash; with it cut,
   queue recovery silently failed. Crash recovery of the queue is part of the kept queue feature (SCOPE K25).
 - **Alternatives:** keep it cut and remove the recovery agent (loses a safety net to save a 30 KB plugin).
+
+### D28 · 2026-10-24 · Disciplined work: task IDs, priorities and agent roles
+- **Decision:** work is broken down Track → Milestone (`Q0.1`) → Task (`Q0.1-T3`, a table in the milestone file:
+  ID, task, priority, status, commit) → commits whose message names the task (`Q0.1: T3 add the D21 player test`).
+  Findings, bugs and gaps carry a priority P0–P3 with fixed meanings (P0/P1 block a merge) and the GitHub label
+  `priority:P<n>`. One lead (the main session or a contributor) plans, decides, runs QC and merges; specialist agents
+  (researcher, reviewer, QA triager) get one bounded job with a brief from [`redux/agents/`](../agents/README.md) and
+  report numbered findings (`F1`…) the lead answers one by one (fixed, filed or rejected).
+- **Why:** the maintainer asked for an organised, disciplined workflow with agents, hierarchies, priorities, clear
+  instructions and IDs, so the code stays readable and maintainable and work is traceable.
+- **Alternatives:** a full project-management tool or board (heavy; duplicates STATUS.md and issues).

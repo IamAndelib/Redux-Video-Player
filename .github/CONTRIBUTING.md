@@ -46,7 +46,9 @@ redux/dev.sh run redux/tools/make-media.sh  # test media in build/media/
    milestone's row in `STATUS.md` to `research`, then `wip`.
 3. Research first and write it into the milestone file: upstream VLC and its MRs, other players, existing libraries.
    Credit what you adopt in [`redux/CREDITS.md`](../redux/CREDITS.md).
-4. Small commits titled `<ID>: <summary>`. Open a **draft PR** early with `Closes #<issue>` so progress is visible.
+4. List the milestone's tasks in its file's task table (`<ID>-T1`, `-T2` …, each with a priority P0–P3, see
+   [`redux/agents/README.md`](../redux/agents/README.md)). Small commits titled `<ID>: T<n> <summary>`. Open a
+   **draft PR** early with `Closes #<issue>` so progress is visible.
 5. Unknowns go into [`GAPS.md`](../redux/milestones/GAPS.md); lasting choices into
    [`DECISIONS.md`](../redux/milestones/DECISIONS.md) (needed for any edit outside `modules/gui/qt/` and `redux/`).
 6. Never rewrite shared history: no rebase, amend or force-push on pushed branches. Bring in `main` with a merge.
