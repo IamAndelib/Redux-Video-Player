@@ -22,6 +22,7 @@ from appium import webdriver
 from appium.options.common.base import AppiumOptions
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 VLC = os.path.join(ROOT, os.environ.get("BUILD_DIR", "build/meson"), "bin", "vlc-static")
@@ -33,7 +34,6 @@ TIME_LABEL = re.compile(r"^\d{2}:\d{2}(:\d{2})?$")
 
 class PlayerTest(unittest.TestCase):
     media = []        # paths under build/media, opened in this order (the queue)
-    _reveals = 0      # reveal_controls() calls so far
     extra_args = []   # more player options for this class
 
     @classmethod
@@ -78,13 +78,11 @@ class PlayerTest(unittest.TestCase):
         self.element(name).click()
 
     def reveal_controls(self):
-        """Move the pointer over the video, as a user does to bring back the auto-hidden player controls (the driver,
-        like a user, can't reach hidden ones). Input goes through KWin's fake-input protocol (KWIN_PID)."""
-        # End somewhere else each time: a move to where the pointer already is makes no motion event (the input helper
-        # applies a sequence of moves as one), and the controls would stay hidden.
-        PlayerTest._reveals += 1
-        offset = 16 if PlayerTest._reveals % 2 else -16
-        ActionChains(self.driver).move_to_element(self.element("Player")).move_by_offset(offset, offset).perform()
+        """Bring back the auto-hidden player controls the way a keyboard user does: any key press counts as activity
+        (the driver, like a user, can't reach hidden controls). Shift alone types nothing, moves no focus and triggers
+        no shortcut. Pointer moves only revealed them the first time in this session (KWin fake input under the
+        virtual output), so the tests use the keyboard. Input goes through KWin's fake-input protocol (KWIN_PID)."""
+        ActionChains(self.driver).send_keys(Keys.SHIFT).perform()
 
     def time_labels(self):
         """The texts of the time labels on screen (the player's elapsed time and duration, the queue's total)."""
