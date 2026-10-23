@@ -50,13 +50,11 @@ source redux/qa/lib/log-problems.sh
 # VA-API at all). Hardware decoding is a hand check on a real desktop (M0.7-3).
 app_start "$log" -vv --no-qt-privacy-ask --vout=wl --no-hw-dec "$clip" || verdict fail "no video output; see $log"
 sleep 3   # a few frames on screen
-# KWin takes screenshots only when it composites with OpenGL, which needs a DRM device (D30, G27).
-if compgen -G '/dev/dri/card*' >/dev/null || compgen -G '/dev/dri/renderD*' >/dev/null; then
-  python3 -I redux/tools/kwin-shot.py "$shot" >> "$out/kwin-session.log" 2>&1
-  shot_status=$?
-else
-  shot_status=skip
-fi
+# KWin takes screenshots only when it composites with OpenGL, which needs a suitable DRM device (D30, G27). Ask KWin
+# rather than guess from /dev/dri: an Azure VM's display-only card0, for one, doesn't qualify.
+python3 -I redux/tools/kwin-shot.py "$shot" >> "$out/kwin-session.log" 2>&1
+shot_status=$?
+[[ $shot_status -eq 3 ]] && shot_status=skip
 alive=yes; kill -0 "$app_pid" 2>/dev/null || alive=no
 app_stop; status=$?
 

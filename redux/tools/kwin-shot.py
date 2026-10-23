@@ -3,6 +3,9 @@
 
   python3 -I redux/tools/kwin-shot.py <out.png>     (run inside the session)
 
+Exit status: 0 written; 3 KWin can't take screenshots here (no OpenGL compositing: no GPU or vgem, G27); 1 any other
+failure.
+
 KWin writes raw pixels into a pipe we pass over D-Bus and replies with their size and layout; ImageMagick turns them
 into a PNG. `gdbus` can't pass a file descriptor, hence this small client (pattern from KDE's selenium-webdriver-at-spi
 screenshotter, credited in redux/CREDITS.md). The session sets KWIN_SCREENSHOT_NO_PERMISSION_CHECKS, so any caller may
@@ -22,6 +25,7 @@ from gi.repository import Gio, GLib  # noqa: E402
 # QImage::Format values KWin may report: 4-6 are 32-bit words in host (little-endian) order, i.e. BGRA bytes;
 # 16-18 are RGBA bytes.
 BYTE_ORDER = {4: "bgra", 5: "bgra", 6: "bgra", 16: "rgba", 17: "rgba", 18: "rgba"}
+NO_OPENGL = 3   # exit status when KWin can't take screenshots (see the docstring)
 
 
 def capture(out_png):
@@ -42,8 +46,10 @@ def capture(out_png):
             Gio.DBusCallFlags.NONE, 15000, fds, None)
     except GLib.Error as error:
         if "Cancelled" in error.message:
-            sys.exit("kwin-shot: KWin cancelled the screenshot: it needs OpenGL compositing, i.e. a DRM device "
-                     "(the GPU, or the vgem module); GitHub's runners have neither (G27)")
+            print("kwin-shot: KWin cancelled the screenshot: it needs OpenGL compositing, i.e. a DRM device "
+                  "with a render node (the GPU, or the vgem module); GitHub's runners have neither (G27)",
+                  file=sys.stderr)
+            sys.exit(NO_OPENGL)
         raise
     # Close every write end on our side: ours, and the duplicate the FD list keeps. Only then does the read end when
     # KWin closes its copy.
