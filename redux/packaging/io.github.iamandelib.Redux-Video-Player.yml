@@ -18,6 +18,8 @@ finish-args:
   - --filesystem=host:ro
   - --talk-name=org.freedesktop.ScreenSaver
   - --own-name=org.mpris.MediaPlayer2.vlc
+  # A second instance registers org.mpris.MediaPlayer2.vlc.instance<pid> (modules/control/dbus/dbus.c).
+  - --own-name=org.mpris.MediaPlayer2.vlc.*
 cleanup:
   - /include
   - /lib/pkgconfig
@@ -159,10 +161,6 @@ modules:
     build-commands:
       - redux/packaging/build-vlc.sh
     post-install:
-      # OSTree resets file times, so give every plugin a fixed time and regenerate the plugin cache
-      # (VLC MR !10454's approach; no source patch needed).
-      - TZ=UTC find /app/lib/vlc/plugins -exec touch -t 197001010000 {} +
-      - /app/libexec/vlc/vlc-cache-gen /app/lib/vlc/plugins
       - install -Dm644 redux/packaging/${FLATPAK_ID}.desktop -t /app/share/applications
       - install -Dm644 redux/packaging/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo
       - install -Dm644 redux/packaging/icon.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
@@ -175,3 +173,12 @@ modules:
           - .git
           - .flatpak-builder
           - redux/design/source
+
+  # The plugin cache, in its own module: flatpak-builder strips the vlc module's plugins after its post-install, and
+  # the cache records each plugin's size, so it must be generated after that. OSTree resets file times, so every
+  # plugin gets a fixed time first (VLC MR !10454's approach; no source patch needed).
+  - name: vlc-plugin-cache
+    buildsystem: simple
+    build-commands:
+      - TZ=UTC find /app/lib/vlc/plugins -exec touch -t 197001010000 {} +
+      - /app/libexec/vlc/vlc-cache-gen /app/lib/vlc/plugins

@@ -226,6 +226,10 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - `test/src/meson.build`, `test/modules/meson.build`: tests that need stream outputs (`player_attachments`,
     `mux_webvtt`) are disabled without them; `media_source` depends on a services discovery plugin (`podcast`), so
     the D20 cut guard skips it.
+  - `modules/misc/medialibrary/medialibrary.cpp` (found by the same test run, not caused by stream outputs): the app
+    crashed on every quit. libmedialibrary keeps the plugin's `Logger` in a static destroyed at exit, and its 170 GNU
+    unique symbols stop glibc from unloading it with the plugin, so the destructor ran in unmapped code. The plugin
+    now marks itself `RTLD_NODELETE` when it opens (G24).
   All are upstreamable and wait on the `up/no-sout-fixes` branch.
 - **Why:** KISS: VLC's own option is the simplest way to drop every encoder, muxer and stream output (D15); fixing the
   bugs it exposes beats keeping code we don't ship.

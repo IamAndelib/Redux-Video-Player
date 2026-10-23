@@ -17,6 +17,8 @@ set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 dir="${1:-build/matrix}"
+# The expected streams come from ffprobe; without it every stream check would silently pass.
+command -v ffprobe >/dev/null || { echo "ffprobe not found (install ffmpeg or run inside the dev container)" >&2; exit 1; }
 if [[ -n "${VLC_CMD:-}" ]]; then
   read -ra vlccmd <<< "$VLC_CMD"
 else

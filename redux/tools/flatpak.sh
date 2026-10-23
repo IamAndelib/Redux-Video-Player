@@ -30,11 +30,14 @@ case "${1:-}" in
     ;;
   matrix)
     # The matrix tool runs on the host; VLC_CMD points it at the player inside the Flatpak.
+    # A timeout stops `flatpak run` but not the player inside the sandbox: stop the instances this run left behind,
+    # never one that was already open.
+    instances() { flatpak ps --columns=instance,application 2>/dev/null | awk -v a="$app" '$2 == a { print $1 }'; }
+    before="$(instances)"
     status=0
-    VLC_CMD="flatpak run --filesystem=$PWD/build:ro --command=vlc $app" redux/tools/play-matrix.sh || status=$?
-    # A timeout stops `flatpak run` but not the player inside the sandbox; stop any leftovers.
-    for i in $(flatpak ps --columns=instance,application 2>/dev/null | awk -v a="$app" '$2 == a { print $1 }'); do
-      flatpak kill "$i"
+    VLC_CMD="flatpak run --command=vlc $app" redux/tools/play-matrix.sh || status=$?   # host:ro already sees build/
+    for i in $(instances); do
+      grep -qxF "$i" <<< "$before" || flatpak kill "$i" || true
     done
     exit $status
     ;;

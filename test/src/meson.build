@@ -411,7 +411,7 @@ vlc_tests += {
     'sources' : files('media_source/media_source.c'),
     'suite' : ['src', 'test_src'],
     'link_with' : [libvlc, libvlccore],
-    # Lists the services discovery plugins, so it needs at least one; podcast is always built
+    # Lists the services discovery plugins, so it needs at least one (podcast has no dependencies)
     'module_depends' : ['podcast'],
 }
 
