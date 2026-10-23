@@ -19,6 +19,11 @@ took, where from, its licence, and where it lives in this repo.
 | Flatpak permissions | Flathub [org.kde.haruna](https://github.com/flathub/org.kde.haruna) | See the repo | `redux/packaging/` (M0.7) |
 | Real-world media samples | [FFmpeg FATE suite](https://fate-suite.ffmpeg.org) | Samples as published by FFmpeg for testing | `redux/tools/samples.tsv`, `fetch-samples.sh`, the codec/format matrix (M0.6) |
 | Synthetic test media | [FFmpeg](https://ffmpeg.org) (`lavfi` sources and encoders) | LGPL/GPL | `make-media.sh`, `make-matrix.sh` |
+| Flatpak CI build | [flatpak/flatpak-github-actions](https://github.com/flatpak/flatpak-github-actions) and Flathub's [actions images](https://github.com/flathub-infra/actions-images) | MIT | `.github/workflows/flatpak.yml` (Q0.7) |
+| Flatpak linting | [flathub/flatpak-builder-lint](https://github.com/flathub/flatpak-builder-lint) | MIT | `.github/workflows/flatpak.yml` (Q0.7) |
+| CI caching pattern (prebuilt CI image, ccache restored by prefix, saved from the main branch) | [mpv](https://github.com/mpv-player/mpv/blob/master/.github/workflows/build.yml)'s workflow | idea only, no code | `.github/workflows/ci.yml` (Q0.7) |
+| Installing the built bundle and running it in CI | [Bottles](https://github.com/bottlesdevs/Bottles/blob/main/.github/workflows/build_flatpak.yml) | idea only, no code (GPL-3) | `.github/workflows/flatpak.yml` (Q0.7) |
+| GitHub Actions building blocks | [actions/checkout, cache, upload-artifact, download-artifact](https://github.com/actions) | MIT | `.github/workflows/` (Q0.7) |
 | Build environment package list | VideoLAN's [docker-images](https://code.videolan.org/videolan/docker-images) `vlc-debian-unstable` | GPL-2.0-or-later | `.devcontainer/Containerfile` (D3) |
 | Video transcription | [AI-Video-Transcriber](https://github.com/wendy7756/AI-Video-Transcriber) with yt-dlp and faster-whisper | See each project | `redux/tools/transcriber/` (M0.4) |
 | Media library | VideoLAN [medialibrary](https://code.videolan.org/videolan/medialibrary) 0.13.2 | LGPL-2.1-or-later | Dev image (D5) |

@@ -11,6 +11,7 @@ vlc="$root/$builddir/bin/vlc-static"
 out="$QA_OUT/l1"
 clip="$root/build/media/Videos/Clips/subtitles-ass-demo.mkv"   # 60 s, video + audio + ASS subtitles
 allow="$root/redux/qa/log-allowlist.txt"
+allow_swrast="$root/redux/qa/log-allowlist-swrast.txt"
 mkdir -p "$out"
 
 result() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$QA_RESULTS"; echo "  $2  $1${3:+  ($3)}"; }
@@ -46,8 +47,14 @@ fi
 # --- the Qt app starts clean and quits clean, in Night and Day -------------------------------------------------
 # Errors that only mean "no GPU in a headless X server" are allowed, each with its reason, in log-allowlist.txt.
 problems() { # problems <log>: every Qt warning or error (QML included) and every VLC error, minus the allowlist
+  local patterns
+  patterns="$(grep -v -e '^#' -e '^$' "$allow")"
+  # The software-rasterizer list applies only when this log proves there is no GPU (CI runners, VMs).
+  if grep -q 'suspected to be a software rasterizer' "$1"; then
+    patterns+=$'\n'"$(grep -v -e '^#' -e '^$' "$allow_swrast")"
+  fi
   grep -E '^\[[0-9a-f]+\] (\[qt\] )?qt [a-z]+ (warning|error): |^\[qt\] |^\[[0-9a-f]+\] .* error: ' "$1" |
-    grep -vEf <(grep -v -e '^#' -e '^$' "$allow") | sed 's/^\[[0-9a-f]*\] //' | sort -u
+    grep -vEf <(printf '%s\n' "$patterns") | sed 's/^\[[0-9a-f]*\] //' | sort -u
 }
 
 source redux/tools/lib/app-session.sh

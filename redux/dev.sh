@@ -10,6 +10,9 @@
 # created in the container belong to you on the host. The host's Wayland/X11
 # display, PipeWire/PulseAudio and GPU are passed through, so the built player
 # can be run and heard from inside the container.
+#
+# REDUX_CCACHE_DIR=<host dir> keeps the compiler cache in that folder instead of the vlc-redux-ccache volume
+# (CI saves it between runs with actions/cache).
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -44,7 +47,7 @@ container_args() { # container_args [home-inside-container]
     --security-opt label=disable       # SELinux: don't relabel the host checkout
     --hostname vlc-redux-dev
     -v "$repo:/workspace"
-    -v vlc-redux-ccache:/ccache:U
+    -v "${REDUX_CCACHE_DIR:-vlc-redux-ccache}:/ccache:U"
     -w /workspace
     --tmpfs /tmp/runtime:rw,mode=0700,U   # private XDG runtime dir owned by you
     -e HOME="$home"

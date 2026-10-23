@@ -92,3 +92,7 @@ ENV LANG=C.UTF-8 \
 
 WORKDIR /workspace
 CMD ["bash"]
+
+# Links the image CI publishes (ghcr.io/iamandelib/redux-dev, redux/tools/ci-image.sh) to this repository on GitHub.
+LABEL org.opencontainers.image.source=https://github.com/IamAndelib/Redux-Video-Player \
+      org.opencontainers.image.description="Redux Video Player dev container: VLC master build deps, Qt 6, QA tools"

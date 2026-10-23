@@ -275,3 +275,26 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 - **Why:** the maintainer asked for an organised, disciplined workflow with agents, hierarchies, priorities, clear
   instructions and IDs, so the code stays readable and maintainable and work is traceable.
 - **Alternatives:** a full project-management tool or board (heavy; duplicates STATUS.md and issues).
+
+### D29 · 2026-10-23 · CI: GitHub Actions running our own tools, Podman for the QA suite
+- **Decision:** Two workflows (Q0.7).
+  - **`.github/workflows/ci.yml`** runs the QA suite on every pull request and push to `main`.
+    - Podman on an `ubuntu-24.04` runner with `redux/dev.sh`, exactly the commands a developer runs locally.
+    - The dev image is published as `ghcr.io/iamandelib/redux-dev`, public and tagged with a hash of `.devcontainer/`. `redux/tools/ci-image.sh` pulls it, or builds it on a miss (pushed from `main`).
+    - ccache (`REDUX_CCACHE_DIR`) and the FATE samples are kept with `actions/cache`. ccache is saved from `main` only.
+  - **`.github/workflows/flatpak.yml`** runs on pull requests that touch code or packaging, and on `main`.
+    - It builds the Flatpak with `flatpak/flatpak-github-actions` in Flathub's `kde-6.11` image, with advisory `flatpak-builder-lint`.
+    - It then plays the codec matrix inside the installed bundle on a plain runner, as the normal user (QA layer L8).
+  - Actions are pinned to commit hashes.
+  - The `.github/` and `.devcontainer/` edits (an OCI source label) are covered by this entry.
+- **Why:**
+  - VLC refuses to run as root (`bin/vlc.c`), and GitHub's `container:` jobs run as root. Podman's `--userns=keep-id` through `dev.sh` already solves that locally, and reusing it keeps one way of running things.
+  - Publishing the image keeps its layers out of the 10 GB Actions cache, so they don't crowd out ccache.
+  - The hash tag means a PR that edits the Containerfile tests its own image.
+  - The matrix needs `ffprobe` and a non-root user, which the Flathub builder image lacks.
+  - The maintainer chose a public image and a Flatpak job limited to code changes and `main`.
+- **Alternatives:**
+  - `container:` jobs with a CI-only user.
+  - The archived `flathub-infra/flatpak-github-actions`.
+  - Running the matrix as root in the builder image (VLC refuses).
+  - Building the image on every run (slow; depends on code.videolan.org, G23).
