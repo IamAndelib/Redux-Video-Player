@@ -4,6 +4,7 @@
 #
 #   redux/dev.sh run redux/tools/qa.sh            the blocking layers: L1 hygiene, L2 codec matrix, L3 VLC's tests
 #   redux/dev.sh run redux/tools/qa.sh L1 L3      only these layers
+#   redux/dev.sh run redux/tools/qa.sh L4         QML component tests only (Q0.5; they also run with L3's meson test)
 #   redux/dev.sh run redux/tools/qa.sh L5         end-to-end flows (Q0.3); opt-in and non-blocking until stable
 #   redux/dev.sh run redux/tools/qa.sh L6         screens by region against Figma and baselines (Q0.4); opt-in, needs
 #                                                 a DRM render node (not on GitHub's runners, G27)
@@ -26,7 +27,7 @@ export QA_RESULTS="$QA_OUT/results.tsv"
 layers=("$@")
 [[ ${#layers[@]} -gt 0 ]] || layers=(L1 L2 L3)
 for layer in "${layers[@]}"; do
-  [[ "$layer" =~ ^L[123567]$ ]] || { echo "unknown layer '$layer' (built so far: L1 L2 L3 L5 L6 L7)" >&2; exit 2; }
+  [[ "$layer" =~ ^L[1234567]$ ]] || { echo "unknown layer '$layer' (built so far: L1 to L7)" >&2; exit 2; }
 done
 rm -rf "$QA_OUT" && mkdir -p "$QA_OUT"
 : > "$QA_RESULTS"
@@ -47,18 +48,22 @@ if wants L1; then
   fi
 fi
 
-if wants L3; then
-  echo "== L3 VLC's test suite (meson test)"
+if wants L3 || wants L4; then
+  # L3 is the whole suite; L4 alone is only the QML component tests (Qt Quick Test files tst_*, Q0.5).
+  tests=()
+  run=l3.run; wants L3 || run=l4.run
+  wants L3 || mapfile -t tests < <(meson test -C "$builddir" --list 2>/dev/null | sed -n 's/.*:\(tst_[A-Za-z0-9_]*\)$/\1/p')
+  echo "== L3 VLC's test suite (meson test)${tests[*]:+: the L4 component tests}"
   # Upstream's CI gives each test 60 s (extras/ci/gitlab-ci.yml); the 10 s default fails under parallel load (G25).
   testlog="$builddir/meson-logs/testlog.json"
   rm -f "$testlog"   # never report a previous run's results
-  VLC_TEST_TIMEOUT="${VLC_TEST_TIMEOUT:-60}" meson test -C "$builddir" --num-processes "$(nproc)" \
+  VLC_TEST_TIMEOUT="${VLC_TEST_TIMEOUT:-60}" meson test -C "$builddir" --num-processes "$(nproc)" "${tests[@]}" \
     > "$QA_OUT/meson-test.log" 2>&1
   status=$?
   if [[ $status -eq 125 || ! -s "$testlog" ]]; then   # 125: meson couldn't build the tests
-    result l3.run fail "meson test exited $status without results; see $QA_OUT/meson-test.log"
+    result "$run" fail "meson test exited $status without results; see $QA_OUT/meson-test.log"
   else
-    result l3.run pass "meson test exited $status"
+    result "$run" pass "meson test exited $status"
   fi
   [[ -s "$testlog" ]] && python3 -I - "$testlog" "$QA_RESULTS" <<'EOF'
 import json, sys
@@ -69,7 +74,8 @@ with open(sys.argv[2], "a") as out:
         result = status.get(test["result"], "fail")
         detail = "" if result != "fail" else f"{test['result']} after {test['duration']:.1f} s; see build/qa/meson-test.log"
         name = test["name"].rsplit(":", 1)[-1]   # "src+test_src+test - VLC:test_src_player_eof" -> the test name
-        out.write(f"l3.{name}\t{result}\t{detail}\n")
+        layer = "l4" if name.startswith("tst_") else "l3"   # Qt Quick Test files are the L4 component tests
+        out.write(f"{layer}.{name}\t{result}\t{detail}\n")
 EOF
   grep -E "^(Ok|Fail|Skipped|Timeout):" "$QA_OUT/meson-test.log" | tr -s ' ' | paste -sd' ' | sed 's/^/  /'
 fi

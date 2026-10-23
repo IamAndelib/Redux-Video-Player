@@ -955,6 +955,7 @@ qml_modules += {
 
 qml_tests = {
     'tst_FSM': files('tests/tst_FSM.qml'),
+    'tst_ButtonExt': files('tests/tst_ButtonExt.qml'),
 }
 
 qmllibs = []
@@ -1427,18 +1428,34 @@ if qt6_dep.found()
 
     quicktest_qt6_dep = dependency('qt6', version: '=' + qt6_dep.version(), modules: ['QuickTest'], required: false)
     if quicktest_qt6_dep.found() and  qtest_qt6_dep.found()
+        # Redux (Q0.5, D34): the component tests compile the style sources against a stand-in MainCtx
+        # (tests/stub/ first on the include path, without meson's implicit directories, where the real one is).
+        qml_test_includes = [include_directories('tests/stub'), qt_include_dir, vlc_include_dirs]
         qml_test_moc = qt6.compile_moc(
-            headers : files('tests/qml_test.hpp'),
+            headers : files('tests/qml_test.hpp', 'tests/qml_baseline.hpp',
+                            'tests/stub/maininterface/mainctx.hpp',
+                            'style/colorcontext.hpp', 'style/systempalette.hpp', 'style/vlcicons.hpp',
+                            'util/color_scheme_model.hpp', 'widgets/native/navigation_attached.hpp',
+                            'util/keyhelper.hpp'),
+            include_directories : qml_test_includes,
             dependencies : [quicktest_qt6_dep, qt6_dep]
         )
         qml_test = executable(
           'qml_test',
-          [files('tests/qml_test.cpp', 'tests/qml_test.hpp'), qml_test_moc],
+          [files('tests/qml_test.cpp', 'tests/qml_test.hpp', 'tests/qml_baseline.cpp', 'tests/qml_baseline.hpp',
+                 'tests/stub/maininterface/mainctx.cpp', 'tests/stub/maininterface/mainctx.hpp',
+                 'style/colorcontext.cpp', 'style/systempalette.cpp', 'style/palettedump.cpp',
+                 'style/vlcicons.cpp', 'util/color_scheme_model.cpp',
+                 'widgets/native/navigation_attached.cpp', 'util/keyhelper.cpp'),
+           qml_test_moc],
           qt6pre_qrc,
           build_by_default: false,
-          dependencies: [quicktest_qt6_dep, qt6_dep, qtest_qt6_dep],
-          link_with: qmllibs,
-          cpp_args: ['-DQUICK_TEST_SOURCE_DIR="' + meson.current_source_dir() + '/tests"']
+          implicit_include_directories: false,
+          include_directories: qml_test_includes,
+          dependencies: [quicktest_qt6_dep, qt6_dep, qtest_qt6_dep, qt_extra_deps],
+          link_with: [qmllibs, libvlccore],
+          cpp_args: ['-DQUICK_TEST_SOURCE_DIR="' + meson.current_source_dir() + '/tests"',
+                     '-DREDUX_BASELINE_DIR="' + meson.project_source_root() + '/redux/qa/components/baselines"']
         )
         foreach test_name, test_file : qml_tests
               test(test_name, qml_test, args: ['-input', test_file], suite:'qt')

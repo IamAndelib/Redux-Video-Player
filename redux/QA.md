@@ -59,7 +59,7 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
 Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
-`l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l5.<module>.<Class>.<test>` (Q0.3), `l6.<scene>.<region>`, `l7.contrast` (Q0.4), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
+`l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l4.<tst_ file>` (Q0.5), `l5.<module>.<Class>.<test>` (Q0.3), `l6.<scene>.<region>`, `l7.contrast` (Q0.4), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 
 **Headless KDE session (Q0.2, D30):** `redux/tools/kwin-session.sh <cmd>` runs a command as a Wayland client in
@@ -72,6 +72,15 @@ codec (`redux/qa/hw-clips.tsv`) in the KDE session with the GPU's OpenGL (`REDUX
 per clip whether the GPU or software should decode it; VLC's log and the kernel's per-process GPU engine time
 (`/proc/<pid>/fdinfo`) prove which one did. `l2.hw.cpu` reports the CPU time with and without the GPU. Without a
 render node, e.g. on GitHub's runners, it's one `l2.hw` skip (G27).
+
+**Components (Q0.5, D34):** `modules/gui/qt/tests/tst_<Widget>.qml` runs in VLC's QML test runner (`qml_test`,
+Qt Quick Test, offscreen with the software backend and hover enabled). It renders a widget alone in every state
+(normal, hover, pressed, focus, disabled) and in Night and Day, asserts each state is actually reached, and compares
+its grab with `redux/qa/components/baselines/<Widget>/<scheme>-<state>.png` through `Baseline.check()`. The style
+sources are compiled against a stand-in `MainCtx` (`tests/stub/`); add members there as more widgets get tests.
+After an intended change: `REDUX_UPDATE_BASELINES=1 redux/dev.sh run meson test -C build/meson tst_<Widget>`. They
+run with L3's `meson test` and report as `l4.tst_<Widget>`; `qa.sh L4` runs only them. A failure leaves the actual
+image and a diff in `build/meson/l4/`. Shader effects aren't covered (G28).
 
 **Screens by region (Q0.4, D33):** `redux/dev.sh run redux/tools/qa.sh L6` (opt-in; needs a render node, G27)
 runs `shoot.sh` (scenes in `redux/qa/visual/scenes.py`, driven through AT-SPI in the KDE session) and `compare.sh`.

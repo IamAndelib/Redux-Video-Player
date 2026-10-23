@@ -305,8 +305,9 @@ SystemPalette::SystemPalette(QObject* parent)
 
 void SystemPalette::componentComplete()
 {
+    // Redux (Q0.5, D34): without an interface (the QML component tests) the default accent stays.
+    if (m_ctx && m_ctx->getIntf())
     {
-        assert(m_ctx);
         char* accentColor = var_InheritString(m_ctx->getIntf(), "qt-accent-color");
         assert(accentColor);
 
