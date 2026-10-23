@@ -1,0 +1,101 @@
+# QA suite on every pull request and on main (Q0.7, D29; plan: redux/QA.md).
+#
+# Runs exactly what a developer runs locally: Podman on the runner and redux/dev.sh, so the player runs as the normal
+# user (VLC refuses to run as root, which is how `container:` jobs run).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  # A newer push to a pull request replaces the older run; runs on main always finish (they save the ccache).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    name: QA suite (L1–L3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: read
+      packages: write   # push a newly built dev image to GHCR (main only)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2   # the parent commit is the token lint's base (QA_BASE below)
+
+      - name: Runner
+        run: |
+          df -h / "$RUNNER_TEMP"
+          podman --version
+          echo "cores: $(nproc)"
+          # redux/dev.sh mounts this folder as the container's ccache; actions/cache saves it between runs.
+          echo "REDUX_CCACHE_DIR=$RUNNER_TEMP/ccache" >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+        run: podman login ghcr.io -u "$ACTOR" --password-stdin <<< "$TOKEN"
+
+      - name: Dev image (pull, or build on a miss)
+        id: image
+        run: redux/tools/ci-image.sh ${{ github.event_name == 'push' && '--push' || '' }}
+
+      - name: Restore ccache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.REDUX_CCACHE_DIR }}
+          key: ccache-${{ steps.image.outputs.tag }}-${{ github.run_id }}
+          restore-keys: |
+            ccache-${{ steps.image.outputs.tag }}-
+            ccache-
+
+      - name: FATE samples (cached)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/matrix/real
+          key: fate-${{ hashFiles('redux/tools/samples.tsv') }}
+
+      - name: Fetch missing FATE samples
+        run: redux/tools/fetch-samples.sh
+
+      - name: Build
+        run: |
+          mkdir -p "$REDUX_CCACHE_DIR"
+          redux/dev.sh run redux/tools/build.sh
+          redux/dev.sh run ccache -s
+
+      - name: QA suite
+        run: redux/dev.sh run env QA_BASE=HEAD~1 redux/tools/qa.sh
+
+      - name: Report summary
+        if: always()
+        run: |
+          if [[ -f build/qa/report.md ]]; then cat build/qa/report.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Upload QA report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qa-report
+          path: |
+            build/qa/
+            build/matrix/report.tsv
+            build/matrix/logs/
+          if-no-files-found: warn
+
+      - name: Save ccache
+        if: always() && github.event_name == 'push'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.REDUX_CCACHE_DIR }}
+          key: ccache-${{ steps.image.outputs.tag }}-${{ github.run_id }}

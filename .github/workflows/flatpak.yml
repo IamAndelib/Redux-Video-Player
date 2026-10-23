@@ -1,0 +1,150 @@
+# Flatpak build and the codec matrix inside the sandbox (Q0.7, D29; QA layer L8, redux/QA.md).
+#
+# Runs on pull requests that touch the player's code or packaging and on main; docs-only changes skip it.
+name: Flatpak
+
+on:
+  pull_request:
+    paths:
+      - 'bin/**'
+      - 'compat/**'
+      - 'include/**'
+      - 'lib/**'
+      - 'modules/**'
+      - 'share/**'
+      - 'src/**'
+      - '**/meson.build'
+      - 'meson_options.txt'
+      - 'redux/packaging/**'
+      - 'redux/cut-modules.txt'
+      - 'redux/tools/flatpak.sh'
+      - 'redux/tools/make-matrix.sh'
+      - 'redux/tools/play-matrix.sh'
+      - 'redux/tools/fetch-samples.sh'
+      - 'redux/tools/samples.tsv'
+      - '.github/workflows/flatpak.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'bin/**'
+      - 'compat/**'
+      - 'include/**'
+      - 'lib/**'
+      - 'modules/**'
+      - 'share/**'
+      - 'src/**'
+      - '**/meson.build'
+      - 'meson_options.txt'
+      - 'redux/packaging/**'
+      - 'redux/cut-modules.txt'
+      - 'redux/tools/flatpak.sh'
+      - 'redux/tools/make-matrix.sh'
+      - 'redux/tools/play-matrix.sh'
+      - 'redux/tools/fetch-samples.sh'
+      - 'redux/tools/samples.tsv'
+      - '.github/workflows/flatpak.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: flatpak-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  APP_ID: io.github.iamandelib.Redux-Video-Player
+
+jobs:
+  build:
+    name: Build the Flatpak
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    container:
+      # Flathub's builder image with the KDE 6.11 runtime and SDK preinstalled (the manifest's runtime).
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.11
+      options: --privileged
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Lint the manifest (advisory)
+        continue-on-error: true
+        run: flatpak-builder-lint --gha-format manifest "redux/packaging/$APP_ID.yml"
+
+      - name: Build
+        uses: flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3 # v6.8
+        with:
+          manifest-path: redux/packaging/${{ env.APP_ID }}.yml
+          # Everything under build/: the manifest copies this checkout as VLC's source and skips build/, so the
+          # action's default folders in the repository root would be copied into the build.
+          build-dir: build/flatpak-build
+          repo-dir: build/flatpak-repo
+          bundle: build/redux-video-player.flatpak
+          # A new key per commit refreshes the state cache (ccache included); restore falls back to the newest
+          # entry with this prefix. Only main saves, so pull requests can't evict it.
+          cache-key: flatpak-builder-x86_64-${{ github.sha }}
+          save-cache: ${{ github.event_name != 'pull_request' }}
+          upload-artifact: false
+
+      - name: Lint the build (advisory)
+        continue-on-error: true
+        run: flatpak-builder-lint --gha-format repo build/flatpak-repo
+
+      - name: Upload the bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: flatpak-bundle
+          path: build/redux-video-player.flatpak
+          if-no-files-found: error
+
+  matrix:
+    name: Codec matrix in the Flatpak (L8)
+    needs: build
+    # A plain runner, as the normal user: VLC refuses to run as root, and play-matrix.sh needs ffprobe.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Flatpak and ffprobe
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends flatpak ffmpeg dbus
+          # Ubuntu 24.04 restricts unprivileged user namespaces through AppArmor, which Flatpak's bwrap needs.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub org.kde.Platform//6.11
+
+      - name: Download the bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: flatpak-bundle
+          path: build
+
+      - name: Install the bundle
+        run: flatpak install --user -y --noninteractive build/redux-video-player.flatpak
+
+      - name: Dev image (to generate the matrix)
+        run: redux/tools/ci-image.sh
+
+      - name: FATE samples (cached)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/matrix/real
+          key: fate-${{ hashFiles('redux/tools/samples.tsv') }}
+
+      - name: Codec matrix
+        run: |
+          redux/tools/fetch-samples.sh
+          redux/dev.sh run redux/tools/make-matrix.sh
+          dbus-run-session -- redux/tools/flatpak.sh matrix
+
+      - name: Upload the matrix report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: flatpak-matrix-report
+          path: |
+            build/matrix/report.tsv
+            build/matrix/logs/
+          if-no-files-found: warn
