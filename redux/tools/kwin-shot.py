@@ -28,6 +28,10 @@ BYTE_ORDER = {4: "bgra", 5: "bgra", 6: "bgra", 16: "rgba", 17: "rgba", 18: "rgba
 NO_OPENGL = 3   # exit status when KWin can't take screenshots (see the docstring)
 
 
+class ShortRead(Exception):
+    """KWin closed the pipe before the whole image: seen as exactly one 4 KiB block short, rarely (G30)."""
+
+
 def capture(out_png):
     read_fd, write_fd = os.pipe()
     chunks = []
@@ -65,7 +69,7 @@ def capture(out_png):
         sys.exit(f"kwin-shot: unsupported pixel format {fmt}")
     data = b"".join(chunks)
     if len(data) < stride * height:
-        sys.exit(f"kwin-shot: got {len(data)} bytes, expected {stride * height}")
+        raise ShortRead(f"kwin-shot: got {len(data)} bytes, expected {stride * height}")
     rows = b"".join(data[y * stride:y * stride + width * 4] for y in range(height))   # drop row padding
     subprocess.run(["magick", "-size", f"{width}x{height}", "-depth", "8", f"{BYTE_ORDER[fmt]}:-",
                     "-alpha", "off", out_png], input=rows, check=True)
@@ -75,5 +79,12 @@ def capture(out_png):
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         sys.exit(__doc__)
-    w, h = capture(sys.argv[1])
+    for attempt in range(3):   # G30: a rare short read; a new capture is complete
+        try:
+            w, h = capture(sys.argv[1])
+            break
+        except ShortRead as error:
+            print(error, file=sys.stderr)
+    else:
+        sys.exit("kwin-shot: three short reads in a row (G30)")
     print(f"{sys.argv[1]} ({w}x{h})")

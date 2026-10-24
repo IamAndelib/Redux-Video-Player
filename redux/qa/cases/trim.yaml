@@ -1,0 +1,55 @@
+# M0.8 feature trim: no cut feature (redux/SCOPE.md, D14) is reachable from a menu, toolbar or shortcut.
+# Format: redux/QA.md § Test case format.
+- id: L1-cut-entries
+  title: No UI entry point of a cut feature is left in the source
+  layer: L1
+  milestone: M0.8
+  sources: [scope:X3, scope:X4, scope:X5, scope:X6, scope:X7, scope:X8, scope:X9, scope:X10, scope:X11, scope:X12,
+            scope:X13, decision:D37, accept:M0.8]
+  expected: >-
+    every rule in redux/qa/cut-entries.tsv holds: no menu entry, shortcut, button or control of a cut feature, and the
+    required hides (Open dialog tabs, New Music row, system tray, core hotkeys) are in place. The menus' blocking
+    check, since their entries aren't visible over AT-SPI (G29).
+  check: l1.cut-entries
+
+- id: L3-nav-no-cut-sections
+  title: The sidebar model has Home, Video and Browse, and no Music or Discover
+  layer: L3
+  milestone: M0.8
+  sources: [scope:X8, scope:X3, decision:D36, accept:M0.8]
+  expected: with the media library Home, Video, Browse (without it Home, Browse); no row or child is music or discover.
+  check: l3.test_qt_navigation_model
+
+- id: L3-toolbar-no-cut-controls
+  title: Cut controls never reach a toolbar; their IDs stay valid
+  layer: L3
+  milestone: M0.8
+  sources: [scope:K30, scope:X4, scope:X5, scope:X6, scope:X7, scope:X13, accept:M0.8]
+  expected: a saved profile with record, renderer, teletext, DVD, navigation, program and reverse loads without them; the editor can't insert them.
+  check: l3.test_qt_control_list_model
+
+- id: L5-sidebar-trimmed
+  title: The sidebar shows Home, Video and Browse, without Music or Discover
+  layer: L5
+  milestone: M0.8
+  sources: [scope:X8, scope:X3, decision:D36, accept:M0.8]
+  expected: the sidebar's sections, as a user reaches them, exclude the cut ones.
+  check: l5.test_trim.SidebarTrimmed.*
+
+- id: L5-home-no-open-disc
+  title: Home without the media library offers Open File, not Open Disc
+  layer: L5
+  milestone: M0.8
+  sources: [scope:X4, accept:M0.8]
+  expected: the Open File button is there, the Open Disc button isn't.
+  check: l5.test_trim.HomeWithoutLibraryTrimmed.*
+
+- id: L5-shortcuts-trimmed
+  title: The cut shortcuts open nothing; Ctrl+I still opens Media Information
+  layer: L5
+  milestone: M0.8
+  sources: [scope:X3, scope:X4, scope:X5, scope:X7, scope:X13, scope:K35, accept:M0.8]
+  expected: >-
+    Ctrl+I changes the screen (Media Information opens) and Escape restores it; Ctrl+D, N, C, R, S, M and T leave the
+    screen unchanged (judged by KWin screenshots, since QWidget dialogs aren't visible over AT-SPI, G29).
+  check: l5.test_trim.ShortcutsTrimmed.*

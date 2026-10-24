@@ -89,7 +89,7 @@ closer). Regressions are checked against the committed crops in `redux/qa/visual
 | | bottom | 0.0905 |
 | player (`187:328`) | title-bar | 0.1580 |
 | | side-panel | 0.1568 |
-| | controls | 0.3007 |
+| | controls | 0.3004 (M0.8: cast button removed) |
 | first-run (`1899:3055`) | dialog | 0.4795 |
 
 Contrast (`qa.sh L7`, WCAG 2.x, 169 pairs per scheme): Night 62 pairs below the minimum, Day 95 (stock palette; M1.1).

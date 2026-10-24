@@ -112,7 +112,10 @@ def compare_scene(scene, update):
             ours, m = crop(shot, area, f"{prefix}.png"), mask(area, excludes, f"{prefix}.mask.png")
             to_figma = (dssim(ours, crop(figma, area, f"{prefix}.figma.png"), m, f"{prefix}.figma-diff.png")
                         if figma else None)
-            if update:
+            # Only a region its check would fail gets a new baseline: rewriting the others churns git and hides which
+            # regions an intended change really touched (D35's regressions rubric).
+            if update and (not os.path.exists(baseline)
+                           or dssim(ours, baseline, m, f"{prefix}.update-diff.png") > threshold):
                 os.makedirs(os.path.dirname(baseline), exist_ok=True)
                 magick(ours, "-strip", "-define", "png:compression-level=9", baseline)
             if os.path.exists(baseline):
