@@ -21,26 +21,19 @@ import VLC.MainInterface
 import VLC.Dialogs
 
 Item {
+    // Redux (M0.8, D14, D37): no shortcuts for cut features (disc, network, capture, convert, stream, log viewer,
+    // jump to time, VLM). Paste stays: it plays files copied in a file manager.
 
     ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+O"; onActivated: DialogsProvider.simpleOpenDialog(); }
     ShortcutExt{ sequence:"Ctrl+Shift+O"; onActivated: DialogsProvider.openFileDialog(); }
     ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+F"; onActivated: DialogsProvider.PLOpenDir(); }
-    ShortcutExt{ sequence:"Ctrl+D"; onActivated: DialogsProvider.openDiscDialog(); }
-    ShortcutExt{ sequence:"Ctrl+N"; onActivated: DialogsProvider.openNetDialog(); }
-    ShortcutExt{ sequence:"Ctrl+C"; onActivated: DialogsProvider.openCaptureDialog(); }
     ShortcutExt{ sequences: [StandardKey.Paste]; onActivated: MainCtx.pasteFromClipboard(); }
     ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+Y"; onActivated: DialogsProvider.savePlayingToPlaylist(); }
-    ShortcutExt{ sequence:"Ctrl+R"; onActivated: DialogsProvider.openAndTranscodingDialogs(); }
-    ShortcutExt{ sequence:"Ctrl+S"; onActivated: DialogsProvider.openAndStreamingDialogs(); }
     ShortcutExt{ sequence:"Ctrl+Q"; onActivated: DialogsProvider.quit(); }
     ShortcutExt{ sequence:"Ctrl+E"; onActivated: DialogsProvider.extendedDialog(); }
     ShortcutExt{ sequence:"Ctrl+I"; onActivated: DialogsProvider.mediaInfoDialog(); }
     ShortcutExt{ sequence:"Ctrl+J"; onActivated: DialogsProvider.mediaCodecDialog(); }
-    ShortcutExt{ sequence:"Ctrl+M"; onActivated: DialogsProvider.messagesDialog(); }
     ShortcutExt{ sequence:"Ctrl+P"; onActivated: DialogsProvider.prefsDialog(); }
-    ShortcutExt{ sequence:"Ctrl+T"; onActivated: DialogsProvider.gotoTimeDialog(); }
-
-    ShortcutExt{ sequence:"Ctrl+Shift+W"; onActivated: DialogsProvider.vlmDialog(); }
 
     ShortcutExt{ sequence:"Ctrl+L"; onActivated: MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible; }
 

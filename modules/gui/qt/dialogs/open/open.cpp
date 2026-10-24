@@ -64,6 +64,10 @@ OpenDialog::OpenDialog(qt_intf_t *_p_intf, QWindow* parent )
                        qtr( "&Network" ) );
     ui.Tab->insertTab( OPEN_CAPTURE_TAB, captureOpenPanel,
                        QIcon( ":/menu/capture-card.svg" ), qtr( "Capture &Device" ) );
+    /* Redux (M0.8, D14): only files; no disc, network or capture (X3, X4, X7). The panels stay, hidden. */
+    ui.Tab->setTabVisible( OPEN_DISC_TAB, false );
+    ui.Tab->setTabVisible( OPEN_NETWORK_TAB, false );
+    ui.Tab->setTabVisible( OPEN_CAPTURE_TAB, false );
 
     /* Hide the Slave input widgets */
     ui.slaveLabel->hide();
@@ -86,10 +90,7 @@ OpenDialog::OpenDialog(qt_intf_t *_p_intf, QWindow* parent )
                                     )->setShortcut( QKeySequence( "Alt+E" ) );
     openButtonMenu->addAction( qtr( "&Play" ), this, &OpenDialog::play
                                     )->setShortcut( QKeySequence( "Alt+P" ) );
-    openButtonMenu->addAction( qtr( "&Stream" ), this, &OpenDialog::stream
-                                    )->setShortcut( QKeySequence( "Alt+S" ) );
-    openButtonMenu->addAction( qtr( "C&onvert" ), this, &OpenDialog::transcode
-                                    )->setShortcut( QKeySequence( "Alt+O" ) );
+    /* Redux (M0.8, D14): no Stream or Convert (X5). */
 
     playButton->setMenu( openButtonMenu );
 

@@ -752,23 +752,7 @@ void QmlSubtitleMenu::beforePopup(QMenu * menu) /* override */
         emit triggered(Synchronize);
     });
 
-    menu->addAction(ColorizedSvgIcon::colorizedIconForWidget(":/menu/download.svg", menu), qtr("Search online"), this, [this]()
-    {
-        emit triggered(Download);
-    });
-
-    menu->addSeparator();
-
-    QAction * action = menu->addAction(qtr("Select multiple"), this, [this]()
-    {
-        TrackListModel * tracks = this->m_player->getSubtitleTracks();
-
-        tracks->setMultiSelect(!(tracks->getMultiSelect()));
-    });
-
-    action->setCheckable(true);
-
-    action->setChecked(m_player->getSubtitleTracks()->getMultiSelect());
+    // Redux (M0.8, D14): no online subtitle search (VLSub, X9; M5.7 brings its own) or dual subtitles (X13).
 }
 
 // QmlAudioMenu
@@ -1059,10 +1043,6 @@ void PlaylistContextMenu::popup(int selectedIndex, QPoint pos )
     m_menu = std::make_unique<VLCMenu>(m_ctx->getIntf());
     QAction* action;
 
-    QList<QUrl> selectedUrlList;
-    for (const int modelIndex : m_selectionModel->selectedIndexesFlat())
-        selectedUrlList.push_back(m_model->itemAt(modelIndex).getUrl());
-
     PlaylistItem selectedItem;
     if (selectedIndex >= 0)
         selectedItem = m_model->itemAt(selectedIndex);
@@ -1083,19 +1063,7 @@ void PlaylistContextMenu::popup(int selectedIndex, QPoint pos )
         connect(action, &QAction::triggered, this, &PlaylistContextMenu::jumpToCurrentPlaying);
     }
 
-    if (m_selectionModel->hasSelection()) {
-        action = m_menu->addAction( qtr("Stream") );
-        connect(action, &QAction::triggered, [selectedUrlList]( ) {
-            DialogsProvider::getInstance()->streamingDialog(selectedUrlList, false);
-        });
-
-        action = m_menu->addAction( qtr("Save") );
-        connect(action, &QAction::triggered, [selectedUrlList]( ) {
-            DialogsProvider::getInstance()->streamingDialog(selectedUrlList, true);
-        });
-
-        m_menu->addSeparator();
-    }
+    // Redux (M0.8, D14): no Stream or Convert / Save of the selection (X5).
 
     if (selectedItem) {
         action = m_menu->addAction( qtr("Information") );

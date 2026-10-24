@@ -273,23 +273,12 @@ public:
             videoEntry.children.emplace_back(qtr("All"), "all");
             videoEntry.children.emplace_back(qtr("Playlists"), "playlists");
             m_model.children.push_back(std::move(videoEntry));
-
-            ModelEntry musicEntry{ qtr("Music"), "music", VLCIcons::topbar_music, QStringLiteral(":/icons/ic_fluent_music_note_2.svg") };
-            musicEntry.children.emplace_back(qtr("Artists"), "artists");
-            musicEntry.children.emplace_back(qtr("Albums"), "albums");
-            musicEntry.children.emplace_back(qtr("Tracks"), "tracks");
-            musicEntry.children.emplace_back(qtr("Genres"), "genres");
-            musicEntry.children.emplace_back(qtr("Playlists"), "playlists");
-            m_model.children.push_back(std::move(musicEntry));
+            // Redux (M0.8, D14): no Music section (the library is video only).
         }
 
+        // Redux (M0.8, D36): Browse stays until M3.1 gives Videos folder browsing; Discover (network services and
+        // streams) is cut.
         m_model.children.emplace_back(qtr("Browse"), "network", VLCIcons::topbar_network, QStringLiteral(":/icons/ic_fluent_wifi_1.svg"));
-
-        ModelEntry discoverEntry{ qtr("Discover"), "discover", VLCIcons::topbar_discover, QStringLiteral(":/icons/ic_fluent_globe.svg") };
-        discoverEntry.children.emplace_back(qtr("Services"), "services");
-
-        discoverEntry.children.emplace_back(qtr("URL"), "url");
-        m_model.children.push_back(std::move(discoverEntry));
 
         m_model.visibleChildren = m_model.children.size();
     }
