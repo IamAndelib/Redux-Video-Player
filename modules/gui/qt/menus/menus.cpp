@@ -393,9 +393,7 @@ void VLCMenuBar::AudioMenu( qt_intf_t *p_intf, QMenu * current )
             current->addMenu( new CheckableListMenu(qtr( "&Stereo Mode" ), THEMIM->getAudioStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
         else
             current->addMenu( new CheckableListMenu(qtr( "&Mix Mode" ), mix_mode, QActionGroup::ExclusionPolicy::Exclusive, current) );
-        current->addSeparator();
-
-        /* Redux (M0.8, D14): no visualizations (X8). */
+        /* Redux (M0.8, D14): no visualizations (X8); VolumeEntries starts with its own separator. */
         VolumeEntries( p_intf, current );
     }
 }
@@ -422,9 +420,7 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
     {
         current->addMenu(new CheckableListMenu(qtr( "Video &Track" ), THEMIM->getVideoTracks(), QActionGroup::ExclusionPolicy::None, current));
 
-        current->addSeparator();
         /* Redux (M0.8, D14): no 3D output (X12). */
-
         current->addSeparator();
         /* Surface modifiers */
         current->addAction(new BooleanPropertyAction(qtr( "&Fullscreen"), THEMIM, "fullscreen", current));

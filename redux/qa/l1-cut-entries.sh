@@ -5,20 +5,27 @@ set -uo pipefail
 
 cd "$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 export QA_RESULTS="${QA_RESULTS:-$PWD/build/qa/results.tsv}"
+rules=redux/qa/cut-entries.tsv
 found=()
+checked=0
+[[ -r "$rules" ]] || found+=("$rules can't be read")
 while IFS=$'\t' read -r kind file pattern what; do
   [[ -z "$kind" || "$kind" == \#* ]] && continue
-  if [[ ! -f "$file" ]]; then
-    found+=("$what: $file is missing")
-  elif [[ "$kind" == absent ]] && grep -qE -- "$pattern" "$file"; then
+  checked=$((checked + 1))
+  grep -qE -- "$pattern" "$file" 2>/dev/null
+  status=$?   # 0 matches, 1 no match, 2 error (a missing file or a bad pattern: never a silent pass)
+  if [[ $status -eq 2 || ( "$kind" != absent && "$kind" != present ) ]]; then
+    found+=("$what: rule can't be checked ($kind, $file)")
+  elif [[ "$kind" == absent && $status -eq 0 ]]; then
     found+=("$what: still in $file:$(grep -nE -- "$pattern" "$file" | head -1 | cut -d: -f1)")
-  elif [[ "$kind" == present ]] && ! grep -qE -- "$pattern" "$file"; then
+  elif [[ "$kind" == present && $status -eq 1 ]]; then
     found+=("$what: not hidden in $file")
   fi
-done < redux/qa/cut-entries.tsv
+done < <(cat "$rules" 2>/dev/null)
+[[ $checked -gt 0 ]] || found+=("no rules in $rules")
 
 if [[ ${#found[@]} -eq 0 ]]; then
-  printf '%s\t%s\t%s\n' l1.cut-entries pass "every rule in redux/qa/cut-entries.tsv holds" >> "$QA_RESULTS"
+  printf '%s\t%s\t%s\n' l1.cut-entries pass "all $checked rules in $rules hold" >> "$QA_RESULTS"
   echo "  pass  l1.cut-entries"
 else
   printf '%s\n' "${found[@]}" > "$(dirname "$QA_RESULTS")/cut-entries.txt"

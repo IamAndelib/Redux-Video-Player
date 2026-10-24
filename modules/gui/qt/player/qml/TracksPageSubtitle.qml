@@ -196,6 +196,8 @@ TracksPage {
         }
 
         ColumnLayout {
+            visible: false   // Redux (M0.8, D14): no dual subtitles (X13)
+
             Layout.fillWidth: true
 
             spacing: VLCStyle.margin_xxxsmall

@@ -427,10 +427,8 @@ T.Pane {
                         }).then(() => { listView.forceActiveFocus(); })
                 // NOTE: Dropping an external item (i.e. filesystem) into the queue.
                 } else if (drop.hasUrls) {
-                    const urlList = [];
-
-                    for (let url in drop.urls)
-                        urlList.push(drop.urls[url]);
+                    // Redux (M0.8, D37): local files only, as paste does (X3).
+                    const urlList = Array.from(drop.urls).filter((url) => url.toString().startsWith("file:"));
 
                     MainPlaylistController.insert(index, urlList, false);
 

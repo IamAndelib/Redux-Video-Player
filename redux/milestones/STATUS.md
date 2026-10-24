@@ -82,7 +82,7 @@ closer). Regressions are checked against the committed crops in `redux/qa/visual
 | Scene (Figma) | Region | Baseline |
 |---|---|---|
 | library (`970:3308`) | title-bar | 0.4950 |
-| | sidebar | 0.3336 |
+| | sidebar | 0.3336 (M0.8: Music, Discover removed; Figma still shows Music, cut by X8) |
 | | header | 0.1868 |
 | | content | 0.2135 |
 | | miniplayer | 0.1308 |
@@ -90,6 +90,6 @@ closer). Regressions are checked against the committed crops in `redux/qa/visual
 | player (`187:328`) | title-bar | 0.1580 |
 | | side-panel | 0.1568 |
 | | controls | 0.3004 (M0.8: cast button removed) |
-| first-run (`1899:3055`) | dialog | 0.4795 |
+| first-run (`1899:3055`) | dialog | 0.4722 (region anchored at the origin in Q0.4) |
 
 Contrast (`qa.sh L7`, WCAG 2.x, 169 pairs per scheme): Night 62 pairs below the minimum, Day 95 (stock palette; M1.1).

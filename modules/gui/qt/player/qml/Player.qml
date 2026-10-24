@@ -736,8 +736,7 @@ FocusScope {
                                 // Stay visible (reserving the 2-line slot) for the
                                 // entire track when it has any lyrics, so the
                                 // layout does not collapse between lyric lines.
-                                value: Player.hasLyrics && !audioFocusScope.lyricsLayoutActive &&
-                                       (centerContent.height > (lyricsLabel.y + lyricsLabel.height))
+                                value: false   // Redux (M0.8, D14): no lyrics (X8)
                             }
 
                             property bool componentCompleted: false

@@ -255,38 +255,18 @@ Item {
             anchors.fill: parent
             z: -1
 
+            // Redux (M0.8, D37): only local files are dropped in, as paste does; no web URLs or text (X3).
+            function localFiles(urls) {
+                return Array.from(urls).filter((url) => url.toString().startsWith("file:"))
+            }
+
             onEntered: (drag) => {
                 // Do not handle internal drag here:
-                if (!drag.source) {
-                    // Foreign drag, check if valid:
-                    if (drag.hasUrls || drag.hasText) {
-                        drag.accepted = true
-                        return
-                    }
-                }
-
-                drag.accepted = false
+                drag.accepted = !drag.source && drag.hasUrls && localFiles(drag.urls).length > 0
             }
 
             onDropped: (drop) => {
-                let urls = []
-                if (drop.hasUrls) {
-
-                    for (let i = 0; i < drop.urls.length; i++)
-                        urls.push(drop.urls[i])
-
-                } else if (drop.hasText) {
-                    /* Browsers give content as text if you dnd the addressbar,
-                       so check if mimedata has valid url in text and use it
-                       if we didn't get any normal Urls()*/
-
-                    if (drop.text.includes("\n")) {
-                        const normalizedLineEndingsDropText = drop.text.replace("\r\n", "\n")
-                        urls.push(...normalizedLineEndingsDropText.split("\n"))
-                    } else {
-                        urls.push(drop.text)
-                    }
-                }
+                const urls = drop.hasUrls ? localFiles(drop.urls) : []
 
                 if (urls.length > 0) {
                     /* D&D of a subtitles file, add it on the fly */
