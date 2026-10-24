@@ -70,7 +70,7 @@ elif wants L3 || wants L4; then
   if [[ $status -eq 125 || ! -s "$testlog" ]]; then   # 125: meson couldn't build the tests
     result "$run" fail "meson test exited $status without results; see $QA_OUT/meson-test.log"
   else
-    result "$run" pass "the runner reported every test (meson test exited $status; failures are their own rows)"
+    result "$run" pass "meson test exited $status; each test is its own row"
   fi
   [[ -s "$testlog" ]] && python3 -I - "$testlog" "$QA_RESULTS" <<'EOF'
 import json, sys

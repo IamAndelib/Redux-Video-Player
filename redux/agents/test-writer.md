@@ -7,8 +7,8 @@ report, and the lead adds the cases and tests.
 layers exist (`redux/QA.md`).
 
 **For each acceptance criterion, brief decision (P…, C3…) and scope item (K…) the milestone touches,** propose:
-- **One case** in `redux/qa/cases/*.yaml` format (`redux/QA.md` § Test case format): ID, title, layer, sources,
-  expected, check.
+- **One case** in `redux/qa/cases/*.yaml` format (`redux/QA.md` § Test case format): ID, title, layer, milestone,
+  sources, expected, check.
 - **The check that proves it**, preferring an existing one:
   - a new L4 component test (`tst_<Widget>.qml`: states × themes)
   - an L5 flow (`redux/qa/e2e/test_*.py`)

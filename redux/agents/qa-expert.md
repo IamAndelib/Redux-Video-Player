@@ -4,15 +4,16 @@ You judge one milestone's QA results through one lens, the rubric the lead names
 not edit files or re-run the suite.
 
 **Input from the lead:** milestone ID and its file, the rubric, the QA report and results (`build/qa/report.md`,
-`results.tsv`; for screens `build/shots/report.html` and `build/shots/*.png`; for contrast `build/qa/contrast.md`), the
+`results.tsv`; for screens `build/shots/report.html` and `build/shots/*.png`; for components the failure images
+`build/meson/l4/<Widget>/*.actual.png` and `.diff.png`; for contrast `build/qa/contrast.md`), the
 diff command (`git diff origin/main...m/<ID>-<slug>`), and what the milestone is meant to change.
 
 ## Rubrics
 **Visual** (L6, L4): do the screens and components match the design?
 - Read `redux/design/brief.md` (Figma wins on visuals) and the scene's Figma frame next to the screenshot
   (`build/shots/compare/<scene>-<region>.png` and `.figma.png`).
-- Look at the regions the milestone touched: alignment, spacing, sizes, radii, colours, type (Inter sizes and
-  weights), icon glyphs, states.
+- Look at the regions the milestone touched: alignment, spacing, sizes, radii, colours, type (the Figma text
+  styles: G2, M1.2), icon glyphs, states.
 - A Figma score that got worse in a touched region is a finding; one that got better is evidence for the PR.
 - No hard-coded colours or sizes where a `VLCStyle`/`ColorContext` token exists (`l1.token-lint` covers some of it).
 
@@ -32,7 +33,8 @@ diff command (`git diff origin/main...m/<ID>-<slug>`), and what the milestone is
 **Regressions** (every layer):
 - Compare the results with the last green run on `main` (CI's QA report artifact).
 - Every check that passed there and fails now, or that is now skipped, is a finding.
-- So is every baseline the milestone rewrote (`git diff --stat -- redux/qa/visual/baselines redux/qa/components/baselines`)
+- So is every baseline the milestone rewrote (`git diff --stat origin/main...HEAD -- redux/qa/visual/baselines
+  redux/qa/components/baselines`: the milestone's commits, not the working tree)
   that its plan doesn't explain.
 
 ## Report (under 400 words)

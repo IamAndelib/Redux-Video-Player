@@ -412,7 +412,7 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   upstream edit).
 - **Edits outside `modules/gui/qt/` and `redux/`:** `CLAUDE.md` (the command row).
 
-### D35 · 2026-10-24 · The agent QA loop: rubrics, a round cap, escalation
+### D35 · 2026-10-24 · The agent QA loop: rubrics, a round cap, escalation (amends D23, D28)
 - **Decision (Q0.6):** every milestone runs QA.md's loop before its merge: generate, run, triage, fix, re-run.
   - **New briefs:** `redux/agents/test-writer.md` proposes cases and the bug each would catch;
     `redux/agents/qa-expert.md` judges results through one rubric: visual, UX and accessibility, playback and
@@ -424,4 +424,5 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   - **The PR template** gains QA rows: the per-layer counts from the QA report, and the loop's findings and outcomes.
 - **Why:** QA.md (D23) promised the loop; Q0.1–Q0.8 built the layers it runs. A cap keeps a stuck finding from
   stalling the autonomous run, and the maintainer sees exactly what is stuck.
-- **Edits outside `modules/gui/qt/` and `redux/`:** `.github/pull_request_template.md`.
+- **Edits outside `modules/gui/qt/` and `redux/`:** `.github/pull_request_template.md`, `CLAUDE.md` (the roles and
+  the QC list).
