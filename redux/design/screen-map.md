@@ -82,7 +82,7 @@ Features cut by `redux/SCOPE.md` (D14) disappear from the UI at one place each; 
 the M0.6 build profile. Upstream files are not deleted.
 | Cut feature | Entry points | Kind |
 |---|---|---|
-| Browse, Discover and Music sections | `maininterface/navigationmodel.cpp` (+ `tests/test_navigation_model.cpp`) | Remove from model |
+| Discover and Music sections (Browse stays until M3.1, D36) | `maininterface/navigationmodel.cpp` (+ `tests/test_navigation_model.cpp`) | Remove from model |
 | Disc, network, capture, clipboard, convert, stream, VLM, EPG, renderer, visualizations, wallpaper, 3D, skins, extensions, update check, go to time, messages | `menus/menus.cpp`, `menus/qml_menu_wrapper.cpp`, `dialogs/dialogs_provider.cpp` | Remove menu entries and shortcuts |
 | Record, renderer, teletext, DVD menu, DVD navigation, program, reverse (A-B loop stays) | `player/control_list_model.hpp`, `player/qml/PlayerControlbarControls.qml` | Hide from the toolbar editor list (IDs stay for old profiles) |
 | Online subtitle search via VLSub | `player/player_controller.cpp` (`openVLsub`) | Replaced by M5.7 |

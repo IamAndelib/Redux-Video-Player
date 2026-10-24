@@ -25,7 +25,7 @@ changes a screen updates its row here and in the table below.
 | Q0.6 | Agent QA loop | Q | M | done | [#61](https://github.com/IamAndelib/Redux-Video-Player/issues/61) / [PR #82](https://github.com/IamAndelib/Redux-Video-Player/pull/82) | | 2026-10-24 |
 | Q0.7 | CI (pulls M10.2 forward) | Q | M | done | [#62](https://github.com/IamAndelib/Redux-Video-Player/issues/62) / [PR #71](https://github.com/IamAndelib/Redux-Video-Player/pull/71) | | 2026-10-23 |
 | Q0.8 | Hardware playback check | Q | S–M | done | [#76](https://github.com/IamAndelib/Redux-Video-Player/issues/76) / [PR #77](https://github.com/IamAndelib/Redux-Video-Player/pull/77) | | 2026-10-24 |
-| M0.8 | Feature trim in the UI | A | M | todo | [#47](https://github.com/IamAndelib/Redux-Video-Player/issues/47) | |  |
+| M0.8 | Feature trim in the UI | A | M | wip | [#47](https://github.com/IamAndelib/Redux-Video-Player/issues/47) | |  |
 | M1.1 | Night palette from Figma tokens | B | S | todo | [#4](https://github.com/IamAndelib/Redux-Video-Player/issues/4) | |  |
 | M1.2 | Typography and shape tokens | B | M | todo | [#5](https://github.com/IamAndelib/Redux-Video-Player/issues/5) | |  |
 | M1.3 | Live accent presets | B | M | todo | [#6](https://github.com/IamAndelib/Redux-Video-Player/issues/6) | |  |
