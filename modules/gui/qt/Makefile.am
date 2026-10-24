@@ -1861,6 +1861,23 @@ check_PROGRAMS += test_vlc_dialog_model
 TESTS += test_vlc_dialog_model
 
 
+# Redux (M0.8): cut controls never reach the toolbar.
+test_qt_control_list_model_SOURCES = \
+	tests/test_control_list_model.cpp \
+	player/control_list_model.hpp \
+	player/control_list_model.cpp
+nodist_test_qt_control_list_model_SOURCES = \
+	tests/test_control_list_model.moc \
+	player/control_list_model.moc.cpp
+BUILT_SOURCES += tests/test_control_list_model.moc
+CLEANFILES += tests/test_control_list_model.moc
+test_qt_control_list_model_CPPFLAGS = $(QT_QTEST_COMMON_cppflags)
+test_qt_control_list_model_CXXFLAGS = $(QT_QTEST_COMMON_cxxflags)
+test_qt_control_list_model_LDADD = $(QT_QTEST_COMMON_ldadd)
+test_qt_control_list_model_LDFLAGS = $(QT_QTEST_COMMON_ldflags)
+check_PROGRAMS += test_qt_control_list_model
+TESTS += test_qt_control_list_model
+
 test_qt_navigation_model_SOURCES = \
 	tests/vlc_stub_modules.cpp \
 	tests/test_navigation_model.cpp \

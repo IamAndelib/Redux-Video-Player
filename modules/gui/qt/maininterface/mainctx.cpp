@@ -637,6 +637,10 @@ void MainCtx::setPinOpacity(float pinOpacity)
 
 inline void MainCtx::initSystray()
 {
+    /* Redux (M0.8, D14): no system tray icon or now-playing popup (X13). */
+    if( true )
+        return;
+
     bool b_systrayAvailable = QSystemTrayIcon::isSystemTrayAvailable();
     bool b_systrayWanted = var_InheritBool( p_intf, "qt-system-tray" );
 

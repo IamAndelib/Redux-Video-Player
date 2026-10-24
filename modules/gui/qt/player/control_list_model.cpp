@@ -18,6 +18,31 @@
 
 #include "control_list_model.hpp"
 
+namespace {
+
+/* Redux (M0.8, D14): controls of cut features. Their IDs stay valid (saved profiles keep them; never renumbered),
+ * but they never reach a toolbar: stock profiles, older saved profiles and the editor alike. */
+bool isCutControl(int id)
+{
+    using C = ControlListModel;
+    switch (id)
+    {
+    case C::RECORD_BUTTON:      // X5
+    case C::RENDERER_BUTTON:    // X6
+    case C::TELETEXT_BUTTONS:   // X13
+    case C::DVD_MENUS_BUTTON:   // X4
+    case C::NAVIGATION_BUTTONS: // X4: DVD navigation
+    case C::NAVIGATION_BOX:     // X4
+    case C::PROGRAM_BUTTON:     // X7
+    case C::REVERSE_BUTTON:     // X13
+        return true;
+    default:
+        return false;
+    }
+}
+
+} // namespace
+
 ControlListModel::ControlListModel(QObject *parent) : QAbstractListModel(parent)
 {
     connect(this, &QAbstractListModel::rowsInserted, this, &ControlListModel::countChanged);
@@ -100,11 +125,11 @@ void ControlListModel::setControls(const QVector<int> &list)
 {
     beginResetModel();
 
-    m_controls.resize(list.size());
-
-    for (int i = 0; i < list.size(); ++i)
+    m_controls.clear();
+    for (const int id : list)
     {
-        m_controls[i] = static_cast<ControlType>(list.at(i));
+        if (!isCutControl(id))
+            m_controls.append(static_cast<ControlType>(id));
     }
 
     endResetModel();
@@ -126,6 +151,9 @@ bool ControlListModel::setButtonAt(int index, const ControlType &button)
 
 void ControlListModel::insert(int index, QVariantMap bdata)
 {
+    if (isCutControl(bdata.value("id").toInt()))
+        return;
+
     beginInsertRows(QModelIndex(), index, index);
     m_controls.insert(index, static_cast<ControlType>(bdata.value("id").toInt()));
     endInsertRows();

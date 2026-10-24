@@ -360,8 +360,7 @@ FocusScope {
 
                 // Whether the full lyrics view is active
                 readonly property bool lyricsMode: MainCtx.lyricsMode
-                readonly property bool lyricsLayoutActive: lyricsMode
-                                                        && Player.hasLyrics
+                readonly property bool lyricsLayoutActive: false   // Redux (M0.8, D14): no lyrics view (X8)
                                                         && centerContent.width > VLCStyle.colWidth(6)
 
                 // Reset sync when entering lyrics mode
@@ -811,26 +810,7 @@ FocusScope {
                                 AccessibleCompat.id: "audioStepBackButton"
                             }
 
-                            Widgets.IconToolButton {
-                                text: VLCIcons.visualization
-                                font.pixelSize: VLCStyle.icon_audioPlayerButton
-                                onClicked: Player.toggleVisualization()
-                                description: qsTr("Visualization")
-
-                                AccessibleCompat.id: "audioVisualizationButton"
-                            }
-
-                            Widgets.IconToolButton {
-                                text: VLCIcons.topbar_music
-                                font.pixelSize: VLCStyle.icon_audioPlayerButton
-                                checked: MainCtx.lyricsMode
-                                onClicked: MainCtx.lyricsMode = !MainCtx.lyricsMode
-                                description: qsTr("Lyrics")
-
-                                Accessible.role: Accessible.Button
-                                Accessible.name: qsTr("Toggle lyrics view")
-                                AccessibleCompat.id: "audioLyricsButton"
-                            }
+                            // Redux (M0.8, D14): no visualization or lyrics view (X8).
 
                             Widgets.IconToolButton{
                                 text: VLCIcons.skip_for
