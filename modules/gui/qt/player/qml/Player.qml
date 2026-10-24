@@ -361,7 +361,6 @@ FocusScope {
                 // Whether the full lyrics view is active
                 readonly property bool lyricsMode: MainCtx.lyricsMode
                 readonly property bool lyricsLayoutActive: false   // Redux (M0.8, D14): no lyrics view (X8)
-                                                        && centerContent.width > VLCStyle.colWidth(6)
 
                 // Reset sync when entering lyrics mode
                 onLyricsModeChanged: {

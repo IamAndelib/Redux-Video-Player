@@ -438,7 +438,8 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
 
 ### D37 · 2026-10-24 · M0.8 trim details (maintainer) and the core hotkeys
 - **Maintainer decisions:**
-  - **Ctrl+V paste stays:** it plays files copied in a file manager.
+  - **Ctrl+V paste stays:** it plays files copied in a file manager, and only those; a URL or text is ignored,
+    since the URL dialogs it used to open are cut (X3).
   - **The error popup's "Show Details" stays** until M8.3's "Save a log" (K34) replaces the log viewer.
   - **Home's "New Music" row is hidden now.**
   - **The novelty video filter tabs wait for M5.3,** which rebuilds that panel with only the kept tools (K21).

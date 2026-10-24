@@ -108,8 +108,10 @@ MediaInfoDialog::MediaInfoDialog(qt_intf_t *_p_intf,
         field->setReadOnly( true );
     for( QPushButton *button : MP->findChildren<QPushButton *>() )
         button->hide();
+    /* The cover's menu comes back whenever its item changes (CoverArtLabel::setItem); without its actions it's empty. */
     for( QWidget *cover : MP->findChildren<CoverArtLabel *>() )
-        cover->setContextMenuPolicy( Qt::NoContextMenu );
+        for( QAction *action : cover->actions() )
+            cover->removeAction( action );
 
     /* Display the buttonBar according to the Tab selected */
     connect( infoTabW, &QTabWidget::currentChanged, this, &MediaInfoDialog::updateButtons );
@@ -204,12 +206,9 @@ void MediaInfoDialog::close()
         deleteLater();
 }
 
-void MediaInfoDialog::updateButtons( int i_tab )
+void MediaInfoDialog::updateButtons( int )
 {
-    if( MP->isInEditMode() && i_tab == 0 )
-        saveMetaButton->show();
-    else
-        saveMetaButton->hide();
+    saveMetaButton->hide();   /* Redux (M0.8, D14): Media Information is read-only (X11) */
 }
 
 void MediaInfoDialog::updateURI( const QString& uri )

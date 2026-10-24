@@ -84,3 +84,7 @@ class ShortcutsTrimmed(PlayerTest):
             if self.changed(before, after):
                 ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
                 self.fail(f"Ctrl+{key.upper()} changed the screen (a window opened); see {after}")
+        # Keys still reach the app: a kept shortcut still changes the screen, so the passes above mean something.
+        self.ctrl("i")
+        self.assertTrue(self.changed(before, self.shot("ctrl-i-after")), "keys no longer reach the app")
+        ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
