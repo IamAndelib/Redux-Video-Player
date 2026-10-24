@@ -99,15 +99,29 @@ throw-away profile. Assert on behaviour with `mpris()` and on what the user sees
 by accessible name; wait with `wait_for()`, never a fixed sleep. Hidden controls aren't reachable: call
 `reveal_controls()` first. A failing test leaves a screenshot and the player's log in `$QA_OUT/l5/` (`build/qa/l5/`; in CI `build/qa-e2e/l5/`).
 
-## The agent loop (per milestone)
-1. **Generate:** a test-writer agent adds or updates cases from the milestone's scope and the brief.
-2. **Run:** the full suite in the container, then the Flatpak subset.
-3. **Triage:** expert agents for UI/visual, UX/accessibility, playback/formats and regressions read the results and
-   screenshots and file findings (severity, evidence, suspected file).
-4. **Fix:** a fix agent addresses the findings in the milestone branch.
-5. **Re-run** until green, with a cap on rounds; anything unresolved goes to `milestones/GAPS.md` and is flagged to
-   the maintainer.
-6. **Report:** a QA report per PR (pass/fail per layer, screenshots, visual diffs, coverage).
+## The agent loop (per milestone, Q0.6)
+The lead runs it on the milestone branch before the PR is merged. Specialists report; the lead decides and fixes (D28).
+Briefs are in [`agents/`](agents/).
+
+1. **Generate:** a test writer ([`agents/test-writer.md`](agents/test-writer.md)) proposes cases and tests from the
+   milestone's acceptance and the brief and scope IDs it cites. The lead adds the ones that would catch a real bug.
+2. **Run:** `redux/dev.sh run redux/tools/qa.sh L1 L2 L3 L4 L5 L6 L7`. Add `flatpak.sh matrix` when packaging or code
+   outside the Qt UI changed.
+3. **Triage:** for each failing check, a QA triager ([`agents/qa-triager.md`](agents/qa-triager.md)) names the cause.
+   QA experts ([`agents/qa-expert.md`](agents/qa-expert.md)), one per rubric the milestone touches (visual, UX and
+   accessibility, playback and formats, regressions), read the results and screens and report findings, even when
+   everything is green.
+4. **Fix:** the lead answers every finding: fixed (commit), filed (issue), or rejected (a reason). P0 and P1 block
+   the merge.
+5. **Re-run** the layers the fixes touch.
+   - **Round cap: 3.** After three rounds with a P0 or P1 still open, stop.
+   - The open item goes to `milestones/GAPS.md` with its evidence and a `needs-user` issue for the maintainer.
+   - Move on to a milestone it doesn't block (D26).
+6. **Report:** the PR's QA row shows the per-layer counts from `build/qa/report.md`, and CI attaches the report. The
+   milestone file's Verification table lists each finding and its outcome.
+
+The dry run in Q0.6 planted a bug on a throwaway branch and went through this loop once. Its record is in
+[`milestones/Q0.6-agent-qa-loop.md`](milestones/Q0.6-agent-qa-loop.md).
 
 ## What stays with the maintainer
 - **Final prototype evaluation**, with a short guided script.

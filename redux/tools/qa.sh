@@ -63,13 +63,14 @@ elif wants L3 || wants L4; then
   # Upstream's CI gives each test 60 s (extras/ci/gitlab-ci.yml); the 10 s default fails under parallel load (G25).
   testlog="$builddir/meson-logs/testlog.json"
   rm -f "$testlog"   # never report a previous run's results
+  rm -rf "$builddir/l4"   # nor a previous run's component failure images (Q0.6 dry run, F2)
   VLC_TEST_TIMEOUT="${VLC_TEST_TIMEOUT:-60}" meson test -C "$builddir" --num-processes "$(nproc)" "${tests[@]}" \
     > "$QA_OUT/meson-test.log" 2>&1
   status=$?
   if [[ $status -eq 125 || ! -s "$testlog" ]]; then   # 125: meson couldn't build the tests
     result "$run" fail "meson test exited $status without results; see $QA_OUT/meson-test.log"
   else
-    result "$run" pass "meson test exited $status"
+    result "$run" pass "meson test exited $status; each test is its own row"
   fi
   [[ -s "$testlog" ]] && python3 -I - "$testlog" "$QA_RESULTS" <<'EOF'
 import json, sys

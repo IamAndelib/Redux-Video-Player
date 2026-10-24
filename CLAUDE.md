@@ -41,7 +41,8 @@ Everything specific to this fork lives in `redux/`. Everything else is upstream 
 - **Priorities:** P0 crash/data loss/broken build, P1 wrong in-scope behaviour or regression (both block a merge),
   P2 robustness/maintainability, P3 polish (`redux/agents/README.md`; GitHub labels `priority:P0`–`P3`).
 - **Agents:** you are the lead: plan, decide, merge. Give each specialist agent one bounded job with its brief from
-  `redux/agents/` (researcher, reviewer, QA triager), run independent jobs in parallel, and answer every finding.
+  `redux/agents/` (researcher, reviewer, QA triager, QA expert, test writer), run independent jobs in parallel, and
+  answer every finding.
 
 ## Working together (D25)
 - GitHub issues are the work queue; the assignee is who works on it. One milestone per person at a time, and never
@@ -55,7 +56,8 @@ status log → start the next milestone (D26: the maintainer evaluates the compl
 milestone). **QC before every merge:** CI green on the PR (D29: `ci.yml` runs the QA suite; `flatpak.yml` builds the
 Flatpak and plays the matrix in it when code or packaging changed); locally: the build; VLC's test suite (`meson test -C build/meson`); the codec matrix;
 the Flatpak build and `flatpak.sh matrix` when packaging or `src/`/`modules/` outside the Qt UI changed; the QA suite
-(`redux/tools/qa.sh`) as Track Q builds it; an independent review agent on the diff; fix and re-run until green, and
+(`redux/tools/qa.sh`) as Track Q builds it; the agent QA loop (`redux/QA.md`, D35: triage, QA experts, at most three
+rounds); an independent review agent on the diff; fix and re-run until green, and
 record the results in the PR and the milestone file. Keep "Redux Video Player (dev)" working (`redux/dev.sh app`).
 A gap that needs the maintainer's decision is filed with `needs-user`; move on to a milestone it doesn't block. Ending
 mid-milestone always logs "stopped at / next step" and is pushed, so anyone can resume. Details:
