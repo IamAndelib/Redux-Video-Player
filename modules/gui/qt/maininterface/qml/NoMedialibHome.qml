@@ -139,11 +139,7 @@ FocusScope {
 
                 text: qsTr("Open File")
 
-                // NOTE: Use the same width for the buttons (give more width if necessary) to have bilateral symmetry:
-                width: Math.max(fileButton.implicitWidth, discButton.implicitWidth)
-
                 Navigation.parentItem: coneNButtons
-                Navigation.rightItem: discButton
 
                 // TODO: The full-fledged open dialog is advertised as "Open Multiple Files" in the menu.
                 //       In the future, we can have the "Open File" button as a combo box button that has these options,
@@ -154,21 +150,7 @@ FocusScope {
                 onClicked: DialogsProvider.simpleOpenDialog()
             }
 
-            Widgets.ActionButtonPrimary {
-                id: discButton
-
-                AccessibleCompat.id: "discButton"
-
-                text: qsTr("Open Disc")
-
-                // NOTE: Use the same width for the buttons (give more width if necessary) to have bilateral symmetry:
-                width: Math.max(fileButton.implicitWidth, discButton.implicitWidth)
-
-                Navigation.parentItem: coneNButtons
-                Navigation.leftItem: fileButton
-
-                onClicked: DialogsProvider.openDiscDialog()
-            }
+            // Redux (M0.8, D14): no Open Disc button (X4).
         }
     }
 

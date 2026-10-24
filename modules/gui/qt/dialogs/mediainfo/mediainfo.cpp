@@ -27,12 +27,14 @@
 
 #include "mediainfo.hpp"
 #include "player/player_controller.hpp"
+#include "widgets/native/interface_widgets.hpp"
 
 #include <vlc_url.h>
 
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QLabel>
 #include <QPushButton>
 
@@ -98,7 +100,18 @@ MediaInfoDialog::MediaInfoDialog(qt_intf_t *_p_intf,
 
     /* Let the MetaData Panel update the URI */
     connect( MP, &MetaPanel::uriSet, this, &MediaInfoDialog::updateURI );
-    connect( MP, &MetaPanel::editing, saveMetaButton, &QPushButton::show );
+    /* Redux (M0.8, D14): Media Information is read-only (X11): no editing, Save, Fingerprint lookup or cover-art
+     * download and replace. K35 keeps the dialog itself. */
+    for( QLineEdit *field : MP->findChildren<QLineEdit *>() )
+        field->setReadOnly( true );
+    for( QTextEdit *field : MP->findChildren<QTextEdit *>() )
+        field->setReadOnly( true );
+    for( QPushButton *button : MP->findChildren<QPushButton *>() )
+        button->hide();
+    /* The cover's menu comes back whenever its item changes (CoverArtLabel::setItem); without its actions it's empty. */
+    for( QWidget *cover : MP->findChildren<CoverArtLabel *>() )
+        for( QAction *action : cover->actions() )
+            cover->removeAction( action );
 
     /* Display the buttonBar according to the Tab selected */
     connect( infoTabW, &QTabWidget::currentChanged, this, &MediaInfoDialog::updateButtons );
@@ -193,12 +206,9 @@ void MediaInfoDialog::close()
         deleteLater();
 }
 
-void MediaInfoDialog::updateButtons( int i_tab )
+void MediaInfoDialog::updateButtons( int )
 {
-    if( MP->isInEditMode() && i_tab == 0 )
-        saveMetaButton->show();
-    else
-        saveMetaButton->hide();
+    saveMetaButton->hide();   /* Redux (M0.8, D14): Media Information is read-only (X11) */
 }
 
 void MediaInfoDialog::updateURI( const QString& uri )

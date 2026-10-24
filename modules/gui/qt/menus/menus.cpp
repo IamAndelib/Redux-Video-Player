@@ -183,15 +183,7 @@ void VLCMenuBar::FileMenu(qt_intf_t *p_intf, QMenu *menu)
         ":/menu/file.svg", &DialogsProvider::openFileDialog, "Ctrl+Shift+O" );
     addDPStaticEntry( menu, qfut( I_OP_OPDIR ),
         ":/menu/folder.svg", &DialogsProvider::PLOpenDir, "Ctrl+F" );
-    addDPStaticEntry( menu, qtr( "Open &Disc..." ),
-        ":/menu/disc.svg", &DialogsProvider::openDiscDialog, "Ctrl+D" );
-    addDPStaticEntry( menu, qtr( "Open &Network Stream..." ),
-        ":/menu/network.svg", &DialogsProvider::openNetDialog, "Ctrl+N" );
-    addDPStaticEntry( menu, qtr( "Open &Capture Device..." ),
-        ":/menu/capture-card.svg", &DialogsProvider::openCaptureDialog, "Ctrl+C" );
-
-    addDPStaticEntry( menu, qtr( "Open &Location from clipboard" ),
-                      NULL, &DialogsProvider::openUrlDialog, "Ctrl+V" );
+    /* Redux (M0.8, D14): no disc, network, capture or URL opening (X3, X4, X7). */
 
     if( mi && var_InheritBool( p_intf, "save-recentplay" ) && mi->hasMediaLibrary() )
     {
@@ -209,10 +201,7 @@ void VLCMenuBar::FileMenu(qt_intf_t *p_intf, QMenu *menu)
     addDPStaticEntry( menu, qfut( I_PL_SAVE ), "", &DialogsProvider::savePlayingToPlaylist,
         "Ctrl+Y" );
 
-    addDPStaticEntry( menu, qtr( "Conve&rt / Save..." ), "",
-        &DialogsProvider::openAndTranscodingDialogs, "Ctrl+R" );
-    addDPStaticEntry( menu, qtr( "&Stream..." ),
-        ":/menu/stream.svg", &DialogsProvider::openAndStreamingDialogs, "Ctrl+S" );
+    /* Redux (M0.8, D14): no Convert / Save or Stream (X5). */
     menu->addSeparator();
 
     action = menu->addAction( qtr( "Quit at the end of play queue" ), [playlist = THEMPL](bool checked){
@@ -224,12 +213,7 @@ void VLCMenuBar::FileMenu(qt_intf_t *p_intf, QMenu *menu)
     action->setCheckable( true );
     action->setChecked( THEMPL->getMediaStopAction() ==  PlaylistController::MEDIA_STOPPED_EXIT);
 
-    VLCSystray* systray = mi ? mi->getSysTray() : nullptr;
-    if( systray )
-    {
-        action = menu->addAction( qtr( "Close to systray"), systray,
-                                 &VLCSystray::toggleUpdateMenu );
-    }
+    /* Redux (M0.8, D14): no system tray (X13). */
 
     addDPStaticEntry( menu, qtr( "&Quit" ) ,
         ":/menu/exit.svg", &DialogsProvider::quit, "Ctrl+Q" );
@@ -257,14 +241,7 @@ void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu )
         "Ctrl+Shift+W" );
 #endif
 
-    addDPStaticEntry( menu, qtr( "Program Guide" ), "", &DialogsProvider::epgDialog,
-        "" );
-
-    addDPStaticEntry( menu, qfut( I_MENU_MSG ),
-        ":/menu/messages.svg", &DialogsProvider::messagesDialog, "Ctrl+M" );
-
-    addDPStaticEntry( menu, qtr( "Plu&gins and extensions" ),
-        "", &DialogsProvider::pluginDialog );
+    /* Redux (M0.8, D14): no program guide, log viewer or plugins and extensions (X7, X9, X13). */
     menu->addSeparator();
 
     if( !p_intf->b_isDialogProvider )
@@ -353,13 +330,7 @@ void VLCMenuBar::ViewMenu(qt_intf_t *p_intf, QMenu *menu)
 
     menu->addMenu( new CheckableListMenu(qtr( "&Color Scheme" ), mi->getColorScheme(), QActionGroup::ExclusionPolicy::Exclusive, menu) );
 
-    menu->addSeparator();
-
-    InterfacesMenu( p_intf, menu );
-    menu->addSeparator();
-
-    /* Extensions */
-    ExtensionsMenu( p_intf, menu );
+    /* Redux (M0.8, D14): no extra interfaces or extensions (X9, X10). */
 }
 
 /**
@@ -422,9 +393,7 @@ void VLCMenuBar::AudioMenu( qt_intf_t *p_intf, QMenu * current )
             current->addMenu( new CheckableListMenu(qtr( "&Stereo Mode" ), THEMIM->getAudioStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
         else
             current->addMenu( new CheckableListMenu(qtr( "&Mix Mode" ), mix_mode, QActionGroup::ExclusionPolicy::Exclusive, current) );
-        current->addSeparator();
-
-        current->addMenu( new CheckableListMenu(qtr( "&Visualizations" ), THEMIM->getAudioVisualizations(), QActionGroup::ExclusionPolicy::Exclusive, current) );
+        /* Redux (M0.8, D14): no visualizations (X8); VolumeEntries starts with its own separator. */
         VolumeEntries( p_intf, current );
     }
 }
@@ -451,9 +420,7 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
     {
         current->addMenu(new CheckableListMenu(qtr( "Video &Track" ), THEMIM->getVideoTracks(), QActionGroup::ExclusionPolicy::None, current));
 
-        current->addSeparator();
-        current->addMenu( new CheckableListMenu(qtr( "&3D Output" ), THEMIM->getVideoStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
-
+        /* Redux (M0.8, D14): no 3D output (X12). */
         current->addSeparator();
         /* Surface modifiers */
         current->addAction(new BooleanPropertyAction(qtr( "&Fullscreen"), THEMIM, "fullscreen", current));
@@ -461,7 +428,7 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
         action->setEnabled( THEMIM->hasVideoOutput() );
         connect(THEMIM, &PlayerController::hasVideoOutputChanged, action, &QAction::setEnabled);
         current->addAction(action);
-        current->addAction(new BooleanPropertyAction(qtr( "Set as Wall&paper"), THEMIM, "wallpaperMode", current));
+        /* Redux (M0.8, D14): no wallpaper mode (X12). */
 
         current->addSeparator();
         /* Size modifiers */
@@ -496,7 +463,7 @@ void VLCMenuBar::NavigMenu( qt_intf_t *p_intf, QMenu *menu )
     submenu = new CheckableListMenu( qtr( "&Chapter" ), THEMIM->getChapters(), QActionGroup::ExclusionPolicy::Exclusive, menu );
     submenu->setTearOffEnabled( true );
     menu->addMenu( submenu );
-    menu->addMenu( new CheckableListMenu( qtr("&Program") , THEMIM->getPrograms(), QActionGroup::ExclusionPolicy::Exclusive, menu) );
+    /* Redux (M0.8, D14): no program selection (X7). */
 
     MainCtx * mi = p_intf->p_mi;
 
@@ -515,11 +482,7 @@ void VLCMenuBar::NavigMenu( qt_intf_t *p_intf, QMenu *menu )
 
     menu->addSeparator();
 
-    if ( !VLCMenuBar::rendererMenu )
-        VLCMenuBar::rendererMenu = new RendererMenu( NULL, p_intf, p_intf->p_mainPlayerController );
-
-    menu->addMenu( VLCMenuBar::rendererMenu );
-    menu->addSeparator();
+    /* Redux (M0.8, D14): no renderers (X6). */
 
 
     PopupMenuControlEntries( menu, p_intf );
@@ -616,10 +579,7 @@ void VLCMenuBar::PopupMenuPlaylistEntries( QMenu *menu, qt_intf_t *p_intf )
     nextAction->setEnabled( !bPlaylistEmpty );
     connect( THEMPL, &PlaylistController::isEmptyChanged, nextAction, &QAction::setDisabled);
 
-    action = menu->addAction( qtr( "Record" ), THEMIM, &PlayerController::toggleRecord );
-    action->setIcon( QIcon( ":/menu/ic_fluent_record.svg" ) );
-    if( !hasInput )
-        action->setEnabled( false );
+    /* Redux (M0.8, D14): no recording (X5). */
     menu->addSeparator();
 }
 
@@ -676,8 +636,7 @@ void VLCMenuBar::PopupMenuControlEntries( QMenu *menu, qt_intf_t *p_intf,
     action->setIcon( ColorizedSvgIcon::colorizedIconForWidget( ":/menu/ic_fluent_skip_back_10.svg", menu ) );
 #endif
 
-    action = menu->addAction( qfut( I_MENU_GOTOTIME ), THEDP, &DialogsProvider::gotoTimeDialog );
-    action->setShortcut( QKeySequence( "Ctrl+T" ) );
+    /* Redux (M0.8, D14): no jump to a specific time (X13). */
 
     menu->addSeparator();
 }
@@ -689,12 +648,7 @@ void VLCMenuBar::PopupMenuStaticEntries( QMenu *menu )
         ":/menu/file.svg", &DialogsProvider::openFileDialog);
     addDPStaticEntry( openmenu, qfut( I_OP_OPDIR ),
         ":/menu/folder.svg", &DialogsProvider::PLOpenDir);
-    addDPStaticEntry( openmenu, qtr( "Open &Disc..." ),
-        ":/menu/disc.svg", &DialogsProvider::openDiscDialog);
-    addDPStaticEntry( openmenu, qtr( "Open &Network..." ),
-        ":/menu/network.svg", &DialogsProvider::openNetDialog);
-    addDPStaticEntry( openmenu, qtr( "Open &Capture Device..." ),
-        ":/menu/capture-card.svg", &DialogsProvider::openCaptureDialog);
+    /* Redux (M0.8, D14): no disc, network or capture opening (X3, X4, X7). */
     menu->addMenu( openmenu );
 
     menu->addSeparator();
@@ -828,10 +782,7 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
             CheckableListMenu* skinsubmenu = new CheckableListMenu(qtr("Interface"), skinmodel, QActionGroup::ExclusionPolicy::ExclusiveOptional, submenu);
             submenu->addMenu(skinsubmenu);
 
-            submenu->addSeparator();
-
-            /* list of extensions */
-            ExtensionsMenu( p_intf, submenu );
+            /* Redux (M0.8, D14): no extensions (X9). */
 
             menu->addMenu( submenu );
         }

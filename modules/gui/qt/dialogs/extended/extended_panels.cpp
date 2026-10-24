@@ -1508,6 +1508,12 @@ SyncControls::SyncControls( qt_intf_t *_p_intf, QWidget *_parent )
 
         *p_subsSpin = new SyncWidget( this );
         synchronizationLayout->addWidget( *p_subsSpin, i, 2, 1, 1 );
+        if( i == 1 )
+        {
+            /* Redux (M0.8, D14): no dual subtitles (X13); the widget stays, hidden. */
+            subsLabel->hide();
+            (*p_subsSpin)->hide();
+        }
     }
 
     subsLayout->addWidget( subsTrackSyncBox, 0, 0, 2, 5 );

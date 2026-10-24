@@ -57,6 +57,12 @@ def dssim(a, b, mask, diff):
     return float(found[1])
 
 
+def needs_update(ours, baseline, mask, prefix, threshold):
+    """--update: a region whose check would fail, including one whose size changed (dssim refuses to compare it)."""
+    sizes = [magick("identify", "-format", "%wx%h", image).stdout for image in (ours, baseline)]
+    return sizes[0] != sizes[1] or dssim(ours, baseline, mask, f"{prefix}.update-diff.png") > threshold
+
+
 def figma_frame(node, anchor):
     """The Figma frame scaled like a screenshot: full-window (16:9) frames to 1920x1080, smaller ones (dialogs) at
     their own size on a dark canvas, where the app puts them (`anchor`: center, or northwest for a window the session
@@ -112,7 +118,9 @@ def compare_scene(scene, update):
             ours, m = crop(shot, area, f"{prefix}.png"), mask(area, excludes, f"{prefix}.mask.png")
             to_figma = (dssim(ours, crop(figma, area, f"{prefix}.figma.png"), m, f"{prefix}.figma-diff.png")
                         if figma else None)
-            if update:
+            # Only a region its check would fail gets a new baseline: rewriting the others churns git and hides which
+            # regions an intended change really touched (D35's regressions rubric).
+            if update and (not os.path.exists(baseline) or needs_update(ours, baseline, m, prefix, threshold)):
                 os.makedirs(os.path.dirname(baseline), exist_ok=True)
                 magick(ours, "-strip", "-define", "png:compression-level=9", baseline)
             if os.path.exists(baseline):

@@ -360,9 +360,7 @@ FocusScope {
 
                 // Whether the full lyrics view is active
                 readonly property bool lyricsMode: MainCtx.lyricsMode
-                readonly property bool lyricsLayoutActive: lyricsMode
-                                                        && Player.hasLyrics
-                                                        && centerContent.width > VLCStyle.colWidth(6)
+                readonly property bool lyricsLayoutActive: false   // Redux (M0.8, D14): no lyrics view (X8)
 
                 // Reset sync when entering lyrics mode
                 onLyricsModeChanged: {
@@ -738,8 +736,7 @@ FocusScope {
                                 // Stay visible (reserving the 2-line slot) for the
                                 // entire track when it has any lyrics, so the
                                 // layout does not collapse between lyric lines.
-                                value: Player.hasLyrics && !audioFocusScope.lyricsLayoutActive &&
-                                       (centerContent.height > (lyricsLabel.y + lyricsLabel.height))
+                                value: false   // Redux (M0.8, D14): no lyrics (X8)
                             }
 
                             property bool componentCompleted: false
@@ -811,26 +808,7 @@ FocusScope {
                                 AccessibleCompat.id: "audioStepBackButton"
                             }
 
-                            Widgets.IconToolButton {
-                                text: VLCIcons.visualization
-                                font.pixelSize: VLCStyle.icon_audioPlayerButton
-                                onClicked: Player.toggleVisualization()
-                                description: qsTr("Visualization")
-
-                                AccessibleCompat.id: "audioVisualizationButton"
-                            }
-
-                            Widgets.IconToolButton {
-                                text: VLCIcons.topbar_music
-                                font.pixelSize: VLCStyle.icon_audioPlayerButton
-                                checked: MainCtx.lyricsMode
-                                onClicked: MainCtx.lyricsMode = !MainCtx.lyricsMode
-                                description: qsTr("Lyrics")
-
-                                Accessible.role: Accessible.Button
-                                Accessible.name: qsTr("Toggle lyrics view")
-                                AccessibleCompat.id: "audioLyricsButton"
-                            }
+                            // Redux (M0.8, D14): no visualization or lyrics view (X8).
 
                             Widgets.IconToolButton{
                                 text: VLCIcons.skip_for

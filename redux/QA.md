@@ -58,7 +58,7 @@ L5 and L7 start non-blocking and become blocking once they have run green and st
   figma: 2151:9673                    # optional: the Figma node it comes from
   frame: 0323-control-bar-one-row.jpg # optional: the video frame (redux/design/frame-picks.tsv)
 ```
-Check IDs: `l1.build`, `l1.cut-plugins`, `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
+Check IDs: `l1.build`, `l1.cut-plugins`, `l1.cut-entries` (M0.8), `l1.startup.night|day`, `l1.quit`, `l1.token-lint`, `l1.kwin-session`, `l1.kwin-screenshot`, `l2.matrix`,
 `l2.hw.<clip>`, `l2.hw.cpu` (Q0.8), `l3.<meson test name>`, `l4.<tst_ file>` (Q0.5), `l5.<module>.<Class>.<test>` (Q0.3), `l6.<scene>.<region>`, `l7.contrast` (Q0.4), `l8.flatpak-matrix` (host, from Q0.7 in CI). Errors the headless X server causes (no GPU)
 are allowed only through `redux/qa/log-allowlist.txt`, each with its reason.
 

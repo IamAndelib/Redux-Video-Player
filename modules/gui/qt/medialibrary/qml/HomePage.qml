@@ -445,7 +445,7 @@ Widgets.PageExt {
 
                 height: currentItem?.contentHeight ?? implicitHeight
 
-                visible: model.count !== 0
+                visible: false   // Redux (M0.8, D37): the library is video only (X8); Home is rebuilt in M3.6
 
                 listHeaderPositioning: ListView.InlineHeader
                 enableBeginningFade: false

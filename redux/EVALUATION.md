@@ -17,3 +17,21 @@ says so, the dev build ("Redux Video Player (dev)"). Use your own videos of at l
 - **M0.7-5 · Open:** the Flatpak while a video plays · **Do:** media keys or the KDE media applet · **Expect:**
   play/pause works; the applet shows the title.
 - **M0.7-6 · Open:** the Flatpak · **Do:** quit with Ctrl+Q · **Expect:** it closes cleanly, no crash dialog (G24, fixed in M0.7: it crashed on every quit before).
+
+## M0.8: Feature trim
+- **M0.8-1 · Open:** the Flatpak, the "⋮" menu at the top right · **Do:** go through Media, Playback, Audio, Video,
+  Subtitle, Tools, View and Help, then right-click on a video and look at that menu too · **Expect:** nothing for discs,
+  network streams, capture devices, converting, streaming, recording, renderers (casting), the program guide, the log
+  viewer ("Messages"), plugins and extensions, visualizations, 3D, wallpaper or the system tray; Media Information is
+  still there (Tools). No menu has an empty gap or a doubled separator where an entry was.
+- **M0.8-2 · Open:** the Flatpak's sidebar · **Do:** look at the sections · **Expect:** Home, Video, Browse; no Music
+  or Discover. Browse stays until M3.1 brings folders into Videos (D36).
+- **M0.8-3 · Open:** a video playing in the Flatpak · **Do:** press Ctrl+D, Ctrl+N, Ctrl+C, Ctrl+R, Ctrl+S, Ctrl+M,
+  Ctrl+T, then Shift+R and W · **Expect:** nothing opens or changes; Ctrl+I still opens Media Information, where the
+  fields can't be edited, there's no Save or Fingerprint, and nothing leaves an empty gap.
+- **M0.8-4 · Open:** Tools › Customize Interface · **Do:** look through the controls you can add · **Expect:** no
+  Record, Renderer, Teletext, DVD menus, Navigation, Program or Trickplay Reverse; A-B Loop is there.
+- **M0.8-5 · Open:** Dolphin and the Flatpak · **Do:** copy a video file in Dolphin, then press Ctrl+V in the player;
+  then copy a web address (or any text) and press Ctrl+V; then drag a video file, and then a web link from a browser,
+  onto the window · **Expect:** the copied and the dragged file play; the web address, the text and the dropped link do
+  nothing (no dialog, no error).

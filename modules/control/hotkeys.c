@@ -1021,6 +1021,22 @@ static struct vlc_action const actions[] =
 static void
 handle_action(intf_thread_t *intf, vlc_action_id_t action_id)
 {
+    /* Redux (M0.8, D37): the keys of features Redux Video Player cuts (D14) do nothing, whatever they are bound to:
+     * recording, wallpaper mode, the disc menu, program switching, secondary subtitles and the boss key. */
+    switch (action_id)
+    {
+        case ACTIONID_RECORD:
+        case ACTIONID_WALLPAPER:
+        case ACTIONID_DISC_MENU:
+        case ACTIONID_PROGRAM_SID_PREV:
+        case ACTIONID_PROGRAM_SID_NEXT:
+        case ACTIONID_SUBTITLE_CONTROL_SECONDARY:
+        case ACTIONID_INTF_BOSS:
+            return;
+        default:
+            break;
+    }
+
     size_t action_idx;
     for (action_idx = 0; actions[action_idx].type != NULL_ACTION; ++action_idx)
         if (actions[action_idx].range.first <= action_id &&

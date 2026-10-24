@@ -426,3 +426,25 @@ Lightweight decision records, newest at the bottom. Add one whenever a choice is
   stalling the autonomous run, and the maintainer sees exactly what is stuck.
 - **Edits outside `modules/gui/qt/` and `redux/`:** `.github/pull_request_template.md`, `CLAUDE.md` (the roles and
   the QC list).
+
+### D36 · 2026-10-24 · Browse stays until M3.1 (amends the M0.8 trim list)
+- **Decision (maintainer):** M0.8 removes the Music and Discover sections and every other cut entry point, but the
+  Browse section (VLC's folder view) stays until M3.1 gives Videos its own folder browsing (brief D5); M3.1 removes
+  it then.
+- **Why:** stock VLC 4's Video section has only "All" and "Playlists". Without Browse there would be no way to browse
+  folders between M0.8 and M3.1, and K38 (local files and folders) is in scope. Q0.4's library scene, which reaches
+  the Figma folder screen through Browse, keeps working.
+- **Alternative:** remove Browse now, as screen-map.md listed: a folder-browsing gap until M3.1.
+
+### D37 · 2026-10-24 · M0.8 trim details (maintainer) and the core hotkeys
+- **Maintainer decisions:**
+  - **Ctrl+V paste stays:** it plays files copied in a file manager, and only those; a URL or text is ignored,
+    since the URL dialogs it used to open are cut (X3).
+  - **The error popup's "Show Details" stays** until M8.3's "Save a log" (K34) replaces the log viewer.
+  - **Home's "New Music" row is hidden now.**
+  - **The novelty video filter tabs wait for M5.3,** which rebuilds that panel with only the kept tools (K21).
+- **Core hotkeys:** `modules/control/hotkeys.c` ignores the actions of cut features (record, wallpaper, disc menu,
+  program, secondary subtitles, boss key) at the top of `handle_action`. That one place covers the defaults and any
+  bindings in an existing `vlcrc`.
+- **Why:** M0.8's acceptance covers shortcuts as well as menus, and these keys are bound outside the Qt UI.
+- **Edits outside `modules/gui/qt/` and `redux/`:** `modules/control/hotkeys.c`.

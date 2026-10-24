@@ -814,6 +814,10 @@ SPrefsPanel::SPrefsPanel( qt_intf_t *_p_intf, QWidget *_parent,
                 ui.notificationComboLabel->setEnabled( checked );
             } );
             ui.notificationCombo->setEnabled( ui.systrayBox->isChecked() );
+            /* Redux (M0.8, D14): no system tray (X13). */
+            ui.systrayBox->hide();
+            ui.notificationCombo->hide();
+            ui.notificationComboLabel->hide();
 
             configBool( "qt-pause-minimized", ui.pauseMinimizedBox );
             configBool( "playlist-tree", ui.treePlaylist );

@@ -1364,6 +1364,24 @@ if qt6_dep.found()
 
 
         vlc_tests += {
+            'name': 'test_qt_control_list_model',
+            'sources': files(
+                'tests/test_control_list_model.cpp',
+                'player/control_list_model.hpp',
+                'player/control_list_model.cpp'
+            ),
+            'moc_sources': files(
+                'tests/test_control_list_model.cpp'
+            ),
+            'moc_headers': files(
+                'player/control_list_model.hpp'
+            ),
+            'suite': ['qt'],
+            'include_directories' : qt_include_dir,
+            'dependencies': [qt6_dep, qtest_qt6_dep]
+        }
+
+        vlc_tests += {
             'name': 'test_qt_renderer_manager',
             'sources': files(
                 'tests/vlc_stub_modules.cpp',

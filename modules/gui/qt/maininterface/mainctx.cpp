@@ -65,7 +65,6 @@
 #include <QDate>
 #include <QMimeData>
 #include <QClipboard>
-#include <QInputDialog>
 
 #include <QQmlProperty>
 
@@ -637,22 +636,9 @@ void MainCtx::setPinOpacity(float pinOpacity)
 
 inline void MainCtx::initSystray()
 {
-    bool b_systrayAvailable = QSystemTrayIcon::isSystemTrayAvailable();
-    bool b_systrayWanted = var_InheritBool( p_intf, "qt-system-tray" );
-
-    if( var_InheritBool( p_intf, "qt-start-minimized") )
-    {
-        if( b_systrayAvailable )
-        {
-            b_systrayWanted = true;
-            b_hideAfterCreation = true;
-        }
-        else
-            msg_Err( p_intf, "cannot start minimized without system tray bar" );
-    }
-
-    if( b_systrayAvailable && b_systrayWanted )
-        m_systray = std::make_unique<VLCSystray>(this);
+    if( var_InheritBool( p_intf, "qt-start-minimized" ) )
+        msg_Warn( p_intf, "cannot start minimized: there is no system tray" );
+    return; /* Redux (M0.8, D14): no system tray icon or now-playing popup (X13) */
 }
 
 ThreadRunner* MainCtx::threadRunner() const
@@ -901,6 +887,8 @@ VLCVarChoiceModel* MainCtx::getExtraInterfaces()
 
 bool MainCtx::pasteFromClipboard()
 {
+    /* Redux (M0.8, D37): paste plays files copied in a file manager, and nothing else: a URL or text would open the
+     * network URL dialogs, which are cut (X3). */
     assert(qApp);
     const QClipboard *const clipboard = qApp->clipboard();
     if (Q_UNLIKELY(!clipboard))
@@ -908,55 +896,21 @@ bool MainCtx::pasteFromClipboard()
     const QMimeData *mimeData = clipboard->mimeData(QClipboard::Selection);
     if (!mimeData || !mimeData->hasUrls())
         mimeData = clipboard->mimeData(QClipboard::Clipboard);
-
-    if (Q_UNLIKELY(!mimeData))
+    if (Q_UNLIKELY(!mimeData) || !mimeData->hasUrls())
         return false;
 
-    QList<QUrl> urlList = mimeData->urls();
-    QString text = mimeData->text();
-
-    if (urlList.count() > 1 || text.contains('\n'))
-    {
-        // NOTE: The reason that mime data for `text/uri-list` is not used
-        //       directly as the placeholder of the input dialog instead of
-        //       re-constructing is to decode the urls in the list.
-        QString placeholder;
-
-        if (urlList.isEmpty())
-        {
-            placeholder = std::move(text);
-        }
-        else
-        {
-            for (const auto& i : urlList)
-                placeholder += i.toString(QUrl::PrettyDecoded) + '\n';
-            placeholder.chop(1);
-        }
-
-        bool ok = false;
-        const QString ret = QInputDialog::getMultiLineText(nullptr,
-                                                           qtr("Paste from clipboard"),
-                                                           qtr("Do you want to enqueue the following URLs into the play queue?"),
-                                                           placeholder,
-                                                           &ok);
-        if (!ok)
+    const QList<QUrl> urlList = mimeData->urls();
+    for (const QUrl &url : urlList)
+        if (!url.isLocalFile())
             return false;
 
-        for (const auto& i : QStringView(ret).split('\n'))
-        {
-            if (i.length() > 0)
-                THEMPL->append(i.trimmed().toString(), false);
-        }
-
-        return true;
-    }
-    else if ((urlList.count() == 1) || mimeData->hasText())
+    bool first = true;
+    for (const QUrl &url : urlList)
     {
-        THEDP->openUrlDialog();
-        return true;
+        THEMPL->append(url.toString(), first);   // play the first, enqueue the rest
+        first = false;
     }
-
-    return false;
+    return !urlList.isEmpty();
 }
 
 /*****************************************************************************
